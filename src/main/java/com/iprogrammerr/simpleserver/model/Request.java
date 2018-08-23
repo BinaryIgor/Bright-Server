@@ -6,10 +6,11 @@ public class Request {
 
     private String method;
     private String path;
+    private String resolvedPath;
     private List<Header> headers;
-    private String body;
+    private byte[] body;
 
-    public Request(String method, String path, List<Header> headers, String body) {
+    public Request(String method, String path, List<Header> headers, byte[] body) {
 	this.method = method;
 	this.path = path;
 	this.headers = headers;
@@ -28,8 +29,16 @@ public class Request {
 	return headers;
     }
 
-    public String getBody() {
+    public byte[] getBody() {
 	return body;
+    }
+
+    public String getResolvedPath() {
+	return resolvedPath;
+    }
+
+    public void setResolvedPath(String resolvedPath) {
+	this.resolvedPath = resolvedPath;
     }
 
     @Override

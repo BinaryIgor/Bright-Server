@@ -6,17 +6,18 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import com.iprogrammerr.simpleserver.constants.ResponseCode;
 import com.iprogrammerr.simpleserver.model.Request;
 import com.iprogrammerr.simpleserver.model.Response;
 import com.iprogrammerr.simpleserver.parser.RequestParser;
 import com.iprogrammerr.simpleserver.resolver.RequestsResolver;
 
-public class RequestHandler implements Runnable {
+public class ClientHandler implements Runnable {
 
     private Socket socket;
     private RequestParser httpParser;
 
-    public RequestHandler(Socket socket, RequestParser httpParser) {
+    public ClientHandler(Socket socket, RequestParser httpParser) {
 	this.socket = socket;
 	this.httpParser = httpParser;
     }
@@ -41,17 +42,13 @@ public class RequestHandler implements Runnable {
     }
 
     private void writeResponse(BufferedWriter writer, Response response) throws IOException {
-	writer.write(response.getCode() == 404 ? getNotFoundResponse() : getAcceptedResponse());
+	writer.write(responseCodeToString(response.getCode()));
 	writer.newLine();
 	writer.write("Access-Control-Allow-Origin: *");
     }
 
-    private String getAcceptedResponse() {
-	return "HTTP/1.1 200 OK";
-    }
-
-    private String getNotFoundResponse() {
-	return "HTTP/1.1 400 NOT FOUND";
+    private String responseCodeToString(ResponseCode responseCode) {
+	return "HTTP/1.1 " + responseCode.getValue();
     }
 
 }

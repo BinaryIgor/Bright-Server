@@ -1,19 +1,26 @@
 package com.iprogrammerr.simpleserver.resolver;
 
+import com.iprogrammerr.simpleserver.constants.RequestMethod;
 import com.iprogrammerr.simpleserver.model.Request;
 import com.iprogrammerr.simpleserver.model.Response;
 
-public abstract class RequestResolver {
+public class RequestResolver {
 
-    private String mainPath;
+    private String url;
+    private RequestMethod requestMethod;
+    private RequestHandler requestHandler;
 
-    public RequestResolver(String mainPath) {
-	this.mainPath = mainPath;
+    public RequestResolver(String url, RequestMethod requestMethod, RequestHandler requestHandler) {
+	this.url = url;
+	this.requestMethod = requestMethod;
+	this.requestHandler = requestHandler;
     }
 
-    public abstract void resolve(Request request, Response response);
+    public boolean canHandle(String url, RequestMethod requestMethod) {
+	return this.url.equals(url) && this.requestMethod.equals(requestMethod);
+    }
 
-    public boolean canResolve(String path) {
-	return path.startsWith(mainPath);
+    public void handle(Request request, Response response) {
+	requestHandler.handle(request, response);
     }
 }

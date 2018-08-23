@@ -3,21 +3,27 @@ package com.iprogrammerr.simpleserver.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iprogrammerr.simpleserver.constants.ResponseCode;
+
 public class Response {
 
     private final List<Header> headers = new ArrayList<>();
-    private String body;
-    private int code;
+    private byte[] body;
+    private ResponseCode code;
 
     public List<Header> getHeaders() {
 	return headers;
     }
 
-    public String getBody() {
+    public void setBody(byte[] body) {
+	this.body = body;
+    }
+
+    public byte[] getBody() {
 	return body;
     }
 
-    public int getCode() {
+    public ResponseCode getCode() {
 	return code;
     }
 
@@ -25,8 +31,8 @@ public class Response {
 	headers.add(header);
     }
 
-    public void setCode(int responseCode) {
-	this.code = responseCode;
+    public void setCode(ResponseCode code) {
+	this.code = code;
     }
 
 }

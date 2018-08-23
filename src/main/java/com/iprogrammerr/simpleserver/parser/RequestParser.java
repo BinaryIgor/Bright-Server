@@ -14,18 +14,19 @@ public class RequestParser {
 
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String HEADERS_BODY_PARSED_SEPARATOR = "\r";
+    private static final int MIN_VALID_FIRST_LINE_LENGTH = 10;
+    private static final int MIN_REQUEST_METHOD_LENGTH = 3;
 
     public Request getRequest(InputStream inputStream) throws IOException {
 	String[] requestLines = readRequest(inputStream);
-	if (requestLines.length < 1) {
+	if (requestLines.length < 1 || requestLines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
 	    throw new RequestException();
 	}
-	String[] splitedFirstLine = requestLines[0].split("/");
-	if (splitedFirstLine.length < 1) {
-	    throw new RequestException();
-	}
-	String method = getMethod(splitedFirstLine[0].trim());
-	String path = splitedFirstLine[1].replaceAll(" HTTP", "");
+	System.out.println("First line = " + requestLines[0]);
+	String method = getMethod(requestLines[0]);
+	System.out.println("Method = " + method);
+	String path = getPath(requestLines[0]);
+	System.out.println("path = " + path);
 	List<Header> headers = new ArrayList<>();
 	int i;
 	for (i = 1; i < requestLines.length; i++) {
@@ -35,9 +36,9 @@ public class RequestParser {
 	    }
 	    headers.add(getHeader(line));
 	}
-	String body = "";
+	byte[] body = new byte[0];
 	if ((i + 1) < requestLines.length && requestLines[i].equals(HEADERS_BODY_PARSED_SEPARATOR)) {
-	    body = requestLines[i + 1];
+	    body = requestLines[i + 1].getBytes();
 	}
 	return new Request(method, path, headers, body);
     }
@@ -54,12 +55,24 @@ public class RequestParser {
 	return request.split(NEW_LINE_SEPARATOR);
     }
 
-    private String getMethod(String methodToParse) {
-	String[] parsed = methodToParse.split("/");
-	if (parsed.length < 1) {
+    private String getMethod(String firstLine) {
+	int indexOfSeparator = firstLine.indexOf("/");
+	if (indexOfSeparator <= MIN_REQUEST_METHOD_LENGTH) {
 	    throw new RequestException();
 	}
-	return parsed[0].trim();
+	return firstLine.substring(0, indexOfSeparator - 1);
+    }
+
+    private String getPath(String firstLine) {
+	int indexOfSeparator = firstLine.indexOf("/");
+	if (indexOfSeparator <= MIN_REQUEST_METHOD_LENGTH) {
+	    throw new RequestException();
+	}
+	int indexOfHttp = firstLine.indexOf("HTTP");
+	if (indexOfHttp <= MIN_REQUEST_METHOD_LENGTH) {
+	    throw new RequestException();
+	}
+	return firstLine.substring(indexOfSeparator + 1, indexOfHttp).trim();
     }
 
     private Header getHeader(String headerToParse) {

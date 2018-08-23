@@ -29,7 +29,7 @@ public class Server {
 	    try {
 		System.out.println("Waiting for connection...");
 		Socket clientSocket = serverSocket.accept();
-		executor.execute(new RequestHandler(clientSocket, httpParser));
+		executor.execute(new ClientHandler(clientSocket, httpParser));
 	    } catch (IOException exception) {
 		exception.printStackTrace();
 	    }
@@ -38,10 +38,6 @@ public class Server {
 
     private synchronized boolean isStopped() {
 	return stopped;
-    }
-
-    private String getAcceptedResponse() {
-	return "HTTP/1.1 200 OK";
     }
 
     public void stop() {
