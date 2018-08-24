@@ -9,7 +9,7 @@ public class Response {
 
     private final List<Header> headers = new ArrayList<>();
     private byte[] body;
-    private ResponseCode code;
+    private ResponseCode code = ResponseCode.NOT_FOUND;
 
     public List<Header> getHeaders() {
 	return headers;
@@ -33,6 +33,10 @@ public class Response {
 
     public void setCode(ResponseCode code) {
 	this.code = code;
+    }
+
+    public boolean hasBody() {
+	return body != null && body.length > 0;
     }
 
 }

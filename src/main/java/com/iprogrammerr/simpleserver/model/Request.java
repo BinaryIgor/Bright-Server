@@ -6,14 +6,18 @@ public class Request {
 
     private String method;
     private String path;
-    private String resolvedPath;
     private List<Header> headers;
+    private List<Parameter> parameters;
+    private List<Number> pathVariables;
     private byte[] body;
 
-    public Request(String method, String path, List<Header> headers, byte[] body) {
+    public Request(String method, String path, List<Header> headers, List<Parameter> parameters,
+	    List<Number> pathVariables, byte[] body) {
 	this.method = method;
 	this.path = path;
 	this.headers = headers;
+	this.parameters = parameters;
+	this.pathVariables = pathVariables;
 	this.body = body;
     }
 
@@ -33,12 +37,12 @@ public class Request {
 	return body;
     }
 
-    public String getResolvedPath() {
-	return resolvedPath;
+    public List<Parameter> getParameters() {
+	return parameters;
     }
 
-    public void setResolvedPath(String resolvedPath) {
-	this.resolvedPath = resolvedPath;
+    public List<Number> getPathVariables() {
+	return pathVariables;
     }
 
     @Override

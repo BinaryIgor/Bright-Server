@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Properties;
 
 import com.iprogrammerr.simpleserver.configuration.ServerConfiguration;
-import com.iprogrammerr.simpleserver.controller.SimpleController;
+import com.iprogrammerr.simpleserver.example.AuthorisationFilter;
+import com.iprogrammerr.simpleserver.example.SimpleController;
+import com.iprogrammerr.simpleserver.filter.RequestFilter;
 import com.iprogrammerr.simpleserver.resolver.RequestResolver;
 import com.iprogrammerr.simpleserver.resolver.RequestsResolver;
 import com.iprogrammerr.simpleserver.server.Server;
@@ -21,8 +23,13 @@ public class ServerApplication {
 
 	List<RequestResolver> requestResolvers = new ArrayList<>();
 	requestResolvers.addAll(simpleController.getRequestResolvers());
-	RequestsResolver.createInstance(serverConfiguration.getContextPath(), requestResolvers);
-	Server server = new Server(8080);
+
+	List<RequestFilter> requestFilters = new ArrayList<>();
+	requestFilters.add(new AuthorisationFilter());
+
+	RequestsResolver.createInstance(serverConfiguration.getContextPath(), requestResolvers, requestFilters);
+
+	Server server = new Server(serverConfiguration.getPort());
 	server.start();
     }
 

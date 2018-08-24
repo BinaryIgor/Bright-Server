@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.iprogrammerr.simpleserver.exception.RequestException;
 import com.iprogrammerr.simpleserver.model.Header;
+import com.iprogrammerr.simpleserver.model.Parameter;
 import com.iprogrammerr.simpleserver.model.Request;
 
 public class RequestParser {
@@ -27,6 +28,8 @@ public class RequestParser {
 	System.out.println("Method = " + method);
 	String path = getPath(requestLines[0]);
 	System.out.println("path = " + path);
+	List<Parameter> parameters = getParameters(path);
+	List<Number> pathVariables = getPathVariables(path);
 	List<Header> headers = new ArrayList<>();
 	int i;
 	for (i = 1; i < requestLines.length; i++) {
@@ -40,7 +43,7 @@ public class RequestParser {
 	if ((i + 1) < requestLines.length && requestLines[i].equals(HEADERS_BODY_PARSED_SEPARATOR)) {
 	    body = requestLines[i + 1].getBytes();
 	}
-	return new Request(method, path, headers, body);
+	return new Request(method, path, headers, parameters, pathVariables, body);
     }
 
     private String[] readRequest(InputStream inputStream) throws IOException {
@@ -73,6 +76,16 @@ public class RequestParser {
 	    throw new RequestException();
 	}
 	return firstLine.substring(indexOfSeparator + 1, indexOfHttp).trim();
+    }
+
+    private List<Parameter> getParameters(String path) {
+	List<Parameter> parameters = new ArrayList<>();
+	return parameters;
+    }
+
+    private List<Number> getPathVariables(String path) {
+	List<Number> pathVariables = new ArrayList<>();
+	return pathVariables;
     }
 
     private Header getHeader(String headerToParse) {
