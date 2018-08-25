@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.iprogrammerr</groupId>
-	<artifactId>simple-server</artifactId>
+	<artifactId>simple-http-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>simple-server</name>
+	<name>simple-http-server</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
