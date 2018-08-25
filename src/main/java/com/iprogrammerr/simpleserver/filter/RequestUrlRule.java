@@ -18,7 +18,14 @@ public class RequestUrlRule {
 	return new RequestUrlRule(url, ValidationRule.STARTS_WITH);
     }
 
+    public static RequestUrlRule createAll() {
+	return new RequestUrlRule("*", ValidationRule.ALL);
+    }
+
     public boolean isCompliant(String url) {
+	if (ValidationRule.ALL.equals(validationRule)) {
+	    return true;
+	}
 	if (ValidationRule.EXACT.equals(validationRule)) {
 	    return this.url.equals(url);
 	}
@@ -27,6 +34,6 @@ public class RequestUrlRule {
     }
 
     private enum ValidationRule {
-	EXACT, STARTS_WITH
+	EXACT, STARTS_WITH, ALL
     }
 }
