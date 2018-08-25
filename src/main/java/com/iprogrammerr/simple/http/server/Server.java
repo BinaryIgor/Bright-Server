@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 
 import com.iprogrammerr.simple.http.server.configuration.ServerConfiguration;
 import com.iprogrammerr.simple.http.server.constants.RequestMethod;
+import com.iprogrammerr.simple.http.server.constants.ResponseCode;
 import com.iprogrammerr.simple.http.server.exception.InitializationException;
 import com.iprogrammerr.simple.http.server.exception.ObjectNotFoundException;
 import com.iprogrammerr.simple.http.server.filter.RequestFilter;
@@ -74,6 +75,7 @@ public class Server {
 		Request request = requestParser.getRequest(inputStream);
 		System.out.println(request);
 		Response response = resolve(request);
+		System.out.println("Writing..." + response);
 		byte[] rawResponse = responseParser.getResponse(response);
 		outputStream.write(rawResponse);
 	    } catch (IOException exception) {
@@ -96,6 +98,11 @@ public class Server {
 	}
 	try {
 	    RequestMethod requestMethod = RequestMethod.createFromString(request.getMethod());
+	    // TODO proper JS's OPTIONS Handling
+	    if (requestMethod.equals(RequestMethod.OPTIONS)) {
+		response.setCode(ResponseCode.OK);
+		return response;
+	    }
 	    System.out.println(requestMethod);
 	    request.removeContextFromPath(contextPath);
 	    RequestResolver resolver = getResolver(requestMethod, request);

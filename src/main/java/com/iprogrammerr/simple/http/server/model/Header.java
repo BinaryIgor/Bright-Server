@@ -1,5 +1,8 @@
 package com.iprogrammerr.simple.http.server.model;
 
+import com.iprogrammerr.simple.http.server.constants.HeadersValues;
+import com.iprogrammerr.simple.http.server.constants.RequestHeaderKey;
+
 public class Header {
 
     private String key;
@@ -18,12 +21,20 @@ public class Header {
 	return value;
     }
 
-    public void setKey(String key) {
-	this.key = key;
+    public static Header createJsonContentType() {
+	return new Header(RequestHeaderKey.CONTENT_TYPE.getValue(), HeadersValues.JSON_CONTENT_TYPE);
     }
 
-    public void setValue(String value) {
-	this.value = value;
+    public static Header createTextContentType() {
+	return new Header(RequestHeaderKey.CONTENT_TYPE.getValue(), HeadersValues.TEXT_PLAIN_CONTENT_TYPE);
+    }
+
+    public static Header createContentLengthHeader(int contentLength) {
+	return new Header(RequestHeaderKey.CONTENT_LENGTH.getValue(), String.valueOf(contentLength));
+    }
+
+    public String getWritable() {
+	return key + ": " + value;
     }
 
     @Override

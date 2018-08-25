@@ -12,16 +12,16 @@ public class Request {
     private String method;
     private String path;
     private List<Header> headers;
-    private List<Parameter> parameters;
-    private List<PathVariable> pathVariables;
+    private Parameters parameters;
+    private PathVariables pathVariables;
     private byte[] body;
 
-    public Request(String method, String path, List<Header> headers, List<Parameter> parameters, byte[] body) {
+    public Request(String method, String path, List<Header> headers, Parameters parameters, byte[] body) {
 	this.method = method;
 	this.path = path;
 	this.headers = headers;
 	this.parameters = parameters;
-	this.pathVariables = new ArrayList<>();
+	this.pathVariables = new PathVariables(new ArrayList<>());
 	this.body = body;
     }
 
@@ -39,10 +39,6 @@ public class Request {
 
     public byte[] getBody() {
 	return body;
-    }
-
-    public List<Parameter> getParameters() {
-	return parameters;
     }
 
     public boolean hasHeader(RequestHeaderKey headerKey) {
@@ -72,38 +68,19 @@ public class Request {
     }
 
     public boolean hasParameter(String key, Class clazz) {
-	for (Parameter parameter : parameters) {
-	    if (parameter.getKey().equals(key) && parameter.getValue().getClass().isAssignableFrom(clazz)) {
-		return true;
-	    }
-	}
-	return false;
+	return parameters.has(key, clazz);
     }
 
     public <T> T getParameter(String key, Class<T> clazz) {
-	for (Parameter parameter : parameters) {
-	    if (parameter.getKey().equals(key) && parameter.getValue().getClass().isAssignableFrom(clazz)) {
-		return (T) parameter.getValue();
-	    }
-	}
-	throw new ObjectNotFoundException();
+	return parameters.get(key, clazz);
     }
 
     public <T> T getPathVariable(String key, Class<T> clazz) {
-	for (PathVariable pathVariable : pathVariables) {
-	    if (pathVariable.getKey().equals(key) && pathVariable.getValue().getClass().isAssignableFrom(clazz)) {
-		return (T) pathVariable.getValue();
-	    }
-	}
-	throw new ObjectNotFoundException();
-    }
-
-    public List<PathVariable> getPathVariables() {
-	return pathVariables;
+	return pathVariables.get(key, clazz);
     }
 
     public void setPathVariables(List<PathVariable> pathVariables) {
-	this.pathVariables = pathVariables;
+	this.pathVariables.set(pathVariables);
     }
 
     // TODO - should it be here?

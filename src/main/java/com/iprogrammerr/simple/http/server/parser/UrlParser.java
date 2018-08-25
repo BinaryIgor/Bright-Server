@@ -5,20 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.iprogrammerr.simple.http.server.constants.ParserConstants;
 import com.iprogrammerr.simple.http.server.exception.CreationException;
 import com.iprogrammerr.simple.http.server.model.Parameter;
+import com.iprogrammerr.simple.http.server.model.Parameters;
 import com.iprogrammerr.simple.http.server.model.PathVariable;
 
 public class UrlParser {
 
     private static final double IS_INTEGER_DELTA = 10e6;
-    public static final String URL_SEGMENTS_SEPARATOR = "/";
-    public static final String PARAMETERS_BEGINING = "?";
-    public static final String PARAMETERS_SEPARATOR = "&";
-    public static final String PARAMETERS_KEY_VALUE_SEPARATOR = "=";
-    public static final String URL_PATTERN_PATH_VARIABLE_START = "{";
-    public static final String URL_PATTERN_PATH_VARIABLE_END = "}";
-    public static final String URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
     private static UrlParser instance;
 
     private UrlParser() {
@@ -42,13 +37,13 @@ public class UrlParser {
 
     private Map<String, String> getKeyTypeVariablesFromUrlPattern(String urlPattern) {
 	Map<String, String> keyTypeUrlPatternVariables = new HashMap<>();
-	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
+	String[] urlPatternSegments = urlPattern.split(ParserConstants.URL_SEGMENTS_SEPARATOR);
 	for (int i = 0; i < urlPatternSegments.length; i++) {
 	    if (!isPathVariable(urlPatternSegments[i])) {
 		continue;
 	    }
 	    String pathVariable = getRawPathVariable(urlPatternSegments[i]);
-	    String[] keyAndType = pathVariable.split(URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR);
+	    String[] keyAndType = pathVariable.split(ParserConstants.URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR);
 	    if (keyAndType.length >= 2) {
 		keyTypeUrlPatternVariables.put(keyAndType[0], keyAndType[1]);
 	    }
@@ -58,8 +53,8 @@ public class UrlParser {
 
     public Map<String, String> getRawPathVariables(String url, String urlPattern) {
 	Map<String, String> pathVariables = new HashMap<>();
-	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
-	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
+	String[] urlSegments = url.split(ParserConstants.URL_SEGMENTS_SEPARATOR);
+	String[] urlPatternSegments = urlPattern.split(ParserConstants.URL_SEGMENTS_SEPARATOR);
 	if (urlSegments.length < urlPatternSegments.length) {
 	    return pathVariables;
 	}
@@ -74,8 +69,8 @@ public class UrlParser {
 
     public List<PathVariable> getPathVariables(String url, String urlPattern) {
 	List<PathVariable> pathVariables = new ArrayList<>();
-	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
-	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
+	String[] urlSegments = url.split(ParserConstants.URL_SEGMENTS_SEPARATOR);
+	String[] urlPatternSegments = urlPattern.split(ParserConstants.URL_SEGMENTS_SEPARATOR);
 	if (urlSegments.length < urlPatternSegments.length) {
 	    return pathVariables;
 	}
@@ -98,27 +93,28 @@ public class UrlParser {
 	if (rawPathVariable.isEmpty()) {
 	    throw new CreationException();
 	}
-	String[] keyAndType = getRawPathVariable(urlPatternSegment).split(URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR);
+	String[] keyAndType = getRawPathVariable(urlPatternSegment)
+		.split(ParserConstants.URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR);
 	System.out.println("urlPatternSegment = " + urlPatternSegment);
 	if (keyAndType.length < 2) {
 	    throw new CreationException();
 	}
-	VariableType variableType = VariableType.createFromString(keyAndType[1]);
-	if (variableType.equals(VariableType.BOOLEAN)) {
+	Type variableType = Type.createFromString(keyAndType[1]);
+	if (variableType.equals(Type.BOOLEAN)) {
 	    return new PathVariable(keyAndType[0], Boolean.parseBoolean(urlSegment));
 	}
-	if (variableType.equals(VariableType.INT)) {
+	if (variableType.equals(Type.INT)) {
 	    return new PathVariable(keyAndType[0], Integer.parseInt(urlSegment));
 	}
-	if (variableType.equals(VariableType.DOUBLE)) {
+	if (variableType.equals(Type.DOUBLE)) {
 	    return new PathVariable(keyAndType[0], Double.parseDouble(urlSegment));
 	}
 	return new PathVariable(keyAndType[0], urlSegment);
     }
 
     private boolean isPathVariable(String urlPatternSegment) {
-	return urlPatternSegment.startsWith(URL_PATTERN_PATH_VARIABLE_START)
-		&& urlPatternSegment.endsWith(URL_PATTERN_PATH_VARIABLE_END);
+	return urlPatternSegment.startsWith(ParserConstants.URL_PATTERN_PATH_VARIABLE_START)
+		&& urlPatternSegment.endsWith(ParserConstants.URL_PATTERN_PATH_VARIABLE_END);
     }
 
     private String getRawPathVariable(String urlPatternSegment) {
@@ -126,9 +122,10 @@ public class UrlParser {
     }
 
     public boolean areEqual(String url, String urlPattern) {
+	System.out.println("UrlParser.areEqual()");
 	urlPattern = getWithoutParametersUrl(urlPattern);
-	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
-	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
+	String[] urlSegments = url.split(ParserConstants.URL_SEGMENTS_SEPARATOR);
+	String[] urlPatternSegments = urlPattern.split(ParserConstants.URL_SEGMENTS_SEPARATOR);
 	if (urlSegments.length != urlPatternSegments.length) {
 	    return false;
 	}
@@ -137,6 +134,7 @@ public class UrlParser {
 		continue;
 	    }
 	    if (!urlSegments[i].equals(urlPatternSegments[i])) {
+		System.out.println("Not equal!" + urlSegments[i] + " vs " + urlPatternSegments[i]);
 		return false;
 	    }
 	}
@@ -164,7 +162,7 @@ public class UrlParser {
 	Map<String, Class> typedMap = new HashMap<>();
 	try {
 	    for (Map.Entry<String, String> rawEntry : rawMap.entrySet()) {
-		VariableType variableType = VariableType.createFromString(rawEntry.getValue());
+		Type variableType = Type.createFromString(rawEntry.getValue());
 		typedMap.put(rawEntry.getKey(), variableType.getType());
 	    }
 	} catch (CreationException exception) {
@@ -189,14 +187,14 @@ public class UrlParser {
 
     private Map<String, String> getRawParameters(String path) {
 	Map<String, String> parameters = new HashMap<>();
-	int indexOfQuestionMark = path.indexOf(PARAMETERS_BEGINING) + 1;
+	int indexOfQuestionMark = path.indexOf(ParserConstants.PARAMETERS_BEGINING) + 1;
 	String toSplitParameters = path.substring(indexOfQuestionMark, path.length());
-	String[] parametersKeyValuePairs = toSplitParameters.split(PARAMETERS_SEPARATOR);
+	String[] parametersKeyValuePairs = toSplitParameters.split(ParserConstants.PARAMETERS_SEPARATOR);
 	if (parametersKeyValuePairs.length < 1) {
 	    return parameters;
 	}
 	for (String keyValue : parametersKeyValuePairs) {
-	    String[] keyAndValue = keyValue.split(PARAMETERS_KEY_VALUE_SEPARATOR);
+	    String[] keyAndValue = keyValue.split(ParserConstants.PARAMETERS_KEY_VALUE_SEPARATOR);
 	    if (keyAndValue.length >= 2) {
 		parameters.put(keyAndValue[0], keyAndValue[1]);
 	    }
@@ -204,20 +202,20 @@ public class UrlParser {
 	return parameters;
     }
 
-    public List<Parameter> getParameters(String path) {
+    public Parameters getParameters(String path) {
 	List<Parameter> parameters = new ArrayList<>();
 	Map<String, String> rawParameters = getRawParameters(path);
 	if (rawParameters.isEmpty()) {
-	    return parameters;
+	    return new Parameters(parameters);
 	}
 	for (Map.Entry<String, String> rawParameter : rawParameters.entrySet()) {
 	    parameters.add(new Parameter(rawParameter.getKey(), getParameterValue(rawParameter.getValue())));
 	}
-	return parameters;
+	return new Parameters(parameters);
     }
 
     public String getWithoutParametersUrl(String url) {
-	int indexOfParametersBegining = url.indexOf(PARAMETERS_BEGINING);
+	int indexOfParametersBegining = url.indexOf(ParserConstants.PARAMETERS_BEGINING);
 	if (indexOfParametersBegining < 0) {
 	    return url;
 	}

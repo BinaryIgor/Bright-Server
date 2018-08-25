@@ -13,4 +13,8 @@ public class RequestException extends RuntimeException {
     public static RequestException createLackOfMethodException() {
 	return new RequestException("Lack of method type");
     }
+
+    public static RequestException createLackOfDataException() {
+	return new RequestException("Lack of data");
+    }
 }

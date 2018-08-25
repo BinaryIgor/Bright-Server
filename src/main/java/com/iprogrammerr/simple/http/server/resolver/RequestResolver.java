@@ -34,7 +34,6 @@ public class RequestResolver {
 	    return false;
 	}
 	boolean willHandle = this.requestMethod.equals(requestMethod) && validateUrl(request.getPath());
-	System.out.println("Will handle?" + willHandle);
 	if (willHandle) {
 	    readyToHandle = true;
 	}
@@ -43,7 +42,6 @@ public class RequestResolver {
 
     private boolean validateUrl(String url) {
 	url = urlParser.getWithoutParametersUrl(url);
-	System.out.println("Without parameters url = " + url);
 	if (!pathVariablesRequirements.has()) {
 	    return this.urlPattern.equals(url);
 	}

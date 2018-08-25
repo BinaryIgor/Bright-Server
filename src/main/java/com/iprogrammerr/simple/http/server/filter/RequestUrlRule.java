@@ -29,7 +29,6 @@ public class RequestUrlRule {
 	if (ValidationRule.EXACT.equals(validationRule)) {
 	    return this.url.equals(url);
 	}
-	System.out.println("Comparing..." + url + "vs " + this.url);
 	return url.startsWith(this.url);
     }
 

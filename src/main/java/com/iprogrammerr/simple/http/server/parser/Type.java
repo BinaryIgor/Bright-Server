@@ -2,7 +2,7 @@ package com.iprogrammerr.simple.http.server.parser;
 
 import com.iprogrammerr.simple.http.server.exception.CreationException;
 
-public enum VariableType {
+public enum Type {
 
     BOOLEAN("boolean", Boolean.class), INT("int", Integer.class), DOUBLE("double", Double.class), STRING("string",
 	    String.class);
@@ -10,7 +10,7 @@ public enum VariableType {
     private String value;
     private Class type;
 
-    private VariableType(String value, Class type) {
+    private Type(String value, Class type) {
 	this.value = value;
 	this.type = type;
     }
@@ -23,7 +23,7 @@ public enum VariableType {
 	return type;
     }
 
-    public static VariableType createFromString(String type) {
+    public static Type createFromString(String type) {
 	type = type.toLowerCase();
 	if (BOOLEAN.value.equals(type)) {
 	    return BOOLEAN;
