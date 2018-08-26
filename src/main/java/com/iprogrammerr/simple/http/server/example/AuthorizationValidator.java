@@ -1,21 +1,14 @@
 package com.iprogrammerr.simple.http.server.example;
 
 import com.iprogrammerr.simple.http.server.constants.RequestHeaderKey;
-import com.iprogrammerr.simple.http.server.constants.RequestMethod;
 import com.iprogrammerr.simple.http.server.constants.ResponseCode;
-import com.iprogrammerr.simple.http.server.filter.RequestFilter;
-import com.iprogrammerr.simple.http.server.filter.RequestMethodRule;
-import com.iprogrammerr.simple.http.server.filter.RequestUrlRule;
+import com.iprogrammerr.simple.http.server.filter.RequestValidator;
 import com.iprogrammerr.simple.http.server.model.Request;
 import com.iprogrammerr.simple.http.server.model.Response;
 
-public class AuthorizationFilter extends RequestFilter {
+public class AuthorizationValidator implements RequestValidator {
 
     private static final String SECRET_TOKEN = "token";
-
-    public AuthorizationFilter() {
-	super(RequestUrlRule.createAll(), RequestMethodRule.create(RequestMethod.GET, RequestMethod.POST));
-    }
 
     @Override
     public boolean isValid(Request request, Response response) {

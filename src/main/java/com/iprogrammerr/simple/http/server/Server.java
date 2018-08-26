@@ -15,8 +15,10 @@ import com.iprogrammerr.simple.http.server.constants.RequestHeaderKey;
 import com.iprogrammerr.simple.http.server.constants.RequestMethod;
 import com.iprogrammerr.simple.http.server.constants.RequestResponseConstants;
 import com.iprogrammerr.simple.http.server.constants.ResponseCode;
+import com.iprogrammerr.simple.http.server.exception.HttpException;
 import com.iprogrammerr.simple.http.server.exception.InitializationException;
 import com.iprogrammerr.simple.http.server.exception.ObjectNotFoundException;
+import com.iprogrammerr.simple.http.server.exception.ResolverNotFoundException;
 import com.iprogrammerr.simple.http.server.filter.RequestFilter;
 import com.iprogrammerr.simple.http.server.model.Request;
 import com.iprogrammerr.simple.http.server.model.Response;
@@ -31,7 +33,6 @@ public class Server {
     private Executor executor;
     private RequestParser requestParser;
     private ResponseParser responseParser;
-    private boolean stopped;
     private String contextPath;
     private List<RequestResolver> requestResolvers;
     private List<RequestFilter> requestFilters;
@@ -62,7 +63,7 @@ public class Server {
     }
 
     public void start() {
-	while (!isStopped()) {
+	while (!serverSocket.isClosed()) {
 	    try {
 		System.out.println("Waiting for connection...");
 		Socket socket = serverSocket.accept();
@@ -93,7 +94,6 @@ public class Server {
 	};
     }
 
-    // TODO resolving - exception to status codes handling
     public Response resolve(Request request) {
 	if (!request.getPath().startsWith(contextPath)) {
 	    return new Response();
@@ -109,10 +109,29 @@ public class Server {
 	    if (filter(requestMethod, request, response)) {
 		resolver.handle(request, response);
 	    }
-	} catch (ObjectNotFoundException exception) {
-	    exception.printStackTrace();
+	} catch (Exception exception) {
+	    handleException(exception, response);
 	}
 	return response;
+    }
+
+    private void handleException(Exception exception, Response response) {
+	exception.printStackTrace();
+	if (exception instanceof ResolverNotFoundException) {
+	    response.setCode(ResponseCode.NOT_FOUND);
+	    return;
+	}
+	if (!(exception instanceof HttpException)) {
+	    response.setCode(ResponseCode.INTERNAL_SERVER_ERROR);
+	    return;
+	}
+	HttpException httpException = (HttpException) exception;
+	response.setCode(httpException.getResponseCode());
+	if (httpException.getMessage() != null && !httpException.getMessage().isEmpty()) {
+	    response.setBody(exception.getMessage().getBytes());
+	} else if (httpException.getCause() != null) {
+	    response.setBody(exception.getCause().toString().getBytes());
+	}
     }
 
     private RequestResolver getResolver(RequestMethod requestMethod, Request request) {
@@ -128,7 +147,7 @@ public class Server {
     private boolean filter(RequestMethod requestMethod, Request request, Response response) {
 	for (RequestFilter filter : requestFilters) {
 	    if (filter.shouldFilter(request.getPath(), requestMethod)) {
-		return filter.isValid(request, response);
+		return filter.filter(request, response);
 	    }
 	}
 	return true;
@@ -169,12 +188,7 @@ public class Server {
 	return contextPath;
     }
 
-    private synchronized boolean isStopped() {
-	return stopped;
-    }
-
     public void stop() {
-	stopped = true;
 	try {
 	    serverSocket.close();
 	} catch (IOException exception) {
