@@ -1,0 +1,2 @@
+# Simple Http Server
+ Goal of this project is provide simple, robust and easy to use http-server. I am strongly opposed to idea of web containers as they unnecessarily overcomplicate application deployment. We should be always able to launch application by simply saying java -jar. I am also aware of the fact, that we have a few embedded servers like Tomcat or Jetty, but they also support Servlets API, which have many things that we do no need anymore and I find them simply too heavy weight and complex. We should always strive for simplicity, so that is what I will provide.
