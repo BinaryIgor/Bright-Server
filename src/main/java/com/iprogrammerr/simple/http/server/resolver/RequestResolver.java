@@ -68,4 +68,12 @@ public class RequestResolver {
 	    response.setCode(ResponseCode.BAD_REQUEST);
 	}
     }
+
+    @Override
+    public String toString() {
+	return "RequestResolver [urlPattern=" + urlPattern + ", requestMethod=" + requestMethod + ", requestHandler="
+		+ requestHandler + ", parametersRequirements=" + parametersRequirements + ", pathVariablesRequirements="
+		+ pathVariablesRequirements + ", readyToHandle=" + readyToHandle + ", urlParser=" + urlParser + "]";
+    }
+
 }

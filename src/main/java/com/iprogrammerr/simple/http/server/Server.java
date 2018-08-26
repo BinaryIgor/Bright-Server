@@ -93,6 +93,7 @@ public class Server {
 	};
     }
 
+    // TODO resolving - exception to status codes handling
     public Response resolve(Request request) {
 	if (!request.getPath().startsWith(contextPath)) {
 	    return new Response();
@@ -116,6 +117,7 @@ public class Server {
 
     private RequestResolver getResolver(RequestMethod requestMethod, Request request) {
 	for (RequestResolver resolver : requestResolvers) {
+	    System.out.println(resolver);
 	    if (resolver.canHandle(requestMethod, request)) {
 		return resolver;
 	    }

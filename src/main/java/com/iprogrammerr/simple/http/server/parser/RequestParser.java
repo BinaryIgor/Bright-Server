@@ -1,9 +1,8 @@
 package com.iprogrammerr.simple.http.server.parser;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,40 +21,36 @@ public class RequestParser {
     }
 
     public Request getRequest(InputStream inputStream) throws IOException {
-	List<String> requestLines = readRequest(inputStream);
-	if (requestLines.isEmpty() || requestLines.get(0).length() < ParserConstants.MIN_VALID_FIRST_LINE_LENGTH) {
+	String[] requestLines = readRequest(inputStream);
+	if (requestLines.length < 1 || requestLines[0].length() < ParserConstants.MIN_VALID_FIRST_LINE_LENGTH) {
 	    throw new RequestException();
 	}
-	String method = getMethod(requestLines.get(0));
-	String path = getPath(requestLines.get(0));
+	String method = getMethod(requestLines[0]);
+	String path = getPath(requestLines[0]);
 	Parameters parameters = urlParser.getParameters(path);
 	List<Header> headers = new ArrayList<>();
 	int i;
-	for (i = 1; i < requestLines.size(); i++) {
-	    String line = requestLines.get(i);
+	for (i = 1; i < requestLines.length; i++) {
+	    String line = requestLines[i];
 	    if (line.isEmpty() || line.equals(ParserConstants.HEADERS_BODY_PARSED_SEPARATOR)) {
 		break;
 	    }
 	    headers.add(getHeader(line));
 	}
 	byte[] body = new byte[0];
-	if ((i + 1) < requestLines.size()
-		&& requestLines.get(i).equals(ParserConstants.HEADERS_BODY_PARSED_SEPARATOR)) {
-	    body = requestLines.get(i + 1).getBytes();
+	if ((i + 1) < requestLines.length && requestLines[i].equals(ParserConstants.HEADERS_BODY_PARSED_SEPARATOR)) {
+	    body = requestLines[i + 1].getBytes();
 	}
 	return new Request(method, path, headers, parameters, body);
     }
 
-    private List<String> readRequest(InputStream inputStream) throws IOException {
-	System.out.println("RequestParser.readRequest()");
-	BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-	List<String> lines = new ArrayList<>();
-	String line = bufferedReader.readLine();
-	while (line != null && !line.isEmpty()) {
-	    System.out.println(line);
-	    lines.add(line);
-	    line = bufferedReader.readLine();
-	}
+    private String[] readRequest(InputStream inputStream) throws IOException {
+	BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+	int availableBytes = bufferedInputStream.available();
+	byte[] bytes = new byte[availableBytes];
+	bufferedInputStream.read(bytes);
+	String request = new String(bytes);
+	String[] lines = request.split(ParserConstants.NEW_LINE_SEPARATOR);
 	return lines;
     }
 
