@@ -14,4 +14,6 @@ public class ParserConstants {
     public static final String URL_PATTERN_PATH_VARIABLE_START = "{";
     public static final String URL_PATTERN_PATH_VARIABLE_END = "}";
     public static final String URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
+    public static final String HTTP = "HTTP";
+    public static final String RESPONSE_CODE_HTTP_1_1_PREFIX = "HTTP/1.1 ";
 }

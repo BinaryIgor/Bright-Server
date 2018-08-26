@@ -11,6 +11,8 @@ import com.iprogrammerr.simple.http.server.model.Response;
 
 public class AuthorizationFilter extends RequestFilter {
 
+    private static final String SECRET_TOKEN = "token";
+
     public AuthorizationFilter() {
 	super(RequestUrlRule.createAll(), RequestMethodRule.create(RequestMethod.GET, RequestMethod.POST));
     }
@@ -22,8 +24,7 @@ public class AuthorizationFilter extends RequestFilter {
 	    return false;
 	}
 	String token = request.getHeader(RequestHeaderKey.AUTHORIZATION);
-	System.out.println("Token = " + token);
-	boolean valid = token.equals("token");
+	boolean valid = token.equals(SECRET_TOKEN);
 	if (!valid) {
 	    response.setCode(ResponseCode.UNAUTHORIZED);
 	}

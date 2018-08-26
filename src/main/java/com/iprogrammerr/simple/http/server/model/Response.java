@@ -12,9 +12,10 @@ public class Response {
     private Header contentLengthHeader;
     private final List<Header> headers;
     private byte[] body;
-    private ResponseCode code = ResponseCode.NOT_FOUND;
+    private ResponseCode code;
 
     public Response() {
+	code = ResponseCode.NOT_FOUND;
 	contentTypeHeader = Header.createTextContentType();
 	headers = new ArrayList<>();
     }

@@ -23,13 +23,11 @@ public class RequestParser {
 
     public Request getRequest(InputStream inputStream) throws IOException {
 	List<String> requestLines = readRequest(inputStream);
-	if (requestLines.size() < 1 || requestLines.get(0).length() < ParserConstants.MIN_VALID_FIRST_LINE_LENGTH) {
+	if (requestLines.isEmpty() || requestLines.get(0).length() < ParserConstants.MIN_VALID_FIRST_LINE_LENGTH) {
 	    throw new RequestException();
 	}
 	String method = getMethod(requestLines.get(0));
-	System.out.println("Method = " + method);
 	String path = getPath(requestLines.get(0));
-	System.out.println("path = " + path);
 	Parameters parameters = urlParser.getParameters(path);
 	List<Header> headers = new ArrayList<>();
 	int i;
@@ -49,6 +47,7 @@ public class RequestParser {
     }
 
     private List<String> readRequest(InputStream inputStream) throws IOException {
+	System.out.println("RequestParser.readRequest()");
 	BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 	List<String> lines = new ArrayList<>();
 	String line = bufferedReader.readLine();
@@ -69,11 +68,11 @@ public class RequestParser {
     }
 
     private String getPath(String firstLine) {
-	int indexOfSeparator = firstLine.indexOf("/");
+	int indexOfSeparator = firstLine.indexOf(ParserConstants.URL_SEGMENTS_SEPARATOR);
 	if (indexOfSeparator <= ParserConstants.MIN_REQUEST_METHOD_LENGTH) {
 	    throw new RequestException();
 	}
-	int indexOfHttp = firstLine.indexOf("HTTP");
+	int indexOfHttp = firstLine.indexOf(ParserConstants.HTTP);
 	if (indexOfHttp <= ParserConstants.MIN_REQUEST_METHOD_LENGTH) {
 	    throw new RequestException();
 	}
@@ -85,7 +84,7 @@ public class RequestParser {
 	if (keyValue.length < 2) {
 	    throw new RequestException();
 	}
-	return new Header(keyValue[0], keyValue[1]);
+	return new Header(keyValue[0].trim(), keyValue[1].trim());
     }
 
 }

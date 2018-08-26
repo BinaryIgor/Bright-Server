@@ -4,7 +4,6 @@ import com.iprogrammerr.simple.http.server.configuration.ServerConfiguration;
 import com.iprogrammerr.simple.http.server.constants.HeadersValues;
 import com.iprogrammerr.simple.http.server.constants.ParserConstants;
 import com.iprogrammerr.simple.http.server.constants.ResponseCode;
-import com.iprogrammerr.simple.http.server.constants.ResponseHeaderKey;
 import com.iprogrammerr.simple.http.server.model.Header;
 import com.iprogrammerr.simple.http.server.model.Response;
 
@@ -17,22 +16,20 @@ public class ResponseParser {
     }
 
     public byte[] getResponse(Response response) {
-	return getStringedResponse(response).getBytes();
-    }
-
-    private String getStringedResponse(Response response) {
 	StringBuilder builder = new StringBuilder();
 	builder.append(responseCodeToString(response.getCode())).append(ParserConstants.NEW_LINE_SEPARATOR)
-		.append(ResponseHeaderKey.ACCESS_CONTROL_ALLOW_ORIGIN.getValue()).append(": ")
-		.append(serverConfiguration.getAllowedOrigins());
+		.append(Header.createAccessControlAllowOriginsHeader(serverConfiguration.getAllowedOrigins()))
+		.append(ParserConstants.NEW_LINE_SEPARATOR)
+		.append(Header.createAccessControlAllowHeadersHeader(serverConfiguration.getAllowedHeaders()))
+		.append(ParserConstants.NEW_LINE_SEPARATOR).append(Header.createCurrentDateHeader());
 	for (Header header : response.getHeaders()) {
-	    builder.append(ParserConstants.NEW_LINE_SEPARATOR).append(header.getWritable());
+	    builder.append(ParserConstants.NEW_LINE_SEPARATOR).append(header);
 	}
 	if (!response.hasBody()) {
-	    return builder.toString();
+	    return builder.toString().getBytes();
 	}
-	builder.append(ParserConstants.NEW_LINE_SEPARATOR).append(response.getContentTypeHeader().getWritable())
-		.append(ParserConstants.NEW_LINE_SEPARATOR).append(response.getContentLengthHeader().getWritable())
+	builder.append(ParserConstants.NEW_LINE_SEPARATOR).append(response.getContentTypeHeader())
+		.append(ParserConstants.NEW_LINE_SEPARATOR).append(response.getContentLengthHeader())
 		.append(ParserConstants.HEADERS_BODY_SEPARATOR);
 	String contentType = response.getContentTypeHeader().getValue();
 	if (contentType.equals(HeadersValues.JSON_CONTENT_TYPE)
@@ -41,11 +38,11 @@ public class ResponseParser {
 	} else {
 	    builder.append(response.getBody());
 	}
-	return builder.toString();
+	return builder.toString().getBytes();
     }
 
     private String responseCodeToString(ResponseCode responseCode) {
-	return "HTTP/1.1 " + responseCode.getValue();
+	return ParserConstants.RESPONSE_CODE_HTTP_1_1_PREFIX + responseCode.getValue();
     }
 
 }

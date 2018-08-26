@@ -1,7 +1,11 @@
 package com.iprogrammerr.simple.http.server.model;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import com.iprogrammerr.simple.http.server.constants.HeadersValues;
 import com.iprogrammerr.simple.http.server.constants.RequestHeaderKey;
+import com.iprogrammerr.simple.http.server.constants.ResponseHeaderKey;
 
 public class Header {
 
@@ -33,13 +37,27 @@ public class Header {
 	return new Header(RequestHeaderKey.CONTENT_LENGTH.getValue(), String.valueOf(contentLength));
     }
 
-    public String getWritable() {
-	return key + ": " + value;
+    public static Header createAccessControlAllowOriginsHeader(String allowedOrigins) {
+	return new Header(ResponseHeaderKey.ACCESS_CONTROL_ALLOW_ORIGIN.getValue(), allowedOrigins);
+    }
+
+    public static Header createAccessControlAllowHeadersHeader(String allowedHeaders) {
+	return new Header(ResponseHeaderKey.ACCESS_CONTROL_ALLOW_HEADERS.getValue(), allowedHeaders);
+    }
+
+    public static Header createAccessControlAllowMethodsHeader(String allowedMethods) {
+	return new Header(ResponseHeaderKey.ACCESS_CONTROL_ALLOW_METHODS.getValue(), allowedMethods);
+    }
+
+    public static Header createCurrentDateHeader() {
+	LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);
+	System.out.println(currentDate);
+	return new Header(ResponseHeaderKey.DATE.getValue(), currentDate.toString());
     }
 
     @Override
     public String toString() {
-	return "Header [key=" + key + ", value=" + value + "]";
+	return key + ": " + value;
     }
 
 }

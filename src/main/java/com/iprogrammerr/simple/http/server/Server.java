@@ -11,7 +11,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import com.iprogrammerr.simple.http.server.configuration.ServerConfiguration;
+import com.iprogrammerr.simple.http.server.constants.RequestHeaderKey;
 import com.iprogrammerr.simple.http.server.constants.RequestMethod;
+import com.iprogrammerr.simple.http.server.constants.RequestResponseConstants;
 import com.iprogrammerr.simple.http.server.constants.ResponseCode;
 import com.iprogrammerr.simple.http.server.exception.InitializationException;
 import com.iprogrammerr.simple.http.server.exception.ObjectNotFoundException;
@@ -26,13 +28,14 @@ import com.iprogrammerr.simple.http.server.resolver.RequestResolver;
 public class Server {
 
     private ServerSocket serverSocket;
-    private Executor executor = Executors.newCachedThreadPool();
+    private Executor executor;
     private RequestParser requestParser;
     private ResponseParser responseParser;
     private boolean stopped;
     private String contextPath;
     private List<RequestResolver> requestResolvers;
     private List<RequestFilter> requestFilters;
+    private ServerConfiguration serverConfiguration;
 
     public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers,
 	    List<RequestFilter> requestFilters) {
@@ -41,11 +44,13 @@ public class Server {
 	} catch (IOException exception) {
 	    throw new InitializationException(exception);
 	}
+	this.executor = Executors.newCachedThreadPool();
 	this.contextPath = serverConfiguration.getContextPath();
 	this.requestParser = new RequestParser(UrlParser.getInstance());
 	this.responseParser = new ResponseParser(serverConfiguration);
 	this.requestResolvers = requestsResolvers;
 	this.requestFilters = requestFilters;
+	this.serverConfiguration = serverConfiguration;
     }
 
     public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers) {
@@ -73,9 +78,7 @@ public class Server {
 	    try (InputStream inputStream = socket.getInputStream();
 		    BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream())) {
 		Request request = requestParser.getRequest(inputStream);
-		System.out.println(request);
 		Response response = resolve(request);
-		System.out.println("Writing..." + response);
 		byte[] rawResponse = responseParser.getResponse(response);
 		outputStream.write(rawResponse);
 	    } catch (IOException exception) {
@@ -91,19 +94,15 @@ public class Server {
     }
 
     public Response resolve(Request request) {
-	System.out.println("RequestResolver.resolve()");
-	Response response = new Response();
 	if (!request.getPath().startsWith(contextPath)) {
-	    return response;
+	    return new Response();
 	}
+	Response response = new Response();
 	try {
 	    RequestMethod requestMethod = RequestMethod.createFromString(request.getMethod());
-	    // TODO proper JS's OPTIONS Handling
 	    if (requestMethod.equals(RequestMethod.OPTIONS)) {
-		response.setCode(ResponseCode.OK);
-		return response;
+		return handleOptionsRequest(request);
 	    }
-	    System.out.println(requestMethod);
 	    request.removeContextFromPath(contextPath);
 	    RequestResolver resolver = getResolver(requestMethod, request);
 	    if (filter(requestMethod, request, response)) {
@@ -131,6 +130,37 @@ public class Server {
 	    }
 	}
 	return true;
+    }
+
+    // TODO is it enough?
+    private Response handleOptionsRequest(Request request) {
+	Response response = new Response();
+	response.setCode(ResponseCode.FORBIDDEN);
+	boolean haveRequiredHeaders = request.hasHeader(RequestHeaderKey.ORIGIN)
+		&& request.hasHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD)
+		&& request.hasHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_HEADERS);
+	if (!haveRequiredHeaders) {
+	    return response;
+	}
+	boolean originAllowed = serverConfiguration.getAllowedOrigins().equals(RequestResponseConstants.ALLOW_ALL)
+		|| serverConfiguration.getAllowedOrigins().contains(request.getHeader(RequestHeaderKey.ORIGIN));
+	if (!originAllowed) {
+	    return response;
+	}
+	boolean methodAllowed = serverConfiguration.getAllowedMethods().equals(RequestResponseConstants.ALLOW_ALL)
+		|| serverConfiguration.getAllowedMethods()
+			.contains(request.getHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
+	if (!methodAllowed) {
+	    return response;
+	}
+	boolean headersAllowed = serverConfiguration.getAllowedHeaders().equals(RequestResponseConstants.ALLOW_ALL)
+		|| serverConfiguration.getAllowedHeaders()
+			.contains(request.getHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
+	if (!headersAllowed) {
+	    return response;
+	}
+	response.setCode(ResponseCode.OK);
+	return response;
     }
 
     public String getContextPath() {

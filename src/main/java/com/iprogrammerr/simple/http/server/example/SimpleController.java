@@ -6,6 +6,7 @@ import java.util.List;
 import com.iprogrammerr.simple.http.server.constants.RequestMethod;
 import com.iprogrammerr.simple.http.server.constants.ResponseCode;
 import com.iprogrammerr.simple.http.server.controller.Controller;
+import com.iprogrammerr.simple.http.server.model.Header;
 import com.iprogrammerr.simple.http.server.resolver.RequestResolver;
 
 public class SimpleController implements Controller {
@@ -26,7 +27,8 @@ public class SimpleController implements Controller {
 		    System.out.println("Have id = " + id);
 		    double scale = request.getParameter("scale", Double.class);
 		    System.out.println("Have scale = " + scale);
-		    String text = "Hello!";
+		    String text = "{\"message\": \"Hello\"!}";
+		    response.setContentTypeHeader(Header.createJsonContentType());
 		    response.setBody(text.getBytes());
 		    response.setCode(ResponseCode.OK);
 		});

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.iprogrammerr.simple.http.server.configuration.ServerConfiguration;
+import com.iprogrammerr.simple.http.server.example.AuthorizationFilter;
 import com.iprogrammerr.simple.http.server.example.SimpleController;
 import com.iprogrammerr.simple.http.server.filter.RequestFilter;
 import com.iprogrammerr.simple.http.server.resolver.RequestResolver;
@@ -22,7 +23,7 @@ public class ServerApplication {
 	requestResolvers.addAll(simpleController.getRequestResolvers());
 
 	List<RequestFilter> requestFilters = new ArrayList<>();
-	// requestFilters.add(new AuthorizationFilter());
+	requestFilters.add(new AuthorizationFilter());
 
 	Server server = new Server(serverConfiguration, requestResolvers, requestFilters);
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
