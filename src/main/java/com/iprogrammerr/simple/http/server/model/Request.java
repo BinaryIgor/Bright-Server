@@ -1,6 +1,5 @@
 package com.iprogrammerr.simple.http.server.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,16 +11,16 @@ public class Request {
     private String method;
     private String path;
     private List<Header> headers;
-    private Parameters parameters;
-    private PathVariables pathVariables;
+    private Pairs parameters;
+    private Pairs pathVariables;
     private byte[] body;
 
-    public Request(String method, String path, List<Header> headers, Parameters parameters, byte[] body) {
+    public Request(String method, String path, List<Header> headers, byte[] body) {
 	this.method = method;
 	this.path = path;
 	this.headers = headers;
-	this.parameters = parameters;
-	this.pathVariables = new PathVariables(new ArrayList<>());
+	this.parameters = new Pairs();
+	this.pathVariables = new Pairs();
 	this.body = body;
     }
 
@@ -75,15 +74,22 @@ public class Request {
 	return parameters.get(key, clazz);
     }
 
+    public boolean hasPathVariable(String key, Class clazz) {
+	return pathVariables.has(key, clazz);
+    }
+
     public <T> T getPathVariable(String key, Class<T> clazz) {
 	return pathVariables.get(key, clazz);
     }
 
-    public void setPathVariables(List<PathVariable> pathVariables) {
-	this.pathVariables.set(pathVariables);
+    public void addPathVariables(Pairs pathVariables) {
+	this.pathVariables.add(pathVariables);
     }
 
-    // TODO - should it be here?
+    public void addParameters(Pairs parameters) {
+	this.parameters.add(parameters);
+    }
+
     public void removeContextFromPath(String contextPath) {
 	if (path.startsWith(contextPath)) {
 	    path = path.replace(contextPath + "/", "");

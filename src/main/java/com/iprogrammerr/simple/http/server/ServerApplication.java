@@ -8,28 +8,35 @@ import java.util.Properties;
 
 import com.iprogrammerr.simple.http.server.configuration.ServerConfiguration;
 import com.iprogrammerr.simple.http.server.constants.RequestMethod;
-import com.iprogrammerr.simple.http.server.example.AuthorizationValidator;
-import com.iprogrammerr.simple.http.server.example.SimpleController;
+import com.iprogrammerr.simple.http.server.example.AuthorizationHandler;
+import com.iprogrammerr.simple.http.server.example.HelloHandler;
 import com.iprogrammerr.simple.http.server.filter.RequestFilter;
-import com.iprogrammerr.simple.http.server.filter.RequestMethodRule;
-import com.iprogrammerr.simple.http.server.filter.RequestUrlRule;
+import com.iprogrammerr.simple.http.server.parser.FilterUrlPatternParser;
+import com.iprogrammerr.simple.http.server.parser.HttpOneParser;
+import com.iprogrammerr.simple.http.server.parser.RequestResponseParser;
+import com.iprogrammerr.simple.http.server.parser.ResolverUrlPatternParser;
 import com.iprogrammerr.simple.http.server.resolver.RequestResolver;
+import com.iprogrammerr.simple.http.server.rule.AnyRequestMethodRule;
 
 public class ServerApplication {
 
     public static void main(String[] args) throws IOException {
 	ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
 
-	SimpleController simpleController = new SimpleController();
+	RequestResponseParser httpParser = new HttpOneParser(serverConfiguration);
+	ResolverUrlPatternParser resolverUrlPatternParser = new ResolverUrlPatternParser();
+	FilterUrlPatternParser filterUrlPatternParser = new FilterUrlPatternParser();
 
 	List<RequestResolver> requestResolvers = new ArrayList<>();
-	requestResolvers.addAll(simpleController.getRequestResolvers());
+	RequestResolver helloResolver = new RequestResolver("hello/{id:int}", RequestMethod.GET,
+		resolverUrlPatternParser, new HelloHandler());
+	requestResolvers.add(helloResolver);
 
 	List<RequestFilter> requestFilters = new ArrayList<>();
-	requestFilters.add(new RequestFilter(RequestUrlRule.createAll(),
-		RequestMethodRule.create(RequestMethod.GET, RequestMethod.POST), new AuthorizationValidator()));
+	RequestFilter authorizationFilter = new RequestFilter("*", new AnyRequestMethodRule(), filterUrlPatternParser,
+		new AuthorizationHandler());
 
-	Server server = new Server(serverConfiguration, requestResolvers, requestFilters);
+	Server server = new Server(serverConfiguration, httpParser, requestResolvers, requestFilters);
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 	    server.stop();
 	}));

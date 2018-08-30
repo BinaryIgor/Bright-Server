@@ -1,9 +1,11 @@
 package com.iprogrammerr.simple.http.server.model;
 
-public abstract class Pair {
+import java.util.Objects;
 
-    protected String key;
-    protected Object value;
+public class Pair {
+
+    private String key;
+    private Object value;
 
     public Pair(String key, Object value) {
 	this.key = key;
@@ -16,6 +18,33 @@ public abstract class Pair {
 
     public Object getValue() {
 	return value;
+    }
+
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + ((key == null) ? 0 : key.hashCode());
+	result = prime * result + ((value == null) ? 0 : value.hashCode());
+	return result;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+	if (this == object) {
+	    return true;
+	}
+	if (object == null) {
+	    return false;
+	}
+	if (getClass() != object.getClass()) {
+	    return false;
+	}
+	Pair other = (Pair) object;
+	if (!Objects.equals(key, other.key)) {
+	    return false;
+	}
+	return Objects.equals(value, other.value);
     }
 
 }

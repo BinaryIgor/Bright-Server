@@ -1,14 +1,19 @@
 package com.iprogrammerr.simple.http.server.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.iprogrammerr.simple.http.server.exception.ObjectNotFoundException;
 
-public abstract class Pairs<T extends Pair> {
+public class Pairs {
 
-    protected List<T> pairs;
+    private List<Pair> pairs;
 
-    public Pairs(List<T> pairs) {
+    public Pairs() {
+	this.pairs = new ArrayList<>();
+    }
+
+    public Pairs(List<Pair> pairs) {
 	this.pairs = pairs;
     }
 
@@ -30,8 +35,25 @@ public abstract class Pairs<T extends Pair> {
 	throw new ObjectNotFoundException();
     }
 
-    public void set(List<T> pairs) {
-	this.pairs = pairs;
+    public void add(Pair pair) {
+	if (!this.pairs.contains(pair)) {
+	    pairs.add(pair);
+	}
+    }
+
+    public void add(List<Pair> pairs) {
+	if (pairs == null) {
+	    return;
+	}
+	for (Pair pair : pairs) {
+	    if (!this.pairs.contains(pair)) {
+		pairs.add(pair);
+	    }
+	}
+    }
+
+    public void add(Pairs pairs) {
+	this.pairs.addAll(pairs.pairs);
     }
 
 }

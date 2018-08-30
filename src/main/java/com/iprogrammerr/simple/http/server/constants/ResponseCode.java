@@ -15,4 +15,8 @@ public enum ResponseCode {
     public int getValue() {
 	return value;
     }
+
+    public boolean isOk() {
+	return value >= 200 && value < 300;
+    }
 }

@@ -3,22 +3,21 @@ package com.iprogrammerr.simple.http.server;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.iprogrammerr.simple.http.server.model.PathVariable;
-import com.iprogrammerr.simple.http.server.parser.UrlParser;
+import com.iprogrammerr.simple.http.server.model.Pairs;
+import com.iprogrammerr.simple.http.server.parser.ResolverUrlPatternParser;
 
-public class UrlParserTest {
+public class ResolvedUrlPatternParserTest {
 
-    private UrlParser urlParser;
+    private ResolverUrlPatternParser urlParser;
 
     @Before
     public void setup() {
-	urlParser = UrlParser.getInstance();
+	urlParser = new ResolverUrlPatternParser();
     }
 
     @Test
@@ -61,11 +60,12 @@ public class UrlParserTest {
     public void getPathVariablesTest() {
 	String url = "riddle/user/1/search/9.4";
 	String urlPattern = "riddle/user/{id:int}/search/{scale:double}";
-	List<PathVariable> pathVariables = urlParser.getPathVariables(url, urlPattern);
-	assertTrue(pathVariables.size() == 2);
-	int id = (int) pathVariables.get(0).getValue();
+	Pairs pathVariables = urlParser.getPathVariables(url, urlPattern);
+	assertTrue(pathVariables.has("id", Integer.class));
+	int id = pathVariables.get("id", Integer.class);
 	assertTrue(id == 1);
-	double scale = (double) pathVariables.get(1).getValue();
+	assertTrue(pathVariables.has("scale", Double.class));
+	double scale = pathVariables.get("scale", Double.class);
 	assertTrue(scale == 9.4);
     }
 }

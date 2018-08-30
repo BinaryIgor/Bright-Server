@@ -2,26 +2,26 @@ package com.iprogrammerr.simple.http.server.example;
 
 import com.iprogrammerr.simple.http.server.constants.RequestHeaderKey;
 import com.iprogrammerr.simple.http.server.constants.ResponseCode;
-import com.iprogrammerr.simple.http.server.filter.RequestValidator;
 import com.iprogrammerr.simple.http.server.model.Request;
-import com.iprogrammerr.simple.http.server.model.Response;
+import com.iprogrammerr.simple.http.server.resolver.RequestHandler;
+import com.iprogrammerr.simple.http.server.response.EmptyResponse;
+import com.iprogrammerr.simple.http.server.response.Response;
 
-public class AuthorizationValidator implements RequestValidator {
+public class AuthorizationHandler implements RequestHandler {
 
     private static final String SECRET_TOKEN = "token";
 
     @Override
-    public boolean isValid(Request request, Response response) {
+    public Response handle(Request request) {
 	if (!request.hasHeader(RequestHeaderKey.AUTHORIZATION)) {
-	    response.setCode(ResponseCode.UNAUTHORIZED);
-	    return false;
+	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
 	String token = request.getHeader(RequestHeaderKey.AUTHORIZATION);
 	boolean valid = token.equals(SECRET_TOKEN);
 	if (!valid) {
-	    response.setCode(ResponseCode.UNAUTHORIZED);
+	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
-	return valid;
+	return new EmptyResponse(ResponseCode.OK);
     }
 
 }

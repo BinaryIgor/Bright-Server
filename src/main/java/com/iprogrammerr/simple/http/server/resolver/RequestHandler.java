@@ -1,8 +1,8 @@
 package com.iprogrammerr.simple.http.server.resolver;
 
 import com.iprogrammerr.simple.http.server.model.Request;
-import com.iprogrammerr.simple.http.server.model.Response;
+import com.iprogrammerr.simple.http.server.response.Response;
 
 public interface RequestHandler {
-    void handle(Request request, Response response);
+    Response handle(Request request);
 }

@@ -13,53 +13,49 @@ import java.util.concurrent.Executors;
 import com.iprogrammerr.simple.http.server.configuration.ServerConfiguration;
 import com.iprogrammerr.simple.http.server.constants.RequestHeaderKey;
 import com.iprogrammerr.simple.http.server.constants.RequestMethod;
-import com.iprogrammerr.simple.http.server.constants.RequestResponseConstants;
 import com.iprogrammerr.simple.http.server.constants.ResponseCode;
-import com.iprogrammerr.simple.http.server.exception.HttpException;
 import com.iprogrammerr.simple.http.server.exception.InitializationException;
 import com.iprogrammerr.simple.http.server.exception.ObjectNotFoundException;
-import com.iprogrammerr.simple.http.server.exception.ResolverNotFoundException;
 import com.iprogrammerr.simple.http.server.filter.RequestFilter;
 import com.iprogrammerr.simple.http.server.model.Request;
-import com.iprogrammerr.simple.http.server.model.Response;
-import com.iprogrammerr.simple.http.server.parser.RequestParser;
-import com.iprogrammerr.simple.http.server.parser.ResponseParser;
-import com.iprogrammerr.simple.http.server.parser.UrlParser;
+import com.iprogrammerr.simple.http.server.parser.RequestResponseParser;
 import com.iprogrammerr.simple.http.server.resolver.RequestResolver;
+import com.iprogrammerr.simple.http.server.response.EmptyResponse;
+import com.iprogrammerr.simple.http.server.response.Response;
 
 public class Server {
 
+    private static final String ALLOW_ALL = "*";
     private ServerSocket serverSocket;
     private Executor executor;
-    private RequestParser requestParser;
-    private ResponseParser responseParser;
     private String contextPath;
-    private List<RequestResolver> requestResolvers;
-    private List<RequestFilter> requestFilters;
     private ServerConfiguration serverConfiguration;
+    private RequestResponseParser requestResponseParser;
+    private List<RequestResolver> requestResolvers;
+    private List<RequestFilter> primaryRequestFilters;
+    private List<RequestFilter> requestFilters;
 
-    public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers,
+    public Server(ServerConfiguration serverConfiguration, Executor executor,
+	    RequestResponseParser requestReponseParser, List<RequestResolver> requestsResolvers,
 	    List<RequestFilter> requestFilters) {
 	try {
 	    this.serverSocket = new ServerSocket(serverConfiguration.getPort());
 	} catch (IOException exception) {
 	    throw new InitializationException(exception);
 	}
-	this.executor = Executors.newCachedThreadPool();
+	this.executor = executor;
 	this.contextPath = serverConfiguration.getContextPath();
-	this.requestParser = new RequestParser(UrlParser.getInstance());
-	this.responseParser = new ResponseParser(serverConfiguration);
+	this.requestResponseParser = requestReponseParser;
 	this.requestResolvers = requestsResolvers;
+	this.primaryRequestFilters = new ArrayList<>();
 	this.requestFilters = requestFilters;
 	this.serverConfiguration = serverConfiguration;
     }
 
-    public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers) {
-	this(serverConfiguration, requestsResolvers, new ArrayList<>());
-    }
-
-    public Server(ServerConfiguration serverConfiguration) {
-	this(serverConfiguration, new ArrayList<>(), new ArrayList<>());
+    public Server(ServerConfiguration serverConfiguration, RequestResponseParser requestReponseParser,
+	    List<RequestResolver> requestsResolvers, List<RequestFilter> requestFilters) {
+	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseParser, requestsResolvers,
+		requestFilters);
     }
 
     public void start() {
@@ -78,9 +74,9 @@ public class Server {
 	return () -> {
 	    try (InputStream inputStream = socket.getInputStream();
 		    BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream())) {
-		Request request = requestParser.getRequest(inputStream);
+		Request request = requestResponseParser.read(inputStream);
 		Response response = resolve(request);
-		byte[] rawResponse = responseParser.getResponse(response);
+		byte[] rawResponse = requestResponseParser.write(response);
 		outputStream.write(rawResponse);
 	    } catch (IOException exception) {
 		exception.printStackTrace();
@@ -96,92 +92,86 @@ public class Server {
 
     public Response resolve(Request request) {
 	if (!request.getPath().startsWith(contextPath)) {
-	    return new Response();
+	    return new EmptyResponse();
 	}
-	Response response = new Response();
 	try {
-	    RequestMethod requestMethod = RequestMethod.createFromString(request.getMethod());
-	    if (requestMethod.equals(RequestMethod.OPTIONS)) {
+	    if (RequestMethod.OPTIONS.equalsByValue(request.getMethod())) {
 		return handleOptionsRequest(request);
 	    }
 	    request.removeContextFromPath(contextPath);
-	    RequestResolver resolver = getResolver(requestMethod, request);
-	    if (filter(requestMethod, request, response)) {
-		resolver.handle(request, response);
+	    RequestResolver resolver = getResolver(request);
+	    List<RequestFilter> filters = getFilters(request);
+	    for (RequestFilter filter : filters) {
+		Response response = filter.filter(request);
+		if (!response.getResponseCode().isOk()) {
+		    return response;
+		}
 	    }
+	    return resolver.handle(request);
+	} catch (ObjectNotFoundException exception) {
+	    exception.printStackTrace();
+	    return new EmptyResponse();
 	} catch (Exception exception) {
-	    handleException(exception, response);
-	}
-	return response;
-    }
-
-    private void handleException(Exception exception, Response response) {
-	exception.printStackTrace();
-	if (exception instanceof ResolverNotFoundException) {
-	    response.setCode(ResponseCode.NOT_FOUND);
-	    return;
-	}
-	if (!(exception instanceof HttpException)) {
-	    response.setCode(ResponseCode.INTERNAL_SERVER_ERROR);
-	    return;
-	}
-	HttpException httpException = (HttpException) exception;
-	response.setCode(httpException.getResponseCode());
-	if (httpException.getMessage() != null && !httpException.getMessage().isEmpty()) {
-	    response.setBody(exception.getMessage().getBytes());
-	} else if (httpException.getCause() != null) {
-	    response.setBody(exception.getCause().toString().getBytes());
+	    exception.printStackTrace();
+	    return new EmptyResponse(ResponseCode.INTERNAL_SERVER_ERROR);
 	}
     }
 
-    private RequestResolver getResolver(RequestMethod requestMethod, Request request) {
+    private RequestResolver getResolver(Request request) {
 	for (RequestResolver resolver : requestResolvers) {
-	    System.out.println(resolver);
-	    if (resolver.canHandle(requestMethod, request)) {
+	    if (resolver.canResolve(request)) {
 		return resolver;
 	    }
 	}
 	throw new ObjectNotFoundException();
     }
 
-    private boolean filter(RequestMethod requestMethod, Request request, Response response) {
+    private List<RequestFilter> getFilters(Request request) {
+	if (primaryRequestFilters.isEmpty()) {
+	    setPrimaryFilters();
+	}
+	List<RequestFilter> matchedFilters = new ArrayList<>();
+	matchedFilters.addAll(primaryRequestFilters);
 	for (RequestFilter filter : requestFilters) {
-	    if (filter.shouldFilter(request.getPath(), requestMethod)) {
-		return filter.filter(request, response);
+	    if (filter.shouldFilter(request)) {
+		matchedFilters.add(filter);
 	    }
 	}
-	return true;
+	return matchedFilters;
+    }
+
+    private void setPrimaryFilters() {
+	for (RequestFilter filter : requestFilters) {
+	    if (filter.isPrimary()) {
+		primaryRequestFilters.add(filter);
+	    }
+	}
     }
 
     // TODO is it enough?
     private Response handleOptionsRequest(Request request) {
-	Response response = new Response();
-	response.setCode(ResponseCode.FORBIDDEN);
 	boolean haveRequiredHeaders = request.hasHeader(RequestHeaderKey.ORIGIN)
 		&& request.hasHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD)
 		&& request.hasHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_HEADERS);
 	if (!haveRequiredHeaders) {
-	    return response;
+	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
-	boolean originAllowed = serverConfiguration.getAllowedOrigins().equals(RequestResponseConstants.ALLOW_ALL)
+	boolean originAllowed = serverConfiguration.getAllowedOrigins().equals(ALLOW_ALL)
 		|| serverConfiguration.getAllowedOrigins().contains(request.getHeader(RequestHeaderKey.ORIGIN));
 	if (!originAllowed) {
-	    return response;
+	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
-	boolean methodAllowed = serverConfiguration.getAllowedMethods().equals(RequestResponseConstants.ALLOW_ALL)
-		|| serverConfiguration.getAllowedMethods()
-			.contains(request.getHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
+	boolean methodAllowed = serverConfiguration.getAllowedMethods().equals(ALLOW_ALL) || serverConfiguration
+		.getAllowedMethods().contains(request.getHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
 	if (!methodAllowed) {
-	    return response;
+	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
-	boolean headersAllowed = serverConfiguration.getAllowedHeaders().equals(RequestResponseConstants.ALLOW_ALL)
-		|| serverConfiguration.getAllowedHeaders()
-			.contains(request.getHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
+	boolean headersAllowed = serverConfiguration.getAllowedHeaders().equals(ALLOW_ALL) || serverConfiguration
+		.getAllowedHeaders().contains(request.getHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
 	if (!headersAllowed) {
-	    return response;
+	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
-	response.setCode(ResponseCode.OK);
-	return response;
+	return new EmptyResponse(ResponseCode.OK);
     }
 
     public String getContextPath() {
