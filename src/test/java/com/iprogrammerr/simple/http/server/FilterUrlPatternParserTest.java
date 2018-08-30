@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.iprogrammerr.simple.http.server.parser.FilterUrlPatternParser;
+import com.iprogrammerr.bright.server.parser.FilterUrlPatternParser;
 
 public class FilterUrlPatternParserTest {
 

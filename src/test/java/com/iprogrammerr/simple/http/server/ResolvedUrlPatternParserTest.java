@@ -8,8 +8,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.iprogrammerr.simple.http.server.model.Pairs;
-import com.iprogrammerr.simple.http.server.parser.ResolverUrlPatternParser;
+import com.iprogrammerr.bright.server.model.Pairs;
+import com.iprogrammerr.bright.server.parser.ResolverUrlPatternParser;
 
 public class ResolvedUrlPatternParserTest {
 
