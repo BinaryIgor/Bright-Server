@@ -1,17 +1,19 @@
 package com.iprogrammerr.bright.server.rule;
 
+import com.iprogrammerr.bright.server.constants.RequestMethod;
+
 public class ListOfRequestMethodRule implements RequestMethodRule {
 
-    private String[] requestMethods;
+    private RequestMethod[] requestMethods;
 
-    public ListOfRequestMethodRule(String... requestMethods) {
+    public ListOfRequestMethodRule(RequestMethod...requestMethods) {
 	this.requestMethods = requestMethods;
     }
-
+    
     @Override
     public boolean isCompliant(String requestMethod) {
-	for (String method : requestMethods) {
-	    if (method.equalsIgnoreCase(requestMethod)) {
+	for (RequestMethod method : requestMethods) {
+	    if (method.equalsByValue(requestMethod)) {
 		return true;
 	    }
 	}

@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server.parser;
+package com.iprogrammerr.bright.server.model;
 
 public enum UrlPatternType {
 

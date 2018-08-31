@@ -3,7 +3,6 @@ package com.iprogrammerr.bright.server.filter;
 import com.iprogrammerr.bright.server.exception.PreConditionRequiredException;
 import com.iprogrammerr.bright.server.model.Request;
 import com.iprogrammerr.bright.server.parser.FilterUrlPatternParser;
-import com.iprogrammerr.bright.server.resolver.RequestHandler;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.rule.RequestMethodRule;
 
@@ -12,11 +11,11 @@ public class RequestFilter {
     private String urlPattern;
     private FilterUrlPatternParser urlPatternParser;
     private RequestMethodRule requestMethodRule;
-    private RequestHandler requestHandler;
+    private ToFilterRequestHandler requestHandler;
     private boolean readyToFilter;
 
     public RequestFilter(String urlPattern, RequestMethodRule requestMethodRule,
-	    FilterUrlPatternParser urlPatternParser, RequestHandler requestHandler) {
+	    FilterUrlPatternParser urlPatternParser, ToFilterRequestHandler requestHandler) {
 	this.urlPattern = urlPattern;
 	this.requestMethodRule = requestMethodRule;
 	this.urlPatternParser = urlPatternParser;

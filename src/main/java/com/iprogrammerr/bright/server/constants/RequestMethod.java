@@ -15,4 +15,8 @@ public enum RequestMethod {
 	return value.equals(requestMethod.toUpperCase());
     }
 
+    public String getValue() {
+        return value;
+    }
+    
 }

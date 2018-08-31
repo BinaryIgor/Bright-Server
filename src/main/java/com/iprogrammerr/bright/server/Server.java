@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
 import com.iprogrammerr.bright.server.constants.HeaderKey;
@@ -17,6 +18,7 @@ import com.iprogrammerr.bright.server.constants.ResponseCode;
 import com.iprogrammerr.bright.server.exception.InitializationException;
 import com.iprogrammerr.bright.server.exception.ObjectNotFoundException;
 import com.iprogrammerr.bright.server.filter.RequestFilter;
+import com.iprogrammerr.bright.server.model.Header;
 import com.iprogrammerr.bright.server.model.Request;
 import com.iprogrammerr.bright.server.parser.HttpOneParser;
 import com.iprogrammerr.bright.server.parser.RequestResponseParser;
@@ -48,8 +50,10 @@ public class Server {
 	this.contextPath = serverConfiguration.getContextPath();
 	this.requestResponseParser = requestReponseParser;
 	this.requestResolvers = requestsResolvers;
-	this.primaryRequestFilters = new ArrayList<>();
-	this.requestFilters = requestFilters;
+	this.primaryRequestFilters = requestFilters.stream().filter(requestFilter -> requestFilter.isPrimary())
+		.collect(Collectors.toList());
+	this.requestFilters = requestFilters.stream().filter(requestFilter -> !requestFilter.isPrimary())
+		.collect(Collectors.toList());
 	this.serverConfiguration = serverConfiguration;
     }
 
@@ -58,10 +62,21 @@ public class Server {
 	this(serverConfiguration, Executors.newCachedThreadPool(), new HttpOneParser(serverConfiguration),
 		requestsResolvers, requestFilters);
     }
+    
+    public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers,
+	    List<RequestFilter> requestFilters, List<Header> additionalResponeHeaders) {
+	this(serverConfiguration, Executors.newCachedThreadPool(), new HttpOneParser(serverConfiguration, additionalResponeHeaders),
+		requestsResolvers, requestFilters);
+    }
 
     public Server(ServerConfiguration serverConfiguration, Executor executor, List<RequestResolver> requestsResolvers,
 	    List<RequestFilter> requestFilters) {
 	this(serverConfiguration, executor, new HttpOneParser(serverConfiguration), requestsResolvers, requestFilters);
+    }
+    
+    public Server(ServerConfiguration serverConfiguration, Executor executor, List<RequestResolver> requestsResolvers,
+	    List<RequestFilter> requestFilters, List<Header> additionalResponseHeaders) {
+	this(serverConfiguration, executor, new HttpOneParser(serverConfiguration, additionalResponseHeaders), requestsResolvers, requestFilters);
     }
 
     public Server(ServerConfiguration serverConfiguration, RequestResponseParser requestReponseParser,
@@ -71,9 +86,9 @@ public class Server {
     }
 
     public void start() {
+	System.out.println("Bright Server is shining!");
 	while (!serverSocket.isClosed()) {
 	    try {
-		System.out.println("Waiting for connection...");
 		Socket socket = serverSocket.accept();
 		executor.execute(getRequestHandler(socket));
 	    } catch (IOException exception) {
@@ -89,7 +104,6 @@ public class Server {
 		Request request = requestResponseParser.read(inputStream);
 		Response response = resolve(request);
 		byte[] rawResponse = requestResponseParser.write(response);
-		System.out.println(new String(rawResponse));
 		outputStream.write(rawResponse);
 	    } catch (IOException exception) {
 		exception.printStackTrace();
@@ -113,12 +127,9 @@ public class Server {
 	    }
 	    request.removeContextFromPath(contextPath);
 	    RequestResolver resolver = getResolver(request);
-	    List<RequestFilter> filters = getFilters(request);
-	    for (RequestFilter filter : filters) {
-		Response response = filter.filter(request);
-		if (!isResponseCodeOk(response.getResponseCode())) {
-		    return response;
-		}
+	    Response response = filter(request);
+	    if (!isResponseCodeOk(response.getResponseCode())) {
+		return response;
 	    }
 	    return resolver.handle(request);
 	} catch (ObjectNotFoundException exception) {
@@ -139,26 +150,34 @@ public class Server {
 	throw new ObjectNotFoundException();
     }
 
-    private List<RequestFilter> getFilters(Request request) {
-	if (primaryRequestFilters.isEmpty()) {
-	    setPrimaryFilters();
+    private Response filter(Request request) {
+	Response response = runFilters(request, primaryRequestFilters);
+	if (!isResponseCodeOk(response.getResponseCode())) {
+	    return response;
 	}
+	return runFilters(request, getFilters(request));
+    }
+    
+    private Response runFilters(Request request, List<RequestFilter> requestFilters) {
+	Response response = new EmptyResponse(ResponseCode.OK);
+	for (RequestFilter filter : requestFilters) {
+	    response = filter.filter(request);
+	    if (!isResponseCodeOk(response.getResponseCode())) {
+		return response;
+	    }
+	}
+	return response;
+    }
+    
+
+    private List<RequestFilter> getFilters(Request request) {
 	List<RequestFilter> matchedFilters = new ArrayList<>();
-	matchedFilters.addAll(primaryRequestFilters);
 	for (RequestFilter filter : requestFilters) {
 	    if (filter.shouldFilter(request)) {
 		matchedFilters.add(filter);
 	    }
 	}
 	return matchedFilters;
-    }
-
-    private void setPrimaryFilters() {
-	for (RequestFilter filter : requestFilters) {
-	    if (filter.isPrimary()) {
-		primaryRequestFilters.add(filter);
-	    }
-	}
     }
 
     private Response handleOptionsRequest(Request request) {
@@ -183,14 +202,13 @@ public class Server {
 	if (!headersAllowed) {
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
-	System.out.println("Ok!");
 	return new EmptyResponse(ResponseCode.OK);
     }
 
     public String getContextPath() {
 	return contextPath;
     }
-    
+
     private boolean isResponseCodeOk(int responseCode) {
 	return responseCode >= 200 && responseCode < 300;
     }
@@ -198,6 +216,7 @@ public class Server {
     public void stop() {
 	try {
 	    serverSocket.close();
+	    System.out.println("Bright Server is fading away...");
 	} catch (IOException exception) {
 	    exception.printStackTrace();
 	}

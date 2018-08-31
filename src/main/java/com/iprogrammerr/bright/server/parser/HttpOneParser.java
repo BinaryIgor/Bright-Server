@@ -31,7 +31,7 @@ public class HttpOneParser implements RequestResponseParser {
     private Header accessControlAllowedHeadersHeader;
     private Header accessControllAllowedMethodsHeader;
     private Header accessControllAllowedOriginsHeader;
-    private List<Header> additionalHeaders;
+    private List<Header> additionalResponseHeaders;
 
     public HttpOneParser(ServerConfiguration serverConfiguration, List<Header> additionalHeaders) {
 	accessControlAllowedHeadersHeader = new Header(HeaderKey.ACCESS_CONTROL_ALLOW_HEADERS,
@@ -40,7 +40,7 @@ public class HttpOneParser implements RequestResponseParser {
 		serverConfiguration.getAllowedMethods());
 	accessControllAllowedOriginsHeader = new Header(HeaderKey.ACCESS_CONTROL_ALLOW_ORIGIN,
 		serverConfiguration.getAllowedOrigin());
-	this.additionalHeaders = additionalHeaders;
+	this.additionalResponseHeaders = additionalHeaders;
     }
 
     public HttpOneParser(ServerConfiguration serverConfiguration) {
@@ -77,7 +77,6 @@ public class HttpOneParser implements RequestResponseParser {
 	byte[] bytes = new byte[availableBytes];
 	bufferedInputStream.read(bytes);
 	String request = new String(bytes);
-	System.out.println(request);
 	String[] lines = request.split(NEW_LINE_SEPARATOR);
 	return lines;
     }
@@ -119,7 +118,7 @@ public class HttpOneParser implements RequestResponseParser {
 		.append(accessControlAllowedHeadersHeader).append(NEW_LINE_SEPARATOR)
 		.append(accessControllAllowedMethodsHeader).append(NEW_LINE_SEPARATOR)
 		.append(accessControllAllowedOriginsHeader).append(NEW_LINE_SEPARATOR).append(currentDateHeader);
-	for (Header header : additionalHeaders) {
+	for (Header header : additionalResponseHeaders) {
 	    builder.append(NEW_LINE_SEPARATOR).append(header);
 	}
 	String contentType = "";

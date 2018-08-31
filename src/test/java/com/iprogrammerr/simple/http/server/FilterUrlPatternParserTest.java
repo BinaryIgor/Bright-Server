@@ -6,20 +6,20 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.iprogrammerr.bright.server.parser.FilterUrlPatternParser;
+import com.iprogrammerr.bright.server.parser.StarSymbolFilterUrlPatternParser;
 
 public class FilterUrlPatternParserTest {
 
-    private FilterUrlPatternParser urlPatternParser;
+    private StarSymbolFilterUrlPatternParser urlPatternParser;
 
     @Before
     public void setup() {
-	urlPatternParser = new FilterUrlPatternParser();
+	urlPatternParser = new StarSymbolFilterUrlPatternParser();
     }
 
     @Test
     public void properMatchTest() {
-	urlPatternParser = new FilterUrlPatternParser();
+	urlPatternParser = new StarSymbolFilterUrlPatternParser();
 	String url = "user/search/1/name";
 	String urlPattern = "user/";
 	assertTrue(urlPatternParser.match(url, urlPattern));
@@ -31,7 +31,7 @@ public class FilterUrlPatternParserTest {
 
     @Test
     public void imProperMatchTest() {
-	urlPatternParser = new FilterUrlPatternParser();
+	urlPatternParser = new StarSymbolFilterUrlPatternParser();
 	String url = "user/search/1/name";
 	String urlPattern = "search/";
 	assertFalse(urlPatternParser.match(url, urlPattern));

@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server;
+package com.iprogrammerr.bright.server.example;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,34 +6,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import com.iprogrammerr.bright.server.Server;
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
 import com.iprogrammerr.bright.server.constants.RequestMethod;
-import com.iprogrammerr.bright.server.example.AuthorizationHandler;
-import com.iprogrammerr.bright.server.example.HelloHandler;
 import com.iprogrammerr.bright.server.filter.RequestFilter;
-import com.iprogrammerr.bright.server.parser.FilterUrlPatternParser;
-import com.iprogrammerr.bright.server.parser.ResolverUrlPatternParser;
+import com.iprogrammerr.bright.server.parser.StarSymbolFilterUrlPatternParser;
+import com.iprogrammerr.bright.server.parser.TypedUrlPatternParser;
+import com.iprogrammerr.bright.server.parser.UrlPatternParser;
 import com.iprogrammerr.bright.server.resolver.RequestResolver;
 import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
+import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
 
 public class ServerApplication {
 
     public static void main(String[] args) throws IOException {
 	ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
 
-	ResolverUrlPatternParser resolverUrlPatternParser = new ResolverUrlPatternParser();
-	FilterUrlPatternParser filterUrlPatternParser = new FilterUrlPatternParser();
+	UrlPatternParser urlPatternParser = new TypedUrlPatternParser();
+	StarSymbolFilterUrlPatternParser filterUrlPatternParser = new StarSymbolFilterUrlPatternParser();
 
 	List<RequestResolver> requestResolvers = new ArrayList<>();
-	RequestResolver helloResolver = new RequestResolver("hello/{id:int}", RequestMethod.GET,
-		resolverUrlPatternParser, new HelloHandler());
+	RequestResolver helloResolver = new RequestResolver("hello/{id:int}", RequestMethod.GET, urlPatternParser,
+		new HelloHandler());
 	requestResolvers.add(helloResolver);
 
 	List<RequestFilter> requestFilters = new ArrayList<>();
 	RequestFilter authorizationFilter = new RequestFilter("*", new AnyRequestMethodRule(), filterUrlPatternParser,
 		new AuthorizationHandler());
+	RequestFilter authorizationSecondFilter = new RequestFilter("hello/*",
+		new ListOfRequestMethodRule(RequestMethod.GET, RequestMethod.POST), filterUrlPatternParser,
+		new AuthorizationSecondFreePassHandler());
 	requestFilters.add(authorizationFilter);
+	requestFilters.add(authorizationSecondFilter);
 
+	
 	Server server = new Server(serverConfiguration, requestResolvers, requestFilters);
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 	    server.stop();

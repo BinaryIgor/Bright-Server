@@ -8,8 +8,9 @@ import java.util.Map;
 import com.iprogrammerr.bright.server.exception.CreationException;
 import com.iprogrammerr.bright.server.model.Pair;
 import com.iprogrammerr.bright.server.model.Pairs;
+import com.iprogrammerr.bright.server.model.UrlPatternType;
 
-public class ResolverUrlPatternParser {
+public class TypedUrlPatternParser implements UrlPatternParser{
 
     private static final String URL_SEGMENTS_SEPARATOR = "/";
     private static final String PARAMETERS_BEGINING = "?";
@@ -21,14 +22,13 @@ public class ResolverUrlPatternParser {
     private static final double IS_INTEGER_DELTA = 10e6;
 
     public boolean match(String url, String urlPattern) {
-	System.out.println(url + " vs " + urlPattern);
 	Map<String, Class> requiredUrlPathVariables = getRequiredUrlPathVariables(urlPattern);
-	if (!requiredUrlPathVariables.isEmpty() && checkVariables(url, requiredUrlPathVariables, getParameters(url))) {
+	if (!requiredUrlPathVariables.isEmpty() && checkVariables(url, requiredUrlPathVariables, readParameters(url))) {
 	    return false;
 	}
-	Map<String, Class> requiredUrlParameters = getRequiredUrlParameters(urlPattern);
+	Map<String, Class> requiredUrlParameters = readRequiredUrlParameters(urlPattern);
 	if (!requiredUrlParameters.isEmpty()
-		&& checkVariables(url, requiredUrlParameters, getPathVariables(url, urlPattern))) {
+		&& checkVariables(url, requiredUrlParameters, readPathVariables(url, urlPattern))) {
 	    return false;
 	}
 	return matchOmittingPathVariablesAndParameters(url, urlPattern);
@@ -55,7 +55,7 @@ public class ResolverUrlPatternParser {
 	    if (isPathVariable(urlPatternSegments[i])) {
 		continue;
 	    }
-	    if (!urlPatternSegments[i].equals(urlSegments[i])) {
+	    if (!urlPatternSegments[i].equals(urlSegments[i]))	 {
 		return false;
 	    }
 	}
@@ -70,7 +70,7 @@ public class ResolverUrlPatternParser {
 	return url;
     }
 
-    public Map<String, Class> getRequiredUrlPathVariables(String urlPattern) {
+    private Map<String, Class> getRequiredUrlPathVariables(String urlPattern) {
 	Map<String, String> keyTypeVariables = getKeyTypeVariablesFromUrlPattern(urlPattern);
 	if (keyTypeVariables.isEmpty()) {
 	    return new HashMap<>();
@@ -85,7 +85,7 @@ public class ResolverUrlPatternParser {
 	    if (!isPathVariable(urlPatternSegments[i])) {
 		continue;
 	    }
-	    String pathVariable = getRawPathVariable(urlPatternSegments[i]);
+	    String pathVariable = readRawPathVariable(urlPatternSegments[i]);
 	    String[] keyAndType = pathVariable.split(URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR);
 	    if (keyAndType.length >= 2) {
 		keyTypeUrlPatternVariables.put(keyAndType[0], keyAndType[1]);
@@ -94,7 +94,7 @@ public class ResolverUrlPatternParser {
 	return keyTypeUrlPatternVariables;
     }
 
-    public Map<String, String> getRawPathVariables(String url, String urlPattern) {
+    private Map<String, String> getRawPathVariables(String url, String urlPattern) {
 	Map<String, String> pathVariables = new HashMap<>();
 	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
 	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
@@ -105,12 +105,13 @@ public class ResolverUrlPatternParser {
 	    if (!isPathVariable(urlPatternSegments[i])) {
 		continue;
 	    }
-	    pathVariables.put(getRawPathVariable(urlPatternSegments[i]), urlSegments[i]);
+	    pathVariables.put(readRawPathVariable(urlPatternSegments[i]), urlSegments[i]);
 	}
 	return pathVariables;
     }
 
-    public Pairs getPathVariables(String url, String urlPattern) {
+    @Override
+    public Pairs readPathVariables(String url, String urlPattern) {
 	List<Pair> pathVariables = new ArrayList<>();
 	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
 	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
@@ -122,7 +123,7 @@ public class ResolverUrlPatternParser {
 		if (!isPathVariable(urlPatternSegments[i])) {
 		    continue;
 		}
-		pathVariables.add(getPathVariable(urlSegments[i], urlPatternSegments[i]));
+		pathVariables.add(readPathVariable(urlSegments[i], urlPatternSegments[i]));
 	    }
 	} catch (Exception exception) {
 	    exception.printStackTrace();
@@ -131,12 +132,12 @@ public class ResolverUrlPatternParser {
 	return new Pairs(pathVariables);
     }
 
-    private Pair getPathVariable(String urlSegment, String urlPatternSegment) {
-	String rawPathVariable = getRawPathVariable(urlPatternSegment);
+    private Pair readPathVariable(String urlSegment, String urlPatternSegment) {
+	String rawPathVariable = readRawPathVariable(urlPatternSegment);
 	if (rawPathVariable.isEmpty()) {
 	    throw new CreationException();
 	}
-	String[] keyAndType = getRawPathVariable(urlPatternSegment).split(URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR);
+	String[] keyAndType = readRawPathVariable(urlPatternSegment).split(URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR);
 	if (keyAndType.length < 2) {
 	    throw new CreationException();
 	}
@@ -163,26 +164,8 @@ public class ResolverUrlPatternParser {
 		&& urlPatternSegment.endsWith(URL_PATTERN_PATH_VARIABLE_END);
     }
 
-    private String getRawPathVariable(String urlPatternSegment) {
+    private String readRawPathVariable(String urlPatternSegment) {
 	return urlPatternSegment.substring(1, urlPatternSegment.length() - 1);
-    }
-
-    public boolean areEqual(String url, String urlPattern) {
-	urlPattern = getWithoutParametersUrl(urlPattern);
-	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
-	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
-	if (urlSegments.length != urlPatternSegments.length) {
-	    return false;
-	}
-	for (int i = 0; i < urlSegments.length; i++) {
-	    if (isPathVariable(urlPatternSegments[i])) {
-		continue;
-	    }
-	    if (!urlSegments[i].equals(urlPatternSegments[i])) {
-		return false;
-	    }
-	}
-	return true;
     }
 
     private boolean isNumeric(String string) {
@@ -194,8 +177,8 @@ public class ResolverUrlPatternParser {
 	}
     }
 
-    public Map<String, Class> getRequiredUrlParameters(String urlPattern) {
-	Map<String, String> rawParameters = getRawParameters(urlPattern);
+    private Map<String, Class> readRequiredUrlParameters(String urlPattern) {
+	Map<String, String> rawParameters = readRawParameters(urlPattern);
 	if (rawParameters.isEmpty()) {
 	    return new HashMap<>();
 	}
@@ -234,7 +217,7 @@ public class ResolverUrlPatternParser {
 	throw new CreationException(value + " is not recoginizable variable type!");
     }
 
-    private Object getParameterValue(String parameter) {
+    private Object readParameterValue(String parameter) {
 	if (!isNumeric(parameter)) {
 	    return parameter;
 	}
@@ -246,10 +229,10 @@ public class ResolverUrlPatternParser {
 	return (int) numericParameter;
     }
 
-    private Map<String, String> getRawParameters(String path) {
+    private Map<String, String> readRawParameters(String url) {
 	Map<String, String> parameters = new HashMap<>();
-	int indexOfQuestionMark = path.indexOf(PARAMETERS_BEGINING) + 1;
-	String toSplitParameters = path.substring(indexOfQuestionMark, path.length());
+	int indexOfQuestionMark = url.indexOf(PARAMETERS_BEGINING) + 1;
+	String toSplitParameters = url.substring(indexOfQuestionMark, url.length());
 	String[] parametersKeyValuePairs = toSplitParameters.split(PARAMETERS_SEPARATOR);
 	if (parametersKeyValuePairs.length < 1) {
 	    return parameters;
@@ -263,30 +246,25 @@ public class ResolverUrlPatternParser {
 	return parameters;
     }
 
-    public Pairs getParameters(String path) {
+    @Override
+    public Pairs readParameters(String url) {
 	List<Pair> parameters = new ArrayList<>();
-	Map<String, String> rawParameters = getRawParameters(path);
+	Map<String, String> rawParameters = readRawParameters(url);
 	if (rawParameters.isEmpty()) {
 	    return new Pairs(parameters);
 	}
 	for (Map.Entry<String, String> rawParameter : rawParameters.entrySet()) {
-	    parameters.add(new Pair(rawParameter.getKey(), getParameterValue(rawParameter.getValue())));
+	    parameters.add(new Pair(rawParameter.getKey(), readParameterValue(rawParameter.getValue())));
 	}
 	return new Pairs(parameters);
     }
 
-    public String getWithoutParametersUrl(String url) {
-	int indexOfParametersBegining = url.indexOf(PARAMETERS_BEGINING);
-	if (indexOfParametersBegining < 0) {
-	    return url;
-	}
-	return url.substring(0, indexOfParametersBegining);
-    }
-
+    @Override
     public boolean hasParameters(String urlPattern) {
 	return urlPattern.contains(PARAMETERS_BEGINING) && urlPattern.contains(PARAMETERS_KEY_VALUE_SEPARATOR);
     }
 
+    @Override
     public boolean hasPathVariables(String urlPattern) {
 	return urlPattern.contains(URL_PATTERN_PATH_VARIABLE_START)
 		&& urlPattern.contains(URL_PATTERN_PATH_VARIABLE_END);

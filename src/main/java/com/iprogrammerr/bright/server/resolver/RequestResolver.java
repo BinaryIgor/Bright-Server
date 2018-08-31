@@ -1,9 +1,13 @@
 package com.iprogrammerr.bright.server.resolver;
 
+import java.util.ArrayList;
+
 import com.iprogrammerr.bright.server.constants.RequestMethod;
 import com.iprogrammerr.bright.server.exception.PreConditionRequiredException;
+import com.iprogrammerr.bright.server.model.Pairs;
 import com.iprogrammerr.bright.server.model.Request;
-import com.iprogrammerr.bright.server.parser.ResolverUrlPatternParser;
+import com.iprogrammerr.bright.server.model.ResolvedRequest;
+import com.iprogrammerr.bright.server.parser.UrlPatternParser;
 import com.iprogrammerr.bright.server.response.Response;
 
 public class RequestResolver {
@@ -12,9 +16,9 @@ public class RequestResolver {
     private RequestMethod requestMethod;
     private RequestHandler requestHandler;
     private boolean readyToHandle;
-    private ResolverUrlPatternParser urlPatternParser;
+    private UrlPatternParser urlPatternParser;
 
-    public RequestResolver(String urlPattern, RequestMethod requestMethod, ResolverUrlPatternParser urlPatternParser,
+    public RequestResolver(String urlPattern, RequestMethod requestMethod, UrlPatternParser urlPatternParser,
 	    RequestHandler requestHandler) {
 	this.urlPattern = urlPattern;
 	this.requestMethod = requestMethod;
@@ -35,14 +39,20 @@ public class RequestResolver {
 	if (!readyToHandle) {
 	    throw new PreConditionRequiredException("Request have to be resolved before it can be handled");
 	}
+	Pairs parameters;
 	if (urlPatternParser.hasParameters(urlPattern)) {
-	    request.addParameters(urlPatternParser.getParameters(request.getPath()));
+	    parameters = urlPatternParser.readParameters(request.getPath());
+	} else {
+	    parameters = new Pairs(new ArrayList<>());
 	}
+	Pairs pathVariables;
 	if (urlPatternParser.hasPathVariables(urlPattern)) {
-	    request.addPathVariables(urlPatternParser.getPathVariables(request.getPath(), urlPattern));
+	    pathVariables = urlPatternParser.readPathVariables(request.getPath(), urlPattern);
+	} else {
+	    pathVariables = new Pairs(new ArrayList<>());
 	}
 	readyToHandle = false;
-	return requestHandler.handle(request);
+	return requestHandler.handle(new ResolvedRequest(request, parameters, pathVariables));
     }
 
 }
