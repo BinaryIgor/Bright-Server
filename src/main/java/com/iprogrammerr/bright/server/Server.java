@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
-import com.iprogrammerr.bright.server.constants.RequestHeaderKey;
+import com.iprogrammerr.bright.server.constants.HeaderKey;
 import com.iprogrammerr.bright.server.constants.RequestMethod;
 import com.iprogrammerr.bright.server.constants.ResponseCode;
 import com.iprogrammerr.bright.server.exception.InitializationException;
@@ -89,6 +89,7 @@ public class Server {
 		Request request = requestResponseParser.read(inputStream);
 		Response response = resolve(request);
 		byte[] rawResponse = requestResponseParser.write(response);
+		System.out.println(new String(rawResponse));
 		outputStream.write(rawResponse);
 	    } catch (IOException exception) {
 		exception.printStackTrace();
@@ -104,10 +105,10 @@ public class Server {
 
     public Response resolve(Request request) {
 	if (!request.getPath().startsWith(contextPath)) {
-	    return new EmptyResponse();
+	    return new EmptyResponse(ResponseCode.NOT_FOUND);
 	}
 	try {
-	    if (RequestMethod.OPTIONS.equalsByValue(request.getMethod())) {
+	    if (RequestMethod.OPTIONS.equalsByValue(request.getMethod()) && serverConfiguration.isAddCorsHeaders()) {
 		return handleOptionsRequest(request);
 	    }
 	    request.removeContextFromPath(contextPath);
@@ -115,14 +116,14 @@ public class Server {
 	    List<RequestFilter> filters = getFilters(request);
 	    for (RequestFilter filter : filters) {
 		Response response = filter.filter(request);
-		if (!response.getResponseCode().isOk()) {
+		if (!isResponseCodeOk(response.getResponseCode())) {
 		    return response;
 		}
 	    }
 	    return resolver.handle(request);
 	} catch (ObjectNotFoundException exception) {
 	    exception.printStackTrace();
-	    return new EmptyResponse();
+	    return new EmptyResponse(ResponseCode.NOT_FOUND);
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    return new EmptyResponse(ResponseCode.INTERNAL_SERVER_ERROR);
@@ -160,34 +161,38 @@ public class Server {
 	}
     }
 
-    // TODO is it enough?
     private Response handleOptionsRequest(Request request) {
-	boolean haveRequiredHeaders = request.hasHeader(RequestHeaderKey.ORIGIN)
-		&& request.hasHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD)
-		&& request.hasHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_HEADERS);
+	boolean haveRequiredHeaders = request.hasHeader(HeaderKey.ORIGIN)
+		&& request.hasHeader(HeaderKey.ACCESS_CONTROL_REQUEST_METHOD)
+		&& request.hasHeader(HeaderKey.ACCESS_CONTROL_REQUEST_HEADERS);
 	if (!haveRequiredHeaders) {
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
-	boolean originAllowed = serverConfiguration.getAllowedOrigins().equals(ALLOW_ALL)
-		|| serverConfiguration.getAllowedOrigins().contains(request.getHeader(RequestHeaderKey.ORIGIN));
+	boolean originAllowed = serverConfiguration.getAllowedOrigin().equals(ALLOW_ALL)
+		|| serverConfiguration.getAllowedOrigin().equals(request.getHeader(HeaderKey.ORIGIN));
 	if (!originAllowed) {
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
 	boolean methodAllowed = serverConfiguration.getAllowedMethods().equals(ALLOW_ALL) || serverConfiguration
-		.getAllowedMethods().contains(request.getHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
+		.getAllowedMethods().contains(request.getHeader(HeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
 	if (!methodAllowed) {
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
 	boolean headersAllowed = serverConfiguration.getAllowedHeaders().equals(ALLOW_ALL) || serverConfiguration
-		.getAllowedHeaders().contains(request.getHeader(RequestHeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
+		.getAllowedHeaders().contains(request.getHeader(HeaderKey.ACCESS_CONTROL_REQUEST_METHOD));
 	if (!headersAllowed) {
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
+	System.out.println("Ok!");
 	return new EmptyResponse(ResponseCode.OK);
     }
 
     public String getContextPath() {
 	return contextPath;
+    }
+    
+    private boolean isResponseCodeOk(int responseCode) {
+	return responseCode >= 200 && responseCode < 300;
     }
 
     public void stop() {

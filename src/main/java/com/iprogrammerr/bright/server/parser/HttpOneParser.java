@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
-import com.iprogrammerr.bright.server.constants.RequestHeaderKey;
-import com.iprogrammerr.bright.server.constants.ResponseCode;
-import com.iprogrammerr.bright.server.constants.ResponseHeaderKey;
+import com.iprogrammerr.bright.server.constants.HeaderKey;
 import com.iprogrammerr.bright.server.exception.RequestException;
 import com.iprogrammerr.bright.server.model.Header;
 import com.iprogrammerr.bright.server.model.Request;
@@ -30,10 +28,23 @@ public class HttpOneParser implements RequestResponseParser {
     private static final String RESPONSE_CODE_HTTP_1_1_PREFIX = "HTTP/1.1 ";
     private static final String JSON_CONTENT_TYPE = "Application/json";
     private static final String TEXT_PLAIN_CONTENT_TYPE = "text/plain";
-    private ServerConfiguration serverConfiguration;
+    private Header accessControlAllowedHeadersHeader;
+    private Header accessControllAllowedMethodsHeader;
+    private Header accessControllAllowedOriginsHeader;
+    private List<Header> additionalHeaders;
+
+    public HttpOneParser(ServerConfiguration serverConfiguration, List<Header> additionalHeaders) {
+	accessControlAllowedHeadersHeader = new Header(HeaderKey.ACCESS_CONTROL_ALLOW_HEADERS,
+		serverConfiguration.getAllowedHeaders());
+	accessControllAllowedMethodsHeader = new Header(HeaderKey.ACCESS_CONTROL_ALLOW_METHODS,
+		serverConfiguration.getAllowedMethods());
+	accessControllAllowedOriginsHeader = new Header(HeaderKey.ACCESS_CONTROL_ALLOW_ORIGIN,
+		serverConfiguration.getAllowedOrigin());
+	this.additionalHeaders = additionalHeaders;
+    }
 
     public HttpOneParser(ServerConfiguration serverConfiguration) {
-	this.serverConfiguration = serverConfiguration;
+	this(serverConfiguration, new ArrayList<>());
     }
 
     @Override
@@ -66,6 +77,7 @@ public class HttpOneParser implements RequestResponseParser {
 	byte[] bytes = new byte[availableBytes];
 	bufferedInputStream.read(bytes);
 	String request = new String(bytes);
+	System.out.println(request);
 	String[] lines = request.split(NEW_LINE_SEPARATOR);
 	return lines;
     }
@@ -101,28 +113,28 @@ public class HttpOneParser implements RequestResponseParser {
     @Override
     public byte[] write(Response response) {
 	StringBuilder builder = new StringBuilder();
-	Header accessControlAllowedHeadersHeader = new Header(ResponseHeaderKey.ACCESS_CONTROL_ALLOW_HEADERS,
-		serverConfiguration.getAllowedHeaders());
-	Header accessControllAllowedMethodsHeader = new Header(ResponseHeaderKey.ACCESS_CONTROL_ALLOW_METHODS,
-		serverConfiguration.getAllowedMethods());
-	Header accessControllAllowedOriginsHeader = new Header(ResponseHeaderKey.ACCESS_CONTROL_ALLOW_ORIGIN,
-		serverConfiguration.getAllowedOrigins());
 	LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);
-	Header currentDateHeader = new Header(ResponseHeaderKey.DATE, currentDate.toString());
+	Header currentDateHeader = new Header(HeaderKey.DATE, currentDate.toString());
 	builder.append(responseCodeToString(response.getResponseCode())).append(NEW_LINE_SEPARATOR)
 		.append(accessControlAllowedHeadersHeader).append(NEW_LINE_SEPARATOR)
 		.append(accessControllAllowedMethodsHeader).append(NEW_LINE_SEPARATOR)
 		.append(accessControllAllowedOriginsHeader).append(NEW_LINE_SEPARATOR).append(currentDateHeader);
+	for (Header header : additionalHeaders) {
+	    builder.append(NEW_LINE_SEPARATOR).append(header);
+	}
+	String contentType = "";
 	for (Header header : response.getHeaders()) {
+	    if (header.getKey().equals(HeaderKey.CONTENT_TYPE.getValue())) {
+		contentType = header.getValue();
+	    }
 	    builder.append(NEW_LINE_SEPARATOR).append(header);
 	}
 	if (!response.hasBody()) {
 	    return builder.toString().getBytes();
 	}
-	builder.append(NEW_LINE_SEPARATOR).append(response.getContentTypeHeader()).append(NEW_LINE_SEPARATOR)
-		.append(new Header(RequestHeaderKey.CONTENT_LENGTH, String.valueOf(response.getBody().length)))
+	builder.append(NEW_LINE_SEPARATOR)
+		.append(new Header(HeaderKey.CONTENT_LENGTH, String.valueOf(response.getBody().length)))
 		.append(HEADERS_BODY_SEPARATOR);
-	String contentType = response.getContentTypeHeader().getValue();
 	if (contentType.equals(JSON_CONTENT_TYPE) || contentType.equals(TEXT_PLAIN_CONTENT_TYPE)) {
 	    builder.append(new String(response.getBody()));
 	} else {
@@ -131,8 +143,8 @@ public class HttpOneParser implements RequestResponseParser {
 	return builder.toString().getBytes();
     }
 
-    private String responseCodeToString(ResponseCode responseCode) {
-	return RESPONSE_CODE_HTTP_1_1_PREFIX + responseCode.getValue();
+    private String responseCodeToString(int responseCode) {
+	return RESPONSE_CODE_HTTP_1_1_PREFIX + responseCode;
     }
 
 }

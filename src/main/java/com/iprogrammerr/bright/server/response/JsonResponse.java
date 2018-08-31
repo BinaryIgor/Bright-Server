@@ -10,13 +10,18 @@ public class JsonResponse implements Response {
 
     private ContentResponse contentResponse;
 
-    public JsonResponse(ResponseCode responseCode, String json) {
+    public JsonResponse(int responseCode, String json) {
 	this.contentResponse = new ContentResponse(responseCode, HeaderValue.JSON.getValue(), json.getBytes());
 
     }
+    
+    public JsonResponse(ResponseCode responseCode, String json) {
+	this(responseCode.getValue(), json);
+    }
+    
 
     @Override
-    public ResponseCode getResponseCode() {
+    public int getResponseCode() {
 	return contentResponse.getResponseCode();
     }
 
@@ -33,11 +38,6 @@ public class JsonResponse implements Response {
     @Override
     public byte[] getBody() {
 	return contentResponse.getBody();
-    }
-
-    @Override
-    public Header getContentTypeHeader() {
-	return contentResponse.getContentTypeHeader();
     }
 
 }

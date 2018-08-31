@@ -21,6 +21,7 @@ public class ResolverUrlPatternParser {
     private static final double IS_INTEGER_DELTA = 10e6;
 
     public boolean match(String url, String urlPattern) {
+	System.out.println(url + " vs " + urlPattern);
 	Map<String, Class> requiredUrlPathVariables = getRequiredUrlPathVariables(urlPattern);
 	if (!requiredUrlPathVariables.isEmpty() && checkVariables(url, requiredUrlPathVariables, getParameters(url))) {
 	    return false;

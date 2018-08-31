@@ -12,13 +12,13 @@ public class RequestResolver {
     private RequestMethod requestMethod;
     private RequestHandler requestHandler;
     private boolean readyToHandle;
-    private ResolverUrlPatternParser urlParser;
+    private ResolverUrlPatternParser urlPatternParser;
 
-    public RequestResolver(String urlPattern, RequestMethod requestMethod, ResolverUrlPatternParser urlParser,
+    public RequestResolver(String urlPattern, RequestMethod requestMethod, ResolverUrlPatternParser urlPatternParser,
 	    RequestHandler requestHandler) {
 	this.urlPattern = urlPattern;
 	this.requestMethod = requestMethod;
-	this.urlParser = urlParser;
+	this.urlPatternParser = urlPatternParser;
 	this.requestHandler = requestHandler;
     }
 
@@ -27,22 +27,19 @@ public class RequestResolver {
 	if (!requestMethod.equalsByValue(request.getMethod())) {
 	    return false;
 	}
-	boolean willHandle = urlParser.match(request.getPath(), urlPattern);
-	if (willHandle) {
-	    readyToHandle = true;
-	}
-	return willHandle;
+	readyToHandle = urlPatternParser.match(request.getPath(), urlPattern);
+	return readyToHandle;
     }
 
     public Response handle(Request request) {
 	if (!readyToHandle) {
 	    throw new PreConditionRequiredException("Request have to be resolved before it can be handled");
 	}
-	if (urlParser.hasParameters(urlPattern)) {
-	    request.addParameters(urlParser.getParameters(request.getPath()));
+	if (urlPatternParser.hasParameters(urlPattern)) {
+	    request.addParameters(urlPatternParser.getParameters(request.getPath()));
 	}
-	if (urlParser.hasPathVariables(urlPattern)) {
-	    request.addPathVariables(urlParser.getPathVariables(request.getPath(), urlPattern));
+	if (urlPatternParser.hasPathVariables(urlPattern)) {
+	    request.addPathVariables(urlPatternParser.getPathVariables(request.getPath(), urlPattern));
 	}
 	readyToHandle = false;
 	return requestHandler.handle(request);

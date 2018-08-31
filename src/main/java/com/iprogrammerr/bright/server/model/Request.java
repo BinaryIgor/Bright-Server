@@ -3,7 +3,7 @@ package com.iprogrammerr.bright.server.model;
 import java.util.Arrays;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.constants.RequestHeaderKey;
+import com.iprogrammerr.bright.server.constants.HeaderKey;
 import com.iprogrammerr.bright.server.exception.ObjectNotFoundException;
 
 public class Request {
@@ -40,7 +40,7 @@ public class Request {
 	return body;
     }
 
-    public boolean hasHeader(RequestHeaderKey headerKey) {
+    public boolean hasHeader(HeaderKey headerKey) {
 	return hasHeader(headerKey.getValue());
     }
 
@@ -53,7 +53,7 @@ public class Request {
 	return false;
     }
 
-    public String getHeader(RequestHeaderKey key) {
+    public String getHeader(HeaderKey key) {
 	return getHeader(key.getValue());
     }
 
@@ -66,7 +66,7 @@ public class Request {
 	throw new ObjectNotFoundException();
     }
 
-    public boolean hasParameter(String key, Class clazz) {
+    public <T> boolean hasParameter(String key, Class<T> clazz) {
 	return parameters.has(key, clazz);
     }
 
@@ -74,7 +74,7 @@ public class Request {
 	return parameters.get(key, clazz);
     }
 
-    public boolean hasPathVariable(String key, Class clazz) {
+    public <T> boolean hasPathVariable(String key, Class<T> clazz) {
 	return pathVariables.has(key, clazz);
     }
 

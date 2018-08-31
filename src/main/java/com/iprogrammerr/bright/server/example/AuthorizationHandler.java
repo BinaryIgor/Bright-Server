@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.example;
 
-import com.iprogrammerr.bright.server.constants.RequestHeaderKey;
+import com.iprogrammerr.bright.server.constants.HeaderKey;
 import com.iprogrammerr.bright.server.constants.ResponseCode;
 import com.iprogrammerr.bright.server.model.Request;
 import com.iprogrammerr.bright.server.resolver.RequestHandler;
@@ -13,10 +13,10 @@ public class AuthorizationHandler implements RequestHandler {
 
     @Override
     public Response handle(Request request) {
-	if (!request.hasHeader(RequestHeaderKey.AUTHORIZATION)) {
+	if (!request.hasHeader(HeaderKey.AUTHORIZATION)) {
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
-	String token = request.getHeader(RequestHeaderKey.AUTHORIZATION);
+	String token = request.getHeader(HeaderKey.AUTHORIZATION);
 	boolean valid = token.equals(SECRET_TOKEN);
 	if (!valid) {
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);

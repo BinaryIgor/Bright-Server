@@ -6,14 +6,16 @@ public class ServerConfiguration {
 
     private String contextPath;
     private int port;
-    private String allowedOrigins;
+    private boolean addCorsHeaders;
+    private String allowedOrigin;
     private String allowedMethods;
     private String allowedHeaders;
 
     public ServerConfiguration(Properties properties) {
 	contextPath = properties.getProperty("contextPath", "");
+	addCorsHeaders = Boolean.parseBoolean(properties.getProperty("addCorsHeaders", "false"));
 	port = Integer.parseInt(properties.getProperty("port", "8080"));
-	allowedOrigins = properties.getProperty("allowedOrigins", "*");
+	allowedOrigin = properties.getProperty("allowedOrigins", "*");
 	allowedMethods = properties.getProperty("allowedMethods", "*");
 	allowedHeaders = properties.getProperty("allowedHeaders", "*");
     }
@@ -26,8 +28,12 @@ public class ServerConfiguration {
 	return port;
     }
 
-    public String getAllowedOrigins() {
-	return allowedOrigins;
+    public boolean isAddCorsHeaders() {
+	return addCorsHeaders;
+    }
+
+    public String getAllowedOrigin() {
+	return allowedOrigin;
     }
 
     public String getAllowedMethods() {

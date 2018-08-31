@@ -10,12 +10,16 @@ public class PlainTextResponse implements Response {
 
     private ContentResponse contentResponse;
 
+    public PlainTextResponse(int responseCode, String text) {
+  	this.contentResponse = new ContentResponse(responseCode, HeaderValue.TEXT_PLAIN.getValue(), text.getBytes());
+      }
+    
     public PlainTextResponse(ResponseCode responseCode, String text) {
-	this.contentResponse = new ContentResponse(responseCode, HeaderValue.TEXT_PLAIN.getValue(), text.getBytes());
+	this(responseCode.getValue(), text);
     }
 
     @Override
-    public ResponseCode getResponseCode() {
+    public int getResponseCode() {
 	return contentResponse.getResponseCode();
     }
 
@@ -32,11 +36,6 @@ public class PlainTextResponse implements Response {
     @Override
     public byte[] getBody() {
 	return contentResponse.getBody();
-    }
-
-    @Override
-    public Header getContentTypeHeader() {
-	return contentResponse.getContentTypeHeader();
     }
 
 }

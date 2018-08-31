@@ -1,8 +1,7 @@
 package com.iprogrammerr.bright.server.model;
 
+import com.iprogrammerr.bright.server.constants.HeaderKey;
 import com.iprogrammerr.bright.server.constants.HeaderValue;
-import com.iprogrammerr.bright.server.constants.RequestHeaderKey;
-import com.iprogrammerr.bright.server.constants.ResponseHeaderKey;
 
 public class Header {
 
@@ -14,21 +13,15 @@ public class Header {
 	this.value = value;
     }
 
-    public Header(RequestHeaderKey key, String value) {
+    public Header(HeaderKey key, String value) {
 	this(key.getValue(), value);
     }
 
-    public Header(ResponseHeaderKey key, String value) {
-	this(key.getValue(), value);
-    }
 
-    public Header(RequestHeaderKey key, HeaderValue value) {
+    public Header(HeaderKey key, HeaderValue value) {
 	this(key.getValue(), value.getValue());
     }
 
-    public Header(ResponseHeaderKey key, HeaderValue value) {
-	this(key.getValue(), value.getValue());
-    }
 
     public Header(String key, HeaderValue value) {
 	this(key, value.getValue());
