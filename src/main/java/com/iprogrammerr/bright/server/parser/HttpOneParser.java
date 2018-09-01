@@ -1,6 +1,7 @@
 package com.iprogrammerr.bright.server.parser;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -17,6 +18,9 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public class HttpOneParser implements RequestResponseParser {
 
+    private static final int WAIT_FOR_INITIAL_BYTES_TRIALS = 5;
+    private static final int WAIT_FOR_NEXT_BYTES_TRIALS = 2;
+    private static final int WAIT_FOR_BYTES_TRIAL_MILLIS = 10;
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String HEADER_KEY_VALUE_SEPARATOR = ": ";
     private static final String HEADERS_BODY_PARSED_SEPARATOR = "\r";
@@ -51,10 +55,10 @@ public class HttpOneParser implements RequestResponseParser {
     public Request read(InputStream inputStream) throws IOException {
 	String[] requestLines = readRequest(inputStream);
 	if (requestLines.length < 1 || requestLines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
-	    throw new RequestException();
+	    throw new RequestException("Request is empty");
 	}
-	String method = getMethod(requestLines[0]);
-	String path = getPath(requestLines[0]);
+	String method = readMethod(requestLines[0]);
+	String path = readPath(requestLines[0]);
 	List<Header> headers = new ArrayList<>();
 	int i;
 	for (i = 1; i < requestLines.length; i++) {
@@ -62,26 +66,64 @@ public class HttpOneParser implements RequestResponseParser {
 	    if (line.isEmpty() || line.equals(HEADERS_BODY_PARSED_SEPARATOR)) {
 		break;
 	    }
-	    headers.add(getHeader(line));
+	    headers.add(readHeader(line));
 	}
 	byte[] body = new byte[0];
 	if ((i + 1) < requestLines.length && requestLines[i].equals(HEADERS_BODY_PARSED_SEPARATOR)) {
-	    body = requestLines[i + 1].getBytes();
+	    body = requestLines[i+1].getBytes();
 	}
 	return new Request(method, path, headers, body);
     }
 
     private String[] readRequest(InputStream inputStream) throws IOException {
 	BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-	int availableBytes = bufferedInputStream.available();
-	byte[] bytes = new byte[availableBytes];
-	bufferedInputStream.read(bytes);
-	String request = new String(bytes);
-	String[] lines = request.split(NEW_LINE_SEPARATOR);
-	return lines;
+	List<byte[]> requestBytes = new ArrayList<>();
+	int availableBytes = waitForAvailableBytes(bufferedInputStream, WAIT_FOR_INITIAL_BYTES_TRIALS);
+	while (availableBytes > 0 ) {
+	    byte[] buffer = new byte[availableBytes];
+	    int readBytes = bufferedInputStream.read(buffer);
+	    if (readBytes != availableBytes) {
+		requestBytes.clear();
+		break;
+	    }
+	    requestBytes.add(buffer);
+	    availableBytes = waitForAvailableBytes(bufferedInputStream, WAIT_FOR_NEXT_BYTES_TRIALS);
+	}
+	byte[] rawRequest;
+	if (requestBytes.isEmpty()) {
+	    rawRequest = new byte[0];
+	} else {
+	    rawRequest = concatenateBytes(requestBytes);
+	}
+	String request = new String(rawRequest);
+	return request.split(NEW_LINE_SEPARATOR);
     }
+    
+    private int waitForAvailableBytes(BufferedInputStream inputStream, int trials) throws IOException {
+	for (int i = 0; i < trials; i ++) {
+	    int bytesAvailable = inputStream.available();
+	    if (bytesAvailable > 0) {
+		return bytesAvailable;
+	    }
+	    try {
+		Thread.sleep(WAIT_FOR_BYTES_TRIAL_MILLIS);
+	    } catch (Exception exception) {
+		return - 1;
+	    }
+	}
+	return -1;
+    }
+    
+    private byte[] concatenateBytes(List<byte[]> toConcatBytesArrays) throws IOException {
+	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	for (byte[] toConcatBytes : toConcatBytesArrays) {
+	    outputStream.write(toConcatBytes);
+	}
+	return outputStream.toByteArray();
+    }
+    
 
-    private String getMethod(String firstLine) {
+    private String readMethod(String firstLine) {
 	int indexOfSeparator = firstLine.indexOf("/");
 	if (indexOfSeparator <= MIN_REQUEST_METHOD_LENGTH) {
 	    throw new RequestException();
@@ -89,7 +131,7 @@ public class HttpOneParser implements RequestResponseParser {
 	return firstLine.substring(0, indexOfSeparator - 1);
     }
 
-    private String getPath(String firstLine) {
+    private String readPath(String firstLine) {
 	int indexOfSeparator = firstLine.indexOf(URL_SEGMENTS_SEPARATOR);
 	if (indexOfSeparator <= MIN_REQUEST_METHOD_LENGTH) {
 	    throw new RequestException();
@@ -101,7 +143,7 @@ public class HttpOneParser implements RequestResponseParser {
 	return firstLine.substring(indexOfSeparator + 1, indexOfHttp).trim();
     }
 
-    private Header getHeader(String headerToParse) {
+    private Header readHeader(String headerToParse) {
 	String[] keyValue = headerToParse.split(HEADER_KEY_VALUE_SEPARATOR);
 	if (keyValue.length < 2) {
 	    throw new RequestException();

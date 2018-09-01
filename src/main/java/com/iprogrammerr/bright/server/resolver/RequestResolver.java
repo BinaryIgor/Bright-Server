@@ -15,7 +15,6 @@ public class RequestResolver {
     private String urlPattern;
     private RequestMethod requestMethod;
     private RequestHandler requestHandler;
-    private boolean readyToHandle;
     private UrlPatternParser urlPatternParser;
 
     public RequestResolver(String urlPattern, RequestMethod requestMethod, UrlPatternParser urlPatternParser,
@@ -27,16 +26,14 @@ public class RequestResolver {
     }
 
     public boolean canResolve(Request request) {
-	readyToHandle = false;
 	if (!requestMethod.equalsByValue(request.getMethod())) {
 	    return false;
 	}
-	readyToHandle = urlPatternParser.match(request.getPath(), urlPattern);
-	return readyToHandle;
+	return urlPatternParser.match(request.getPath(), urlPattern);
     }
 
     public Response handle(Request request) {
-	if (!readyToHandle) {
+	if (!canResolve(request)) {
 	    throw new PreConditionRequiredException("Request have to be resolved before it can be handled");
 	}
 	Pairs parameters;
@@ -51,7 +48,6 @@ public class RequestResolver {
 	} else {
 	    pathVariables = new Pairs(new ArrayList<>());
 	}
-	readyToHandle = false;
 	return requestHandler.handle(new ResolvedRequest(request, parameters, pathVariables));
     }
 

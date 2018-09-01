@@ -19,17 +19,18 @@ public class TypedUrlPatternParser implements UrlPatternParser {
     private static final String URL_PATTERN_PATH_VARIABLE_START = "{";
     private static final String URL_PATTERN_PATH_VARIABLE_END = "}";
     private static final String URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
-    private static final double IS_INTEGER_DELTA = 10e6;
 
     public boolean match(String url, String urlPattern) {
 	Map<String, Class> requiredUrlPathVariables = readRequiredUrlPathVariables(urlPattern);
-	if (!requiredUrlPathVariables.isEmpty()
-		&& checkVariables(requiredUrlPathVariables, readPathVariables(url, urlPattern))) {
+	boolean haveRequiredUrlPathVariables = requiredUrlPathVariables.isEmpty() 
+		 || checkVariables(requiredUrlPathVariables, readPathVariables(url, urlPattern));
+	if (!haveRequiredUrlPathVariables) {
 	    return false;
 	}
 	Map<String, Class> requiredUrlParameters = readRequiredUrlParameters(urlPattern);
-	if (!requiredUrlParameters.isEmpty()
-		&& checkVariables(requiredUrlParameters, readParameters(url, urlPattern))) {
+	boolean haveRequiredUrlParameters = requiredUrlParameters.isEmpty()
+		|| checkVariables(requiredUrlParameters, readParameters(url, urlPattern));
+	if (!haveRequiredUrlParameters) {
 	    return false;
 	}
 	return matchOmittingPathVariablesAndParameters(url, urlPattern);
@@ -95,21 +96,6 @@ public class TypedUrlPatternParser implements UrlPatternParser {
 	return keyTypeUrlPatternVariables;
     }
 
-    private Map<String, String> readRawPathVariables(String url, String urlPattern) {
-	Map<String, String> pathVariables = new HashMap<>();
-	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
-	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
-	if (urlSegments.length < urlPatternSegments.length) {
-	    return pathVariables;
-	}
-	for (int i = 0; i < urlPatternSegments.length; i++) {
-	    if (!isPathVariable(urlPatternSegments[i])) {
-		continue;
-	    }
-	    pathVariables.put(readRawPathVariable(urlPatternSegments[i]), urlSegments[i]);
-	}
-	return pathVariables;
-    }
 
     @Override
     public Pairs readPathVariables(String url, String urlPattern) {
@@ -195,7 +181,7 @@ public class TypedUrlPatternParser implements UrlPatternParser {
 	Map<String, Class> typedMap = new HashMap<>();
 	try {
 	    for (Map.Entry<String, String> rawEntry : rawMap.entrySet()) {
-		typedMap.put(rawEntry.getKey(), getVariableType(rawEntry.getValue()).getClass());
+		typedMap.put(rawEntry.getKey(), getVariableType(rawEntry.getValue()).getType());
 	    }
 	} catch (CreationException exception) {
 	    exception.printStackTrace();
@@ -224,18 +210,6 @@ public class TypedUrlPatternParser implements UrlPatternParser {
 	    return UrlPatternType.STRING;
 	}
 	throw new CreationException(value + " is not recoginizable variable type!");
-    }
-
-    private Object readParameterValue(String parameter) {
-	if (!isNumeric(parameter)) {
-	    return parameter;
-	}
-	double numericParameter = Double.parseDouble(parameter);
-	double delta = numericParameter - Math.floor(numericParameter);
-	if (delta < IS_INTEGER_DELTA) {
-	    return numericParameter;
-	}
-	return (int) numericParameter;
     }
 
     private Map<String, String> readRawParameters(String url) {
@@ -270,6 +244,7 @@ public class TypedUrlPatternParser implements UrlPatternParser {
 		parameters.add(new Pair(requiredUrlParameterEntry.getKey(), value));
 	    }
 	} catch (Exception exception) {
+	    exception.printStackTrace();
 	    parameters.clear();
 	}
 	return new Pairs(parameters);

@@ -29,8 +29,11 @@ public class ServerApplication {
 	List<RequestResolver> requestResolvers = new ArrayList<>();
 	RequestResolver helloResolver = new RequestResolver("hello/{id:int}", RequestMethod.GET, urlPatternParser,
 		new HelloHandler());
+	RequestResolver complexResolver = new RequestResolver("complex/{id:long}/search?message=string&scale=float", RequestMethod.GET,
+		urlPatternParser, new ComplexUrlHandler());
 	requestResolvers.add(helloResolver);
-
+	requestResolvers.add(complexResolver);
+	
 	List<RequestFilter> requestFilters = new ArrayList<>();
 	RequestFilter authorizationFilter = new RequestFilter("*", new AnyRequestMethodRule(), filterUrlPatternParser,
 		new AuthorizationHandler());

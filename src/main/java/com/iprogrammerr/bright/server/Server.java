@@ -1,8 +1,8 @@
 package com.iprogrammerr.bright.server;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -101,11 +101,8 @@ public class Server {
     private Runnable getRequestHandler(Socket socket) {
 	return () -> {
 	    try (InputStream inputStream = socket.getInputStream();
-		    BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream())) {
-		Request request = requestResponseParser.read(inputStream);
-		Response response = resolve(request);
-		byte[] rawResponse = requestResponseParser.write(response);
-		outputStream.write(rawResponse);
+		    OutputStream outputStream = socket.getOutputStream()) {
+		handleRequest(inputStream, outputStream);
 	    } catch (IOException exception) {
 		exception.printStackTrace();
 	    } finally {
@@ -116,6 +113,19 @@ public class Server {
 		}
 	    }
 	};
+    }
+
+    private void handleRequest(InputStream inputStream, OutputStream outputStream) throws IOException {
+	byte[] rawResponse;
+	try {
+	    Request request = requestResponseParser.read(inputStream);
+	    Response response = resolve(request);
+	    rawResponse = requestResponseParser.write(response);
+	} catch (Exception exception) {
+	    exception.printStackTrace();
+	    rawResponse = requestResponseParser.write(new EmptyResponse(ResponseCode.BAD_REQUEST));
+	}
+	outputStream.write(rawResponse);
     }
 
     public Response resolve(Request request) {
@@ -134,10 +144,8 @@ public class Server {
 	    }
 	    return resolver.handle(request);
 	} catch (ObjectNotFoundException exception) {
-	    exception.printStackTrace();
 	    return new EmptyResponse(ResponseCode.NOT_FOUND);
 	} catch (Exception exception) {
-	    exception.printStackTrace();
 	    return new EmptyResponse(ResponseCode.INTERNAL_SERVER_ERROR);
 	}
     }

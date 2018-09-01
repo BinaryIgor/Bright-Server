@@ -11,7 +11,7 @@ public class HelloHandler implements RequestHandler {
     @Override
     public Response handle(ResolvedRequest request) {
 	int id = request.getPathVariable("id", Integer.class);
-	String message = "Hello number " + id + "!";
+	String message = "Hello number " + id + " from Thread = " + Thread.currentThread().getId();
 	return new PlainTextResponse(ResponseCode.OK, message);
     }
 }

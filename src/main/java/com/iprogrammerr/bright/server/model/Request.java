@@ -1,5 +1,6 @@
 package com.iprogrammerr.bright.server.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.constants.HeaderKey;
@@ -62,9 +63,16 @@ public class Request {
     }
 
     public void removeContextFromPath(String contextPath) {
-	if (path.startsWith(contextPath)) {
+	if (path.startsWith(contextPath) && !contextPath.isEmpty()) {
 	    path = path.replace(contextPath + "/", "");
 	}
     }
 
+    @Override
+    public String toString() {
+	return "Request [method=" + method + ", path=" + path + ", headers=" + headers + ", body="
+		+ Arrays.toString(body) + "]";
+    } 
+    
+    
 }

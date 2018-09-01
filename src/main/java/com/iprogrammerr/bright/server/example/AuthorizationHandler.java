@@ -14,9 +14,11 @@ public class AuthorizationHandler implements ToFilterRequestHandler {
     @Override
     public Response handle(Request request) {
 	if (!request.hasHeader(HeaderKey.AUTHORIZATION)) {
+	    System.out.println("There is no authorization header!");
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);
 	}
 	String token = request.getHeader(HeaderKey.AUTHORIZATION);
+	System.out.println("Secret token = " + token);
 	boolean valid = token.equals(SECRET_TOKEN);
 	if (!valid) {
 	    return new EmptyResponse(ResponseCode.FORBIDDEN);

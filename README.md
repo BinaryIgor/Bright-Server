@@ -1,5 +1,5 @@
 # Bright Server
- Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework. Explanatory code is present in example package, so let's examples speak for themselves.
+ Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework. Let the examples speak for themselves:
  ```java
 ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
 

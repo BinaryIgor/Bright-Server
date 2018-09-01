@@ -32,6 +32,11 @@ public class TypedUrlPatternParserTest {
 	url = "riddle/user/1";
 	urlPattern ="riddle/user/{id:int}";
 	assertTrue(urlPatternParser.match(url, urlPattern));
+	url = "ridde/simple/user/1";
+	assertFalse(urlPatternParser.match(url, urlPattern));
+	url = "complex/1/search?message=secret&scale=5.5";
+	urlPattern = "complex/{id:long}/search?message=string&scale=float";
+	assertTrue(urlPatternParser.match(url, urlPattern));
     }
 
 

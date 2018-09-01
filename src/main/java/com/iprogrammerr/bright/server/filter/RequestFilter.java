@@ -12,7 +12,6 @@ public class RequestFilter {
     private FilterUrlPatternParser urlPatternParser;
     private RequestMethodRule requestMethodRule;
     private ToFilterRequestHandler requestHandler;
-    private boolean readyToFilter;
 
     public RequestFilter(String urlPattern, RequestMethodRule requestMethodRule,
 	    FilterUrlPatternParser urlPatternParser, ToFilterRequestHandler requestHandler) {
@@ -27,19 +26,16 @@ public class RequestFilter {
     }
 
     public boolean shouldFilter(Request request) {
-	readyToFilter = false;
 	if (!requestMethodRule.isCompliant(request.getMethod())) {
 	    return false;
 	}
-	readyToFilter = urlPatternParser.match(request.getPath(), urlPattern);
-	return readyToFilter;
+	return urlPatternParser.isPrimary(urlPattern) || urlPatternParser.match(request.getPath(), urlPattern);
     }
 
     public Response filter(Request request) {
-	if (!isPrimary() && !readyToFilter) {
+	if (!shouldFilter(request)) {
 	    throw new PreConditionRequiredException("Request must be matched before it can be filtered");
 	}
-	readyToFilter = false;
 	return requestHandler.handle(request);
     }
 

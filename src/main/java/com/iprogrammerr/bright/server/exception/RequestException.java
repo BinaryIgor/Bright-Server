@@ -6,7 +6,7 @@ public class RequestException extends RuntimeException {
 
     }
 
-    private RequestException(String message) {
+    public RequestException(String message) {
 	super(message);
     }
 
