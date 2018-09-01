@@ -1,5 +1,5 @@
 # Bright Server
- Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework. Let the examples speak for themselves:
+ Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework. Let examples speak for themselves:
  ```java
 ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
 
@@ -43,7 +43,8 @@ public class AuthorizationHandler implements ToFilterRequestHandler {
     }
 
 }
-
+```
+```java
 public class HelloHandler implements RequestHandler {
 
     @Override
@@ -54,8 +55,8 @@ public class HelloHandler implements RequestHandler {
     }
 }
 ```
-For more, refer to [one page docs](https://github.com/Iprogrammerr/Bright-Server/wiki)
-Project is still under development, so any feedback or opened issue is very welcome and appreciated.
+For more, refer to [one page docs](https://github.com/Iprogrammerr/Bright-Server/wiki).
+Project is under active development, so any feedback or opened issue is very welcome and appreciated.
 
 
  
