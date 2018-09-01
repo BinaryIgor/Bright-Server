@@ -18,9 +18,9 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public class HttpOneParser implements RequestResponseParser {
 
-    private static final int WAIT_FOR_INITIAL_BYTES_TRIALS = 5;
-    private static final int WAIT_FOR_NEXT_BYTES_TRIALS = 2;
-    private static final int WAIT_FOR_BYTES_TRIAL_MILLIS = 10;
+    private static final int WAIT_FOR_BYTES_TRIAL_MILLIS = 15;
+    private static final int WAIT_FOR_INITIAL_BYTES_TRIALS = 10;
+    private static final int WAIT_FOR_NEXT_BYTES_TRIALS = 3;
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String HEADER_KEY_VALUE_SEPARATOR = ": ";
     private static final String HEADERS_BODY_PARSED_SEPARATOR = "\r";
@@ -105,6 +105,7 @@ public class HttpOneParser implements RequestResponseParser {
 	    if (bytesAvailable > 0) {
 		return bytesAvailable;
 	    }
+	    System.out.println("Wait for the " + (i + 1) + "time!");
 	    try {
 		Thread.sleep(WAIT_FOR_BYTES_TRIAL_MILLIS);
 	    } catch (Exception exception) {
