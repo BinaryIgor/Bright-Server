@@ -30,7 +30,7 @@ public class FilterUrlPatternParserTest {
     }
 
     @Test
-    public void imProperMatchTest() {
+    public void improperMatchTest() {
 	urlPatternParser = new StarSymbolFilterUrlPatternParser();
 	String url = "user/search/1/name";
 	String urlPattern = "search/";

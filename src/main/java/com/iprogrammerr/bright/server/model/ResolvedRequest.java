@@ -12,7 +12,7 @@ public class ResolvedRequest {
     public ResolvedRequest(Request request, Pairs parameters, Pairs pathVariables) {
 	this(request.getHeaders(), parameters, pathVariables, request.getBody());
     }
-    
+
     public ResolvedRequest(List<Header> headers, Pairs parameters, Pairs pathVariables, byte[] body) {
 	this.headers = headers;
 	this.parameters = parameters;
@@ -43,4 +43,5 @@ public class ResolvedRequest {
     public <T> T getPathVariable(String key, Class<T> clazz) {
 	return pathVariables.get(key, clazz);
     }
+
 }

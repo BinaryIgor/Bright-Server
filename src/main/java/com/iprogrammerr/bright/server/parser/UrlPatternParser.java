@@ -8,7 +8,7 @@ public interface UrlPatternParser {
     
     Pairs readPathVariables(String url, String urlPattern);
     
-    Pairs readParameters(String url);
+    Pairs readParameters(String url, String urlPattern);
     
     boolean hasParameters(String urlPattern);
     

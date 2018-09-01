@@ -57,32 +57,33 @@ public class Server {
 	this.serverConfiguration = serverConfiguration;
     }
 
+    public Server(ServerConfiguration serverConfiguration, RequestResponseParser requestReponseParser,
+	    List<RequestResolver> requestsResolvers, List<RequestFilter> requestFilters) {
+	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseParser, requestsResolvers,
+		requestFilters);
+    }
+
     public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers,
 	    List<RequestFilter> requestFilters) {
 	this(serverConfiguration, Executors.newCachedThreadPool(), new HttpOneParser(serverConfiguration),
 		requestsResolvers, requestFilters);
     }
-    
+
     public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers,
 	    List<RequestFilter> requestFilters, List<Header> additionalResponeHeaders) {
-	this(serverConfiguration, Executors.newCachedThreadPool(), new HttpOneParser(serverConfiguration, additionalResponeHeaders),
-		requestsResolvers, requestFilters);
+	this(serverConfiguration, Executors.newCachedThreadPool(),
+		new HttpOneParser(serverConfiguration, additionalResponeHeaders), requestsResolvers, requestFilters);
     }
 
     public Server(ServerConfiguration serverConfiguration, Executor executor, List<RequestResolver> requestsResolvers,
 	    List<RequestFilter> requestFilters) {
 	this(serverConfiguration, executor, new HttpOneParser(serverConfiguration), requestsResolvers, requestFilters);
     }
-    
+
     public Server(ServerConfiguration serverConfiguration, Executor executor, List<RequestResolver> requestsResolvers,
 	    List<RequestFilter> requestFilters, List<Header> additionalResponseHeaders) {
-	this(serverConfiguration, executor, new HttpOneParser(serverConfiguration, additionalResponseHeaders), requestsResolvers, requestFilters);
-    }
-
-    public Server(ServerConfiguration serverConfiguration, RequestResponseParser requestReponseParser,
-	    List<RequestResolver> requestsResolvers, List<RequestFilter> requestFilters) {
-	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseParser, requestsResolvers,
-		requestFilters);
+	this(serverConfiguration, executor, new HttpOneParser(serverConfiguration, additionalResponseHeaders),
+		requestsResolvers, requestFilters);
     }
 
     public void start() {
@@ -157,7 +158,7 @@ public class Server {
 	}
 	return runFilters(request, getFilters(request));
     }
-    
+
     private Response runFilters(Request request, List<RequestFilter> requestFilters) {
 	Response response = new EmptyResponse(ResponseCode.OK);
 	for (RequestFilter filter : requestFilters) {
@@ -168,7 +169,6 @@ public class Server {
 	}
 	return response;
     }
-    
 
     private List<RequestFilter> getFilters(Request request) {
 	List<RequestFilter> matchedFilters = new ArrayList<>();

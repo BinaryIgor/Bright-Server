@@ -55,5 +55,4 @@ public class Pairs {
     public void add(Pairs pairs) {
 	this.pairs.addAll(pairs.pairs);
     }
-
 }

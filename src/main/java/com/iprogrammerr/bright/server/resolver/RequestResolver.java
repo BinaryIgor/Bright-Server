@@ -41,7 +41,7 @@ public class RequestResolver {
 	}
 	Pairs parameters;
 	if (urlPatternParser.hasParameters(urlPattern)) {
-	    parameters = urlPatternParser.readParameters(request.getPath());
+	    parameters = urlPatternParser.readParameters(request.getPath(), urlPattern);
 	} else {
 	    parameters = new Pairs(new ArrayList<>());
 	}

@@ -11,6 +11,7 @@ import com.iprogrammerr.bright.server.parser.TypedUrlPatternParser;
 
 public class TypedUrlPatternParserTest {
 
+    private static final double DELTA = 10e-6;
     private TypedUrlPatternParser urlPatternParser;
 
     @Before
@@ -20,7 +21,7 @@ public class TypedUrlPatternParserTest {
 
 
     @Test
-    public void areUrlAndUrlPatternEqualTest() {
+    public void matchTest() {
 	String url = "riddle/user/1/search/10";
 	String urlPattern = "riddle/user/{id}/search/{results}";
 	assertTrue(urlPatternParser.match(url, urlPattern));
@@ -35,7 +36,7 @@ public class TypedUrlPatternParserTest {
 
 
     @Test
-    public void getPathVariablesTest() {
+    public void readPathVariablesTest() {
 	String url = "riddle/user/1/search/9.4";
 	String urlPattern = "riddle/user/{id:int}/search/{scale:double}";
 	Pairs pathVariables = urlPatternParser.readPathVariables(url, urlPattern);
@@ -45,5 +46,21 @@ public class TypedUrlPatternParserTest {
 	assertTrue(pathVariables.has("scale", Double.class));
 	double scale = pathVariables.get("scale", Double.class);
 	assertTrue(scale == 9.4);
+    }
+    
+    @Test
+    public void readParametersTest() {
+	String url = "riddle/user?id=1&search=10.33&fast=true&super=dada";
+	String urlPattern = "riddle/user?id=long&search=float&fast=boolean";
+	Pairs parameters = urlPatternParser.readParameters(url, urlPattern);
+	assertTrue(parameters.has("id", Long.class));
+	long id = parameters.get("id", Long.class);
+	assertTrue(id == 1);
+	assertTrue(parameters.has("search", Float.class));
+	float search = parameters.get("search", Float.class); 
+	assertTrue(Math.abs(10.33 - search) < DELTA);
+	assertTrue(parameters.has("fast", Boolean.class));
+	boolean fast = parameters.get("fast", Boolean.class);
+	assertTrue(fast);
     }
 }

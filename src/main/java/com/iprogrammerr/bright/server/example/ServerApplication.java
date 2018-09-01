@@ -10,6 +10,7 @@ import com.iprogrammerr.bright.server.Server;
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
 import com.iprogrammerr.bright.server.constants.RequestMethod;
 import com.iprogrammerr.bright.server.filter.RequestFilter;
+import com.iprogrammerr.bright.server.parser.FilterUrlPatternParser;
 import com.iprogrammerr.bright.server.parser.StarSymbolFilterUrlPatternParser;
 import com.iprogrammerr.bright.server.parser.TypedUrlPatternParser;
 import com.iprogrammerr.bright.server.parser.UrlPatternParser;
@@ -23,7 +24,7 @@ public class ServerApplication {
 	ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
 
 	UrlPatternParser urlPatternParser = new TypedUrlPatternParser();
-	StarSymbolFilterUrlPatternParser filterUrlPatternParser = new StarSymbolFilterUrlPatternParser();
+	FilterUrlPatternParser filterUrlPatternParser = new StarSymbolFilterUrlPatternParser();
 
 	List<RequestResolver> requestResolvers = new ArrayList<>();
 	RequestResolver helloResolver = new RequestResolver("hello/{id:int}", RequestMethod.GET, urlPatternParser,
