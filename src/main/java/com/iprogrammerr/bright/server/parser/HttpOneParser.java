@@ -105,7 +105,6 @@ public class HttpOneParser implements RequestResponseParser {
 	    if (bytesAvailable > 0) {
 		return bytesAvailable;
 	    }
-	    System.out.println("Wait for the " + (i + 1) + "time!");
 	    try {
 		Thread.sleep(WAIT_FOR_BYTES_TRIAL_MILLIS);
 	    } catch (Exception exception) {
