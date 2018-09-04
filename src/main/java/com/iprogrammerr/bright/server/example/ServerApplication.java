@@ -29,7 +29,7 @@ public class ServerApplication {
 	List<RequestResolver> requestResolvers = new ArrayList<>();
 	RequestResolver helloResolver = new RequestResolver("hello/{id:int}", RequestMethod.GET, urlPatternParser,
 		new HelloHandler());
-	RequestResolver complexResolver = new RequestResolver("complex/{id:long}/search?message=string&scale=float", RequestMethod.GET,
+	RequestResolver complexResolver = new RequestResolver("complex/{id:long}/search?message=string&scale=float", RequestMethod.POST,
 		urlPatternParser, new ComplexUrlHandler());
 	requestResolvers.add(helloResolver);
 	requestResolvers.add(complexResolver);

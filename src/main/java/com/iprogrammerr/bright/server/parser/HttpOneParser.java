@@ -1,6 +1,5 @@
 package com.iprogrammerr.bright.server.parser;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,9 +17,6 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public class HttpOneParser implements RequestResponseParser {
 
-    private static final int WAIT_FOR_BYTES_TRIAL_MILLIS = 15;
-    private static final int WAIT_FOR_INITIAL_BYTES_TRIALS = 10;
-    private static final int WAIT_FOR_NEXT_BYTES_TRIALS = 3;
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String HEADER_KEY_VALUE_SEPARATOR = ": ";
     private static final String HEADERS_BODY_PARSED_SEPARATOR = "\r";
@@ -51,6 +47,7 @@ public class HttpOneParser implements RequestResponseParser {
 	this(serverConfiguration, new ArrayList<>());
     }
 
+    //TODO checking left bytes of body
     @Override
     public Request read(InputStream inputStream) throws IOException {
 	String[] requestLines = readRequest(inputStream);
@@ -76,44 +73,33 @@ public class HttpOneParser implements RequestResponseParser {
     }
 
     private String[] readRequest(InputStream inputStream) throws IOException {
-	BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-	List<byte[]> requestBytes = new ArrayList<>();
-	int availableBytes = waitForAvailableBytes(bufferedInputStream, WAIT_FOR_INITIAL_BYTES_TRIALS);
-	while (availableBytes > 0 ) {
-	    byte[] buffer = new byte[availableBytes];
-	    int readBytes = bufferedInputStream.read(buffer);
-	    if (readBytes != availableBytes) {
-		requestBytes.clear();
-		break;
-	    }
-	    requestBytes.add(buffer);
-	    availableBytes = waitForAvailableBytes(bufferedInputStream, WAIT_FOR_NEXT_BYTES_TRIALS);
-	}
-	byte[] rawRequest;
-	if (requestBytes.isEmpty()) {
-	    rawRequest = new byte[0];
-	} else {
-	    rawRequest = concatenateBytes(requestBytes);
-	}
+	byte[] rawRequest = readPacket(inputStream);
 	String request = new String(rawRequest);
 	return request.split(NEW_LINE_SEPARATOR);
     }
     
-    private int waitForAvailableBytes(BufferedInputStream inputStream, int trials) throws IOException {
-	for (int i = 0; i < trials; i ++) {
-	    int bytesAvailable = inputStream.available();
-	    if (bytesAvailable > 0) {
-		return bytesAvailable;
-	    }
-	    try {
-		Thread.sleep(WAIT_FOR_BYTES_TRIAL_MILLIS);
-	    } catch (Exception exception) {
-		return - 1;
-	    }
+    private byte[] readPacket(InputStream inputStream) throws IOException {
+	int bytesAvailable = inputStream.available();
+	if (bytesAvailable == 0) {
+	    bytesAvailable = 2056;
 	}
-	return -1;
+	System.out.println(bytesAvailable);
+	byte[] buffer = new byte[bytesAvailable];
+	int bytesRead = inputStream.read(buffer);
+	if (bytesRead <= 0) {
+	    return new byte[0];
+	}
+	if (bytesRead == buffer.length) {
+	    return buffer;
+	}
+	byte[] readBytes = new byte[bytesRead];
+	for (int i = 0; i < bytesRead; i ++) {
+	    readBytes[i] = buffer[i];
+	}
+	return readBytes;
     }
-    
+     
+
     private byte[] concatenateBytes(List<byte[]> toConcatBytesArrays) throws IOException {
 	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	for (byte[] toConcatBytes : toConcatBytesArrays) {

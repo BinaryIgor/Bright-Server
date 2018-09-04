@@ -62,13 +62,13 @@ public class Server {
 	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseParser, requestsResolvers,
 		requestFilters);
     }
-    
+
     public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers,
 	    List<RequestFilter> requestFilters) {
 	this(serverConfiguration, Executors.newCachedThreadPool(), new HttpOneParser(serverConfiguration),
 		requestsResolvers, requestFilters);
     }
-    
+
     public Server(ServerConfiguration serverConfiguration, List<RequestResolver> requestsResolvers) {
 	this(serverConfiguration, Executors.newCachedThreadPool(), new HttpOneParser(serverConfiguration),
 		requestsResolvers, new ArrayList<>());
@@ -107,7 +107,11 @@ public class Server {
 	return () -> {
 	    try (InputStream inputStream = socket.getInputStream();
 		    OutputStream outputStream = socket.getOutputStream()) {
-		handleRequest(inputStream, outputStream);
+		socket.setSoTimeout(serverConfiguration.getTimeOutMillis());
+		Request request = requestResponseParser.read(inputStream);
+		Response response = resolve(request);
+		byte[] rawResponse = requestResponseParser.write(response);
+		outputStream.write(rawResponse);
 	    } catch (IOException exception) {
 		exception.printStackTrace();
 	    } finally {
@@ -118,19 +122,6 @@ public class Server {
 		}
 	    }
 	};
-    }
-
-    private void handleRequest(InputStream inputStream, OutputStream outputStream) throws IOException {
-	byte[] rawResponse;
-	try {
-	    Request request = requestResponseParser.read(inputStream);
-	    Response response = resolve(request);
-	    rawResponse = requestResponseParser.write(response);
-	} catch (Exception exception) {
-	    exception.printStackTrace();
-	    rawResponse = requestResponseParser.write(new EmptyResponse(ResponseCode.BAD_REQUEST));
-	}
-	outputStream.write(rawResponse);
     }
 
     public Response resolve(Request request) {
