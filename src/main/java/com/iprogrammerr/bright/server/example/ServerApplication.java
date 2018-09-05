@@ -9,12 +9,10 @@ import java.util.Properties;
 import com.iprogrammerr.bright.server.Server;
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
 import com.iprogrammerr.bright.server.constants.RequestMethod;
-import com.iprogrammerr.bright.server.filter.RequestFilter;
-import com.iprogrammerr.bright.server.parser.FilterUrlPatternParser;
-import com.iprogrammerr.bright.server.parser.StarSymbolFilterUrlPatternParser;
-import com.iprogrammerr.bright.server.parser.TypedUrlPatternParser;
-import com.iprogrammerr.bright.server.parser.UrlPatternParser;
-import com.iprogrammerr.bright.server.resolver.RequestResolver;
+import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
+import com.iprogrammerr.bright.server.filter.HttpRequestFilter;
+import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
+import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
 import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
 
@@ -23,28 +21,26 @@ public class ServerApplication {
     public static void main(String[] args) throws IOException {
 	ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
 
-	UrlPatternParser urlPatternParser = new TypedUrlPatternParser();
-	FilterUrlPatternParser filterUrlPatternParser = new StarSymbolFilterUrlPatternParser();
 
-	List<RequestResolver> requestResolvers = new ArrayList<>();
-	RequestResolver helloResolver = new RequestResolver("hello/{id:int}", RequestMethod.GET, urlPatternParser,
-		new HelloHandler());
-	RequestResolver complexResolver = new RequestResolver("complex/{id:long}/search?message=string&scale=float", RequestMethod.POST,
-		urlPatternParser, new ComplexUrlHandler());
-	requestResolvers.add(helloResolver);
-	requestResolvers.add(complexResolver);
+	List<ConditionalRespondent> respondents = new ArrayList<>();
+	ConditionalRespondent helloResolver = new HttpRespondent("hello/{id:int}", RequestMethod.GET,
+		new HelloRespondent());
+	ConditionalRespondent complexResolver = new HttpRespondent("complex/{id:long}/search?message=string&scale=float", RequestMethod.POST,
+		new ComplexUrlRespondent());
+	respondents.add(helloResolver);
+	respondents.add(complexResolver);
 	
-	List<RequestFilter> requestFilters = new ArrayList<>();
-	RequestFilter authorizationFilter = new RequestFilter("*", new AnyRequestMethodRule(), filterUrlPatternParser,
-		new AuthorizationHandler());
-	RequestFilter authorizationSecondFilter = new RequestFilter("hello/*",
-		new ListOfRequestMethodRule(RequestMethod.GET, RequestMethod.POST), filterUrlPatternParser,
-		new AuthorizationSecondFreePassHandler());
+	List<ConditionalRequestFilter> requestFilters = new ArrayList<>();
+	ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),
+		new AuthorizationFilter());
+	ConditionalRequestFilter authorizationSecondFilter = new HttpRequestFilter("hello/*",
+		new ListOfRequestMethodRule(RequestMethod.GET, RequestMethod.POST), 
+		new AuthorizationSecondFreePassFilter());
 	requestFilters.add(authorizationFilter);
 	requestFilters.add(authorizationSecondFilter);
 
 	
-	Server server = new Server(serverConfiguration, requestResolvers, requestFilters);
+	Server server = new Server(serverConfiguration, respondents, requestFilters);
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 	    server.stop();
 	}));

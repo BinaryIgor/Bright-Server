@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server.parser;
+package com.iprogrammerr.bright.server.pattern;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import com.iprogrammerr.bright.server.model.Pair;
 import com.iprogrammerr.bright.server.model.Pairs;
 import com.iprogrammerr.bright.server.model.UrlPatternType;
 
-public class TypedUrlPatternParser implements UrlPatternParser {
+public class TypedUrlPattern implements UrlPattern {
 
     private static final String URL_SEGMENTS_SEPARATOR = "/";
     private static final String PARAMETERS_BEGINING = "?";
@@ -19,21 +19,27 @@ public class TypedUrlPatternParser implements UrlPatternParser {
     private static final String URL_PATTERN_PATH_VARIABLE_START = "{";
     private static final String URL_PATTERN_PATH_VARIABLE_END = "}";
     private static final String URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
+    private final String urlPattern;
+    
+    public TypedUrlPattern(String urlPattern) {
+	this.urlPattern = urlPattern;
+    }
 
-    public boolean match(String url, String urlPattern) {
-	Map<String, Class> requiredUrlPathVariables = readRequiredUrlPathVariables(urlPattern);
+    @Override
+    public boolean match(String url) {
+	Map<String, Class> requiredUrlPathVariables = readRequiredUrlPathVariables();
 	boolean haveRequiredUrlPathVariables = requiredUrlPathVariables.isEmpty() 
-		 || checkVariables(requiredUrlPathVariables, readPathVariables(url, urlPattern));
+		 || checkVariables(requiredUrlPathVariables, readPathVariables(url));
 	if (!haveRequiredUrlPathVariables) {
 	    return false;
 	}
-	Map<String, Class> requiredUrlParameters = readRequiredUrlParameters(urlPattern);
+	Map<String, Class> requiredUrlParameters = readRequiredUrlParameters();
 	boolean haveRequiredUrlParameters = requiredUrlParameters.isEmpty()
-		|| checkVariables(requiredUrlParameters, readParameters(url, urlPattern));
+		|| checkVariables(requiredUrlParameters, readParameters(url));
 	if (!haveRequiredUrlParameters) {
 	    return false;
 	}
-	return matchOmittingPathVariablesAndParameters(url, urlPattern);
+	return matchOmittingPathVariablesAndParameters(url);
     }
 
     private boolean checkVariables( Map<String, Class> requiredVariables, Pairs variables) {
@@ -45,10 +51,10 @@ public class TypedUrlPatternParser implements UrlPatternParser {
 	return true;
     }
 
-    private boolean matchOmittingPathVariablesAndParameters(String url, String urlPattern) {
-	urlPattern = cutParameters(urlPattern);
+    private boolean matchOmittingPathVariablesAndParameters(String url) {
+	String withoutParametersUrlPattern = cutParameters(urlPattern);
 	url = cutParameters(url);
-	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
+	String[] urlPatternSegments = withoutParametersUrlPattern.split(URL_SEGMENTS_SEPARATOR);
 	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
 	if (urlPatternSegments.length != urlSegments.length) {
 	    return false;
@@ -72,15 +78,15 @@ public class TypedUrlPatternParser implements UrlPatternParser {
 	return url;
     }
 
-    private Map<String, Class> readRequiredUrlPathVariables(String urlPattern) {
-	Map<String, String> keyTypeVariables = readKeyTypeVariablesFromUrlPattern(urlPattern);
+    private Map<String, Class> readRequiredUrlPathVariables() {
+	Map<String, String> keyTypeVariables = readKeyTypeVariablesFromUrlPattern();
 	if (keyTypeVariables.isEmpty()) {
 	    return new HashMap<>();
 	}
 	return convertRawToType(keyTypeVariables);
     }
 
-    private Map<String, String> readKeyTypeVariablesFromUrlPattern(String urlPattern) {
+    private Map<String, String> readKeyTypeVariablesFromUrlPattern() {
 	Map<String, String> keyTypeUrlPatternVariables = new HashMap<>();
 	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
 	for (int i = 0; i < urlPatternSegments.length; i++) {
@@ -98,7 +104,7 @@ public class TypedUrlPatternParser implements UrlPatternParser {
 
 
     @Override
-    public Pairs readPathVariables(String url, String urlPattern) {
+    public Pairs readPathVariables(String url) {
 	List<Pair> pathVariables = new ArrayList<>();
 	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
 	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
@@ -160,16 +166,8 @@ public class TypedUrlPatternParser implements UrlPatternParser {
 	return urlPatternSegment.substring(1, urlPatternSegment.length() - 1);
     }
 
-    private boolean isNumeric(String string) {
-	try {
-	    Double.parseDouble(string);
-	    return true;
-	} catch (Exception exception) {
-	    return false;
-	}
-    }
 
-    private Map<String, Class> readRequiredUrlParameters(String urlPattern) {
+    private Map<String, Class> readRequiredUrlParameters() {
 	Map<String, String> rawParameters = readRawParameters(urlPattern);
 	if (rawParameters.isEmpty()) {
 	    return new HashMap<>();
@@ -230,7 +228,7 @@ public class TypedUrlPatternParser implements UrlPatternParser {
     }
 
     @Override
-    public Pairs readParameters(String url, String urlPattern) {
+    public Pairs readParameters(String url) {
 	List<Pair> parameters = new ArrayList<>();
 	Map<String, String> rawParameters = readRawParameters(url);
 	Map<String, String> requiredUrlParameters = readRawParameters(urlPattern);
@@ -251,12 +249,12 @@ public class TypedUrlPatternParser implements UrlPatternParser {
     }
 
     @Override
-    public boolean hasParameters(String urlPattern) {
+    public boolean hasParameters() {
 	return urlPattern.contains(PARAMETERS_BEGINING) && urlPattern.contains(PARAMETERS_KEY_VALUE_SEPARATOR);
     }
 
     @Override
-    public boolean hasPathVariables(String urlPattern) {
+    public boolean hasPathVariables() {
 	return urlPattern.contains(URL_PATTERN_PATH_VARIABLE_START)
 		&& urlPattern.contains(URL_PATTERN_PATH_VARIABLE_END);
     }

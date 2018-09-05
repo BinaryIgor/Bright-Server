@@ -1,17 +1,22 @@
-package com.iprogrammerr.bright.server.parser;
+package com.iprogrammerr.bright.server.pattern;
 
-public class StarSymbolFilterUrlPatternParser implements FilterUrlPatternParser{
+public class StarSymbolFilterUrlPattern implements ToFilterUrlPattern{
 
     private static final String MATCH_ALL = "*";
     private static final String URL_SEGMENTS_SEPARATOR = "/";
+    private String urlPattern;
+    
+    public StarSymbolFilterUrlPattern(String urlPattern) {
+	this.urlPattern = urlPattern;
+    }
 
     @Override
-    public boolean isPrimary(String urlPattern) {
+    public boolean isPrimary() {
 	return urlPattern.startsWith(MATCH_ALL);
     }
 
     @Override
-    public boolean match(String url, String urlPattern) {
+    public boolean match(String url) {
 	if (urlPattern.startsWith(MATCH_ALL)) {
 	    return true;
 	}

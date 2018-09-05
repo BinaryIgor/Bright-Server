@@ -5,18 +5,18 @@ import java.util.List;
 
 import com.iprogrammerr.bright.server.constants.HeaderKey;
 import com.iprogrammerr.bright.server.constants.ResponseCode;
-import com.iprogrammerr.bright.server.model.Header;
+import com.iprogrammerr.bright.server.header.HttpHeader;
 
 public class ContentResponse implements Response {
 
     private int responseCode;
     private byte[] body;
-    private Header contentTypeHeader;
+    private HttpHeader contentTypeHeader;
 
     public ContentResponse(int responseCode, String contentType, byte[] body) {
 	this.responseCode = responseCode;
 	this.body = body;
-	this.contentTypeHeader = new Header(HeaderKey.CONTENT_TYPE, contentType);
+	this.contentTypeHeader = new HttpHeader(HeaderKey.CONTENT_TYPE, contentType);
     }
     
     public ContentResponse(ResponseCode responseCode, String contentType, byte[] body) {
@@ -24,22 +24,22 @@ public class ContentResponse implements Response {
     }
 
     @Override
-    public int getResponseCode() {
+    public int responseCode() {
 	return responseCode;
     }
 
     @Override
-    public List<Header> getHeaders() {
+    public List<HttpHeader> headers() {
 	return Collections.singletonList(contentTypeHeader);
     }
 
     @Override
-    public boolean hasBody() {
+    public boolean hadBody() {
 	return true;
     }
 
     @Override
-    public byte[] getBody() {
+    public byte[] body() {
 	return body;
     }
 

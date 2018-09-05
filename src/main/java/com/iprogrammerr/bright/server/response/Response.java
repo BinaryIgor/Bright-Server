@@ -2,15 +2,16 @@ package com.iprogrammerr.bright.server.response;
 
 import java.util.List;
 
-import com.iprogrammerr.bright.server.model.Header;
+import com.iprogrammerr.bright.server.header.HttpHeader;
 
+//TODO remove enums dependency
 public interface Response {
 
-    int getResponseCode();
+    int responseCode();
 
-    List<Header> getHeaders();
+    List<HttpHeader> headers();
+    
+    boolean hadBody();
 
-    boolean hasBody();
-
-    byte[] getBody();
+    byte[] body();
 }

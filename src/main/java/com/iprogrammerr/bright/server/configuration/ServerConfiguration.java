@@ -1,6 +1,13 @@
 package com.iprogrammerr.bright.server.configuration;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+
+import com.iprogrammerr.bright.server.header.AccessControlAllowHeadersHeader;
+import com.iprogrammerr.bright.server.header.AccessControlAllowMethodsHeader;
+import com.iprogrammerr.bright.server.header.AccessControlAllowOriginHeader;
+import com.iprogrammerr.bright.server.header.Header;
 
 public class ServerConfiguration {
 
@@ -22,31 +29,39 @@ public class ServerConfiguration {
 	allowedHeaders = properties.getProperty("allowedHeaders", "*");
     }
 
-    public String getContextPath() {
+    public String contextPath() {
 	return contextPath;
     }
 
-    public int getPort() {
+    public int port() {
 	return port;
     }
 
-    public int getTimeOutMillis() {
+    public int timeOutMillis() {
 	return timeOutMillis;
     }
 
-    public boolean isAddCorsHeaders() {
+    public boolean addCorsHeaders() {
 	return addCorsHeaders;
     }
 
-    public String getAllowedOrigin() {
+    public List<Header> corsHeaders() {
+	List<Header> corsHeaders = new ArrayList<>();
+	corsHeaders.add(new AccessControlAllowHeadersHeader(allowedHeaders));
+	corsHeaders.add(new AccessControlAllowMethodsHeader(allowedMethods));
+	corsHeaders.add(new AccessControlAllowOriginHeader(allowedOrigin));
+	return corsHeaders;
+    }
+
+    public String allowedOrigin() {
 	return allowedOrigin;
     }
 
-    public String getAllowedMethods() {
+    public String allowedMethods() {
 	return allowedMethods;
     }
 
-    public String getAllowedHeaders() {
+    public String allowedHeaders() {
 	return allowedHeaders;
     }
 

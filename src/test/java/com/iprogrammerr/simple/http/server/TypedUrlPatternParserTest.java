@@ -7,16 +7,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.iprogrammerr.bright.server.model.Pairs;
-import com.iprogrammerr.bright.server.parser.TypedUrlPatternParser;
+import com.iprogrammerr.bright.server.pattern.TypedUrlPattern;
 
 public class TypedUrlPatternParserTest {
 
     private static final double DELTA = 10e-6;
-    private TypedUrlPatternParser urlPatternParser;
+    private TypedUrlPattern urlPatternParser;
 
     @Before
     public void setup() {
-	urlPatternParser = new TypedUrlPatternParser();
+	urlPatternParser = new TypedUrlPattern();
     }
 
 

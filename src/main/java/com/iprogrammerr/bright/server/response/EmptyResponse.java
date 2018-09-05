@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.constants.ResponseCode;
-import com.iprogrammerr.bright.server.model.Header;
+import com.iprogrammerr.bright.server.header.HttpHeader;
 
 public class EmptyResponse implements Response {
 
@@ -20,22 +20,22 @@ public class EmptyResponse implements Response {
     }
 
     @Override
-    public int getResponseCode() {
+    public int responseCode() {
 	return responseCode;
     }
 
     @Override
-    public List<Header> getHeaders() {
+    public List<HttpHeader> headers() {
 	return new ArrayList<>();
     }
 
     @Override
-    public boolean hasBody() {
+    public boolean hadBody() {
 	return false;
     }
 
     @Override
-    public byte[] getBody() {
+    public byte[] body() {
 	return new byte[0];
     }
 }
