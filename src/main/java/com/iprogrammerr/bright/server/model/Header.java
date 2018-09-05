@@ -34,6 +34,18 @@ public class Header {
     public String getValue() {
 	return value;
     }
+    
+    public boolean isContentLength() {
+	if (!key.equalsIgnoreCase("Content-Length")) {
+	    return false;
+	}
+	try {
+	    Integer.parseInt(value);
+	    return true;
+	} catch (NumberFormatException exception) {
+	    return false;
+	}
+    }
 
     @Override
     public String toString() {

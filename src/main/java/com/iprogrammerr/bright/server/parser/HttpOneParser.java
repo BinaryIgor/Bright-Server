@@ -47,7 +47,6 @@ public class HttpOneParser implements RequestResponseParser {
 	this(serverConfiguration, new ArrayList<>());
     }
 
-    //TODO checking left bytes of body
     @Override
     public Request read(InputStream inputStream) throws IOException {
 	String[] requestLines = readRequest(inputStream);
@@ -58,19 +57,43 @@ public class HttpOneParser implements RequestResponseParser {
 	String path = readPath(requestLines[0]);
 	List<Header> headers = new ArrayList<>();
 	int i;
+	int bodyBytes = 0;
 	for (i = 1; i < requestLines.length; i++) {
 	    String line = requestLines[i];
 	    if (line.isEmpty() || line.equals(HEADERS_BODY_PARSED_SEPARATOR)) {
 		break;
 	    }
-	    headers.add(readHeader(line));
+	    Header header = readHeader(line);
+	    if (header.isContentLength()) {
+		bodyBytes = bodyLength(header);
+	    }
+	    headers.add(header);
 	}
-	byte[] body = new byte[0];
-	if ((i + 1) < requestLines.length && requestLines[i].equals(HEADERS_BODY_PARSED_SEPARATOR)) {
-	    body = requestLines[i+1].getBytes();
+	if (bodyBytes == 0) {
+	    return new Request(method, path, headers);
 	}
+	byte[] partOfTheBody;
+	if ((i + 1) < requestLines.length) {
+	    partOfTheBody = requestLines[i + 1].getBytes();
+	} else {
+	    partOfTheBody = new byte[0];
+	}
+	if (partOfTheBody.length == bodyBytes) {
+	    return new Request(method, path, headers, partOfTheBody);
+	}
+	byte[] body = readBody(inputStream, partOfTheBody, bodyBytes);
 	return new Request(method, path, headers, body);
     }
+    
+    private int bodyLength(Header header) {
+	try {
+	    int bodyLength = Integer.parseInt(header.getValue());
+	    return bodyLength > 0 ? bodyLength : 0;
+	} catch (NumberFormatException exception) {
+	    return  0;
+	}
+    }
+
 
     private String[] readRequest(InputStream inputStream) throws IOException {
 	byte[] rawRequest = readPacket(inputStream);
@@ -78,12 +101,32 @@ public class HttpOneParser implements RequestResponseParser {
 	return request.split(NEW_LINE_SEPARATOR);
     }
     
+    private byte[] readBody(InputStream inputStream, byte[] partOfTheBody, int bodyBytes) throws IOException{
+	List<byte[]> bodyParts = new ArrayList<>();
+	if (partOfTheBody.length > 0) {
+	    bodyParts.add(partOfTheBody);
+	}
+	int toReadBytes = bodyBytes - partOfTheBody.length;
+	if (toReadBytes < 1) {
+	    return partOfTheBody;
+	}
+	int bytesRead = partOfTheBody.length;
+	while (bytesRead != bodyBytes) {
+	    byte[] packet = readPacket(inputStream);
+	    bodyParts.add(packet);
+	    bytesRead += packet.length;
+	}
+	if (bodyParts.size() == 1) {
+	    return bodyParts.get(0);
+	}
+	return concatenateBytes(bodyParts);
+    }
+
     private byte[] readPacket(InputStream inputStream) throws IOException {
 	int bytesAvailable = inputStream.available();
 	if (bytesAvailable == 0) {
-	    bytesAvailable = 2056;
+	    bytesAvailable = 1024;
 	}
-	System.out.println(bytesAvailable);
 	byte[] buffer = new byte[bytesAvailable];
 	int bytesRead = inputStream.read(buffer);
 	if (bytesRead <= 0) {
@@ -93,12 +136,11 @@ public class HttpOneParser implements RequestResponseParser {
 	    return buffer;
 	}
 	byte[] readBytes = new byte[bytesRead];
-	for (int i = 0; i < bytesRead; i ++) {
+	for (int i = 0; i < bytesRead; i++) {
 	    readBytes[i] = buffer[i];
 	}
 	return readBytes;
     }
-     
 
     private byte[] concatenateBytes(List<byte[]> toConcatBytesArrays) throws IOException {
 	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -107,7 +149,6 @@ public class HttpOneParser implements RequestResponseParser {
 	}
 	return outputStream.toByteArray();
     }
-    
 
     private String readMethod(String firstLine) {
 	int indexOfSeparator = firstLine.indexOf("/");
@@ -132,7 +173,7 @@ public class HttpOneParser implements RequestResponseParser {
     private Header readHeader(String headerToParse) {
 	String[] keyValue = headerToParse.split(HEADER_KEY_VALUE_SEPARATOR);
 	if (keyValue.length < 2) {
-	    throw new RequestException();
+	    return new Header("super", "super");
 	}
 	return new Header(keyValue[0].trim(), keyValue[1].trim());
     }

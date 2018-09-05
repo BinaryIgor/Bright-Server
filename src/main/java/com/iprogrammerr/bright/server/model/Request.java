@@ -19,6 +19,10 @@ public class Request {
 	this.headers = headers;
 	this.body = body;
     }
+    
+    public Request(String method, String path, List<Header> headers) {
+	this(method, path, headers, new byte[0]);
+    }
 
     public String getMethod() {
 	return method;
