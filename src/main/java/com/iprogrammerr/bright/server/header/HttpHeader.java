@@ -26,7 +26,7 @@ public class HttpHeader implements Header {
     }
     
     @Override
-    public String toString() {
+    public String writable() {
 	return key + ": " + value;
     }
 

@@ -22,5 +22,10 @@ public abstract class HeaderEnvelope implements Header{
     public boolean is(String key) {
 	return header.is(key);
     }
+    
+    @Override
+    public String writable() {
+	return header.writable();
+    }
 
 }

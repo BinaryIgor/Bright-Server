@@ -2,7 +2,7 @@ package com.iprogrammerr.bright.server.response;
 
 import java.util.List;
 
-import com.iprogrammerr.bright.server.header.HttpHeader;
+import com.iprogrammerr.bright.server.header.Header;
 
 public abstract class ResponseEnvelope implements Response {
 
@@ -13,22 +13,22 @@ public abstract class ResponseEnvelope implements Response {
     }
     
     @Override
-    public int responseCode() {
+    public final int responseCode() {
 	return response.responseCode();
     }
 
     @Override
-    public List<HttpHeader> headers() {
+    public final List<Header> headers() {
 	return response.headers();
     }
 
     @Override
-    public boolean hadBody() {
+    public final boolean hadBody() {
 	return response.hadBody();
     }
 
     @Override
-    public byte[] body() {
+    public final byte[] body() {
 	return response.body();
     }
 

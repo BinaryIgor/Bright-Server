@@ -12,23 +12,25 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
-import com.iprogrammerr.bright.server.constants.HeaderKey;
 import com.iprogrammerr.bright.server.constants.RequestMethod;
-import com.iprogrammerr.bright.server.constants.ResponseCode;
 import com.iprogrammerr.bright.server.exception.InitializationException;
 import com.iprogrammerr.bright.server.exception.ObjectNotFoundException;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
-import com.iprogrammerr.bright.server.header.HttpHeader;
+import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.protocol.HttpOneProtocol;
 import com.iprogrammerr.bright.server.protocol.RequestResponseProtocol;
+import com.iprogrammerr.bright.server.request.ConfigurableCors;
+import com.iprogrammerr.bright.server.request.Cors;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
-import com.iprogrammerr.bright.server.response.EmptyResponse;
+import com.iprogrammerr.bright.server.response.ForbiddenResponse;
+import com.iprogrammerr.bright.server.response.InternalServerErrorResponse;
+import com.iprogrammerr.bright.server.response.NotFoundResponse;
+import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
 
 public class Server {
 
-    private static final String ALLOW_ALL = "*";
     private ServerSocket serverSocket;
     private Executor executor;
     private ServerConfiguration serverConfiguration;
@@ -36,10 +38,10 @@ public class Server {
     private List<ConditionalRespondent> respondents;
     private List<ConditionalRequestFilter> primaryRequestFilters;
     private List<ConditionalRequestFilter> requestFilters;
+    private Cors cors;
 
-    public Server(ServerConfiguration serverConfiguration, Executor executor,
-	    RequestResponseProtocol protocol, List<ConditionalRespondent> respondents,
-	    List<ConditionalRequestFilter> requestFilters) {
+    public Server(ServerConfiguration serverConfiguration, Executor executor, RequestResponseProtocol protocol,
+	    List<ConditionalRespondent> respondents, List<ConditionalRequestFilter> requestFilters, Cors cors) {
 	try {
 	    this.serverSocket = new ServerSocket(serverConfiguration.port());
 	} catch (IOException exception) {
@@ -53,40 +55,45 @@ public class Server {
 	this.requestFilters = requestFilters.stream().filter(requestFilter -> !requestFilter.isPrimary())
 		.collect(Collectors.toList());
 	this.serverConfiguration = serverConfiguration;
+	this.cors = cors;
     }
 
     public Server(ServerConfiguration serverConfiguration, RequestResponseProtocol requestReponseParser,
 	    List<ConditionalRespondent> respondents, List<ConditionalRequestFilter> requestFilters) {
-	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseParser, respondents,
-		requestFilters);
+	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseParser, respondents, requestFilters,
+		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, List<ConditionalRespondent> respondents,
 	    List<ConditionalRequestFilter> requestFilters) {
-	this(serverConfiguration, Executors.newCachedThreadPool(), new HttpOneProtocol(serverConfiguration),
-		respondents, requestFilters);
+	this(serverConfiguration, Executors.newCachedThreadPool(),
+		new HttpOneProtocol(serverConfiguration.corsHeaders()), respondents, requestFilters,
+		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, List<ConditionalRespondent> respondents) {
-	this(serverConfiguration, Executors.newCachedThreadPool(), new HttpOneProtocol(serverConfiguration),
-		respondents, new ArrayList<>());
+	this(serverConfiguration, Executors.newCachedThreadPool(),
+		new HttpOneProtocol(serverConfiguration.corsHeaders()), respondents, new ArrayList<>(),
+		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, List<ConditionalRespondent> respondents,
-	    List<ConditionalRequestFilter> requestFilters, List<HttpHeader> additionalResponeHeaders) {
+	    List<ConditionalRequestFilter> requestFilters, List<Header> additionalResponeHeaders) {
 	this(serverConfiguration, Executors.newCachedThreadPool(),
-		new HttpOneProtocol(serverConfiguration, additionalResponeHeaders), respondents, requestFilters);
+		new HttpOneProtocol(serverConfiguration, additionalResponeHeaders), respondents, requestFilters,
+		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, Executor executor, List<ConditionalRespondent> respondents,
 	    List<ConditionalRequestFilter> requestFilters) {
-	this(serverConfiguration, executor, new HttpOneProtocol(serverConfiguration), respondents, requestFilters);
+	this(serverConfiguration, executor, new HttpOneProtocol(serverConfiguration), respondents, requestFilters,
+		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, Executor executor, List<ConditionalRespondent> respondents,
-	    List<ConditionalRequestFilter> requestFilters, List<HttpHeader> additionalResponseHeaders) {
+	    List<ConditionalRequestFilter> requestFilters, List<Header> additionalResponseHeaders) {
 	this(serverConfiguration, executor, new HttpOneProtocol(serverConfiguration, additionalResponseHeaders),
-		respondents, requestFilters);
+		respondents, requestFilters, new ConfigurableCors(serverConfiguration));
     }
 
     public void start() {
@@ -123,7 +130,7 @@ public class Server {
 
     public Response respond(Request request) {
 	if (!request.url().startsWith(serverConfiguration.contextPath())) {
-	    return new EmptyResponse(ResponseCode.NOT_FOUND);
+	    return new NotFoundResponse();
 	}
 	try {
 	    if (RequestMethod.OPTIONS.equalsByValue(request.method()) && serverConfiguration.addCorsHeaders()) {
@@ -137,9 +144,9 @@ public class Server {
 	    }
 	    return respondent.respond(request);
 	} catch (ObjectNotFoundException exception) {
-	    return new EmptyResponse(ResponseCode.NOT_FOUND);
+	    return new NotFoundResponse();
 	} catch (Exception exception) {
-	    return new EmptyResponse(ResponseCode.INTERNAL_SERVER_ERROR);
+	    return new InternalServerErrorResponse();
 	}
     }
 
@@ -161,7 +168,7 @@ public class Server {
     }
 
     private Response runFilters(Request request, List<ConditionalRequestFilter> requestFilters) {
-	Response response = new EmptyResponse(ResponseCode.OK);
+	Response response = new OkResponse();
 	for (ConditionalRequestFilter filter : requestFilters) {
 	    response = filter.filter(request);
 	    if (!isResponseCodeOk(response.responseCode())) {
@@ -182,28 +189,10 @@ public class Server {
     }
 
     private Response handleOptionsRequest(Request request) {
-	boolean haveRequiredHeaders = request.hasHeader(HeaderKey.ORIGIN.getValue())
-		&& request.hasHeader(HeaderKey.ACCESS_CONTROL_REQUEST_METHOD.getValue())
-		&& request.hasHeader(HeaderKey.ACCESS_CONTROL_REQUEST_HEADERS.getValue());
-	if (!haveRequiredHeaders) {
-	    return new EmptyResponse(ResponseCode.FORBIDDEN);
+	if (!cors.validate(request)) {
+	    return new ForbiddenResponse();
 	}
-	boolean originAllowed = serverConfiguration.allowedOrigin().equals(ALLOW_ALL)
-		|| serverConfiguration.allowedOrigin().equals(request.header(HeaderKey.ORIGIN.getValue()));
-	if (!originAllowed) {
-	    return new EmptyResponse(ResponseCode.FORBIDDEN);
-	}
-	boolean methodAllowed = serverConfiguration.allowedMethods().equals(ALLOW_ALL) || serverConfiguration
-		.allowedMethods().contains(request.header(HeaderKey.ACCESS_CONTROL_REQUEST_METHOD.getValue()));
-	if (!methodAllowed) {
-	    return new EmptyResponse(ResponseCode.FORBIDDEN);
-	}
-	boolean headersAllowed = serverConfiguration.allowedHeaders().equals(ALLOW_ALL) || serverConfiguration
-		.allowedHeaders().contains(request.header(HeaderKey.ACCESS_CONTROL_REQUEST_METHOD.getValue()));
-	if (!headersAllowed) {
-	    return new EmptyResponse(ResponseCode.FORBIDDEN);
-	}
-	return new EmptyResponse(ResponseCode.OK);
+	return new OkResponse();
     }
 
     private boolean isResponseCodeOk(int responseCode) {

@@ -1,22 +1,27 @@
 package com.iprogrammerr.bright.server.response;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.constants.ResponseCode;
-import com.iprogrammerr.bright.server.header.HttpHeader;
+import com.iprogrammerr.bright.server.header.Header;
 
 public class EmptyResponse implements Response {
 
     private int responseCode;
+    private List<Header> headers;
 
     public EmptyResponse(int responseCode) {
-	this.responseCode = responseCode;
+	this(responseCode, new ArrayList<>());
     }
 
+    public EmptyResponse(int responseCode, Header... headers) {
+	this(responseCode, Arrays.asList(headers));
+    }
 
-    public EmptyResponse(ResponseCode responseCode) {
-	this(responseCode.getValue());
+    public EmptyResponse(int responseCode, List<Header> headers) {
+	this.responseCode = responseCode;
+	this.headers = headers;
     }
 
     @Override
@@ -25,8 +30,8 @@ public class EmptyResponse implements Response {
     }
 
     @Override
-    public List<HttpHeader> headers() {
-	return new ArrayList<>();
+    public List<Header> headers() {
+	return headers;
     }
 
     @Override

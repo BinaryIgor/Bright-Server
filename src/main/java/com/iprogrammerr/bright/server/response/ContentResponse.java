@@ -1,36 +1,44 @@
 package com.iprogrammerr.bright.server.response;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.constants.HeaderKey;
-import com.iprogrammerr.bright.server.constants.ResponseCode;
-import com.iprogrammerr.bright.server.header.HttpHeader;
+import com.iprogrammerr.bright.server.header.ContentLengthHeader;
+import com.iprogrammerr.bright.server.header.Header;
 
 public class ContentResponse implements Response {
 
     private int responseCode;
     private byte[] body;
-    private HttpHeader contentTypeHeader;
+    private List<Header> headers;
 
-    public ContentResponse(int responseCode, String contentType, byte[] body) {
-	this.responseCode = responseCode;
-	this.body = body;
-	this.contentTypeHeader = new HttpHeader(HeaderKey.CONTENT_TYPE, contentType);
+   
+    public ContentResponse(int responseCode, Header contentTypeHeader, byte[] body) {
+	this(responseCode, contentTypeHeader, body, new ArrayList<>());
     }
     
-    public ContentResponse(ResponseCode responseCode, String contentType, byte[] body) {
-	this(responseCode.getValue(), contentType, body);
+    public ContentResponse(int responseCode, Header contentTypeHeader, byte[] body, Header...headers) {
+	this(responseCode, contentTypeHeader, body, Arrays.asList(headers));
     }
-
+    
+    public ContentResponse(int responseCode, Header contentTypeHeader, byte[] body, List<Header> headers) {
+	this.responseCode = responseCode;
+	this.body = body;
+	this.headers = headers;
+	this.headers.add(contentTypeHeader);
+	this.headers.add(new ContentLengthHeader(body.length));
+    }
+    
+    
     @Override
     public int responseCode() {
 	return responseCode;
     }
 
     @Override
-    public List<HttpHeader> headers() {
-	return Collections.singletonList(contentTypeHeader);
+    public List<Header> headers() {
+	return headers;
     }
 
     @Override

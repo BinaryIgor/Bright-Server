@@ -44,6 +44,10 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	}
     }
     
+    public HttpOneProtocol(ServerConfiguration serverConfiguration) {
+	this(serverConfiguration, new ArrayList<>());
+    }
+    
     public HttpOneProtocol(List<Header> additionalResponseHeaders) {
 	this.additionalResponseHeaders = additionalResponseHeaders;
     }
