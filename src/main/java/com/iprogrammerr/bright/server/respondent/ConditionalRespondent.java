@@ -7,5 +7,5 @@ public interface ConditionalRespondent {
 
     boolean canRespond(Request request);
 
-    Response respond(Request request);
+    Response respond(Request request) throws Exception;
 }

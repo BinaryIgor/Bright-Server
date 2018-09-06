@@ -8,9 +8,9 @@ import java.util.Properties;
 
 import com.iprogrammerr.bright.server.Server;
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
-import com.iprogrammerr.bright.server.constants.RequestMethod;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
 import com.iprogrammerr.bright.server.filter.HttpRequestFilter;
+import com.iprogrammerr.bright.server.request.RequestMethod;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
@@ -21,25 +21,23 @@ public class ServerApplication {
     public static void main(String[] args) throws IOException {
 	ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
 
-
 	List<ConditionalRespondent> respondents = new ArrayList<>();
 	ConditionalRespondent helloResolver = new HttpRespondent("hello/{id:int}", RequestMethod.GET,
 		new HelloRespondent());
-	ConditionalRespondent complexResolver = new HttpRespondent("complex/{id:long}/search?message=string&scale=float", RequestMethod.POST,
-		new ComplexUrlRespondent());
+	ConditionalRespondent complexResolver = new HttpRespondent(
+		"complex/{id:long}/search?message=string&scale=float", RequestMethod.POST, new ComplexUrlRespondent());
 	respondents.add(helloResolver);
 	respondents.add(complexResolver);
-	
+
 	List<ConditionalRequestFilter> requestFilters = new ArrayList<>();
 	ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),
 		new AuthorizationFilter());
 	ConditionalRequestFilter authorizationSecondFilter = new HttpRequestFilter("hello/*",
-		new ListOfRequestMethodRule(RequestMethod.GET, RequestMethod.POST), 
+		new ListOfRequestMethodRule(RequestMethod.GET, RequestMethod.POST),
 		new AuthorizationSecondFreePassFilter());
 	requestFilters.add(authorizationFilter);
 	requestFilters.add(authorizationSecondFilter);
 
-	
 	Server server = new Server(serverConfiguration, respondents, requestFilters);
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 	    server.stop();

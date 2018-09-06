@@ -12,7 +12,7 @@ public class AuthorizationFilter implements RequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Override
-    public Response filter(Request request) {
+    public Response filter(Request request) throws Exception {
 	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
 	    System.out.println("There is no authorization header!");
 	    return new ForbiddenResponse();

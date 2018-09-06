@@ -1,5 +1,6 @@
 package com.iprogrammerr.bright.server.request;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.exception.ObjectNotFoundException;
@@ -54,7 +55,7 @@ public class ParsedRequest implements Request {
     }
 
     @Override
-    public String header(String key) {
+    public String header(String key) throws Exception {
 	for (Header header : headers) {
 	    if (header.is(key)) {
 		return header.value();
@@ -68,7 +69,13 @@ public class ParsedRequest implements Request {
 	if (url.startsWith(contextPath) && !contextPath.isEmpty()) {
 	    url = url.replace(contextPath + "/", "");
 	}
-	
+
+    }
+
+    @Override
+    public String toString() {
+	return "ParsedRequest [method=" + method + ", url=" + url + ", headers=" + headers + ", body="
+		+ Arrays.toString(body) + "]";
     }
 
 }

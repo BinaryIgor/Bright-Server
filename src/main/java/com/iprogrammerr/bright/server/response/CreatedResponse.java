@@ -8,7 +8,7 @@ import com.iprogrammerr.bright.server.header.Header;
 public class CreatedResponse extends ResponseEnvelope {
 
     private static final int RESPONSE_CODE = 201;
-    
+
     public CreatedResponse() {
 	super(new EmptyResponse(RESPONSE_CODE));
     }
@@ -20,13 +20,13 @@ public class CreatedResponse extends ResponseEnvelope {
     public CreatedResponse(Header contentTypeHeader, byte[] body) {
 	super(new ContentResponse(RESPONSE_CODE, contentTypeHeader, body));
     }
-    
+
     public CreatedResponse(Header contentTypeHeader, byte[] body, List<Header> headers) {
 	super(new ContentResponse(RESPONSE_CODE, contentTypeHeader, body, headers));
     }
-    
+
     public CreatedResponse(Header contentTypeHeader, byte[] body, Header... headers) {
 	this(contentTypeHeader, body, Arrays.asList(headers));
     }
-    
+
 }

@@ -2,12 +2,12 @@ package com.iprogrammerr.bright.server.respondent;
 
 import java.util.ArrayList;
 
-import com.iprogrammerr.bright.server.constants.RequestMethod;
 import com.iprogrammerr.bright.server.exception.PreConditionRequiredException;
 import com.iprogrammerr.bright.server.model.Pairs;
 import com.iprogrammerr.bright.server.pattern.TypedUrlPattern;
 import com.iprogrammerr.bright.server.pattern.UrlPattern;
 import com.iprogrammerr.bright.server.request.Request;
+import com.iprogrammerr.bright.server.request.RequestMethod;
 import com.iprogrammerr.bright.server.request.ResolvedRequest;
 import com.iprogrammerr.bright.server.response.Response;
 
@@ -36,7 +36,7 @@ public class HttpRespondent implements ConditionalRespondent {
     }
 
     @Override
-    public Response respond(Request request) {
+    public Response respond(Request request) throws Exception {
 	if (!canRespond(request)) {
 	    throw new PreConditionRequiredException("Request have to be resolved before it can be handled");
 	}

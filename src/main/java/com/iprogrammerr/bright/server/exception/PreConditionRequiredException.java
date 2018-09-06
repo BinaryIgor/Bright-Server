@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.exception;
 
-public class PreConditionRequiredException extends RuntimeException {
+public class PreConditionRequiredException extends Exception {
 
     public PreConditionRequiredException(String message) {
 	super(message);

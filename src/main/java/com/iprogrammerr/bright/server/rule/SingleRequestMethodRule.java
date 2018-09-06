@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.rule;
 
-import com.iprogrammerr.bright.server.constants.RequestMethod;
+import com.iprogrammerr.bright.server.request.RequestMethod;
 
 public class SingleRequestMethodRule implements RequestMethodRule {
 

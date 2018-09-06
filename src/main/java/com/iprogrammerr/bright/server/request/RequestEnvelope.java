@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.iprogrammerr.bright.server.header.Header;
 
-public abstract class RequestEnvelope implements Request{
+public abstract class RequestEnvelope implements Request {
 
     private Request request;
-    
+
     public RequestEnvelope(Request request) {
 	this.request = request;
     }
@@ -33,7 +33,7 @@ public abstract class RequestEnvelope implements Request{
     }
 
     @Override
-    public String header(String key) {
+    public String header(String key) throws Exception {
 	return request.header(key);
     }
 

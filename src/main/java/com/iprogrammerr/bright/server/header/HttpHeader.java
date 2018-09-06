@@ -24,10 +24,15 @@ public class HttpHeader implements Header {
     public boolean is(String key) {
 	return this.key.equalsIgnoreCase(key);
     }
-    
+
     @Override
     public String writable() {
 	return key + ": " + value;
+    }
+
+    @Override
+    public String toString() {
+	return writable();
     }
 
 }

@@ -42,7 +42,7 @@ public class ContentResponse implements Response {
     }
 
     @Override
-    public boolean hadBody() {
+    public boolean hasBody() {
 	return true;
     }
 

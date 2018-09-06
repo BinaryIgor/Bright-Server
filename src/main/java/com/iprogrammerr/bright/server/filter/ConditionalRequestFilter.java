@@ -9,5 +9,5 @@ public interface ConditionalRequestFilter {
 
     boolean canFilter(Request request);
 
-    Response filter(Request request);
+    Response filter(Request request) throws Exception;
 }

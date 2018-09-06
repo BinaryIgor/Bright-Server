@@ -14,9 +14,9 @@ public interface Request {
 
     boolean hasHeader(String key);
 
-    String header(String key);
+    String header(String key) throws Exception;
 
     byte[] body();
-    
+
     void removeContextPath(String contextPath);
 }

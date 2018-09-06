@@ -38,7 +38,7 @@ public class HttpRequestFilter implements ConditionalRequestFilter {
     }
 
     @Override
-    public Response filter(Request request) {
+    public Response filter(Request request) throws Exception {
 	if (!canFilter(request)) {
 	    throw new PreConditionRequiredException("Request must be matched before it can be filtered");
 	}

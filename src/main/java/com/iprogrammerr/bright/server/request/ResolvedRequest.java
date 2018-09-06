@@ -10,16 +10,16 @@ public class ResolvedRequest extends RequestEnvelope implements MatchedRequest {
     public ResolvedRequest(Request request, Pairs parameters, Pairs pathVariables) {
 	super(request);
 	this.parameters = parameters;
-	this.parameters = pathVariables;
+	this.pathVariables = pathVariables;
     }
 
     @Override
-    public <T> T parameter(String key, Class<T> clazz) {
+    public <T> T parameter(String key, Class<T> clazz) throws Exception {
 	return parameters.get(key, clazz);
     }
 
     @Override
-    public <T> T pathVariable(String key, Class<T> clazz) {
+    public <T> T pathVariable(String key, Class<T> clazz) throws Exception {
 	return pathVariables.get(key, clazz);
     }
 

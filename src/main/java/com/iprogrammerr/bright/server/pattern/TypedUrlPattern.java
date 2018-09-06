@@ -20,29 +20,33 @@ public class TypedUrlPattern implements UrlPattern {
     private static final String URL_PATTERN_PATH_VARIABLE_END = "}";
     private static final String URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
     private final String urlPattern;
-    
+
     public TypedUrlPattern(String urlPattern) {
 	this.urlPattern = urlPattern;
     }
 
     @Override
     public boolean match(String url) {
-	Map<String, Class> requiredUrlPathVariables = readRequiredUrlPathVariables();
-	boolean haveRequiredUrlPathVariables = requiredUrlPathVariables.isEmpty() 
-		 || checkVariables(requiredUrlPathVariables, readPathVariables(url));
-	if (!haveRequiredUrlPathVariables) {
-	    return false;
-	}
-	Map<String, Class> requiredUrlParameters = readRequiredUrlParameters();
-	boolean haveRequiredUrlParameters = requiredUrlParameters.isEmpty()
-		|| checkVariables(requiredUrlParameters, readParameters(url));
-	if (!haveRequiredUrlParameters) {
+	try {
+	    Map<String, Class> requiredUrlPathVariables = readRequiredUrlPathVariables();
+	    boolean haveRequiredUrlPathVariables = requiredUrlPathVariables.isEmpty()
+		    || checkVariables(requiredUrlPathVariables, readPathVariables(url));
+	    if (!haveRequiredUrlPathVariables) {
+		return false;
+	    }
+	    Map<String, Class> requiredUrlParameters = readRequiredUrlParameters();
+	    boolean haveRequiredUrlParameters = requiredUrlParameters.isEmpty()
+		    || checkVariables(requiredUrlParameters, readParameters(url));
+	    if (!haveRequiredUrlParameters) {
+		return false;
+	    }
+	} catch (Exception exception) {
 	    return false;
 	}
 	return matchOmittingPathVariablesAndParameters(url);
     }
 
-    private boolean checkVariables( Map<String, Class> requiredVariables, Pairs variables) {
+    private boolean checkVariables(Map<String, Class> requiredVariables, Pairs variables) {
 	for (Map.Entry<String, Class> requiredVariable : requiredVariables.entrySet()) {
 	    if (!variables.has(requiredVariable.getKey(), requiredVariable.getValue())) {
 		return false;
@@ -78,7 +82,7 @@ public class TypedUrlPattern implements UrlPattern {
 	return url;
     }
 
-    private Map<String, Class> readRequiredUrlPathVariables() {
+    private Map<String, Class> readRequiredUrlPathVariables() throws Exception {
 	Map<String, String> keyTypeVariables = readKeyTypeVariablesFromUrlPattern();
 	if (keyTypeVariables.isEmpty()) {
 	    return new HashMap<>();
@@ -102,7 +106,6 @@ public class TypedUrlPattern implements UrlPattern {
 	return keyTypeUrlPatternVariables;
     }
 
-
     @Override
     public Pairs readPathVariables(String url) {
 	List<Pair> pathVariables = new ArrayList<>();
@@ -125,7 +128,7 @@ public class TypedUrlPattern implements UrlPattern {
 	return new Pairs(pathVariables);
     }
 
-    private Pair readPathVariable(String urlSegment, String urlPatternSegment) {
+    private Pair readPathVariable(String urlSegment, String urlPatternSegment) throws Exception {
 	String rawPathVariable = readRawPathVariable(urlPatternSegment);
 	if (rawPathVariable.isEmpty()) {
 	    throw new CreationException();
@@ -166,8 +169,7 @@ public class TypedUrlPattern implements UrlPattern {
 	return urlPatternSegment.substring(1, urlPatternSegment.length() - 1);
     }
 
-
-    private Map<String, Class> readRequiredUrlParameters() {
+    private Map<String, Class> readRequiredUrlParameters() throws Exception {
 	Map<String, String> rawParameters = readRawParameters(urlPattern);
 	if (rawParameters.isEmpty()) {
 	    return new HashMap<>();
@@ -175,11 +177,11 @@ public class TypedUrlPattern implements UrlPattern {
 	return convertRawToType(rawParameters);
     }
 
-    private Map<String, Class> convertRawToType(Map<String, String> rawMap) {
+    private Map<String, Class> convertRawToType(Map<String, String> rawMap) throws Exception {
 	Map<String, Class> typedMap = new HashMap<>();
 	try {
 	    for (Map.Entry<String, String> rawEntry : rawMap.entrySet()) {
-		typedMap.put(rawEntry.getKey(), getVariableType(rawEntry.getValue()).getType());
+		typedMap.put(rawEntry.getKey(), getVariableType(rawEntry.getValue()).type());
 	    }
 	} catch (CreationException exception) {
 	    exception.printStackTrace();
@@ -188,7 +190,7 @@ public class TypedUrlPattern implements UrlPattern {
 	return typedMap;
     }
 
-    private UrlPatternType getVariableType(String value) {
+    private UrlPatternType getVariableType(String value) throws Exception {
 	if (UrlPatternType.BOOLEAN.equalsByValue(value)) {
 	    return UrlPatternType.BOOLEAN;
 	}
@@ -236,7 +238,7 @@ public class TypedUrlPattern implements UrlPattern {
 	    return new Pairs(parameters);
 	}
 	try {
-	    for(Map.Entry<String, String> requiredUrlParameterEntry : requiredUrlParameters.entrySet()) {
+	    for (Map.Entry<String, String> requiredUrlParameterEntry : requiredUrlParameters.entrySet()) {
 		String toParseValue = rawParameters.getOrDefault(requiredUrlParameterEntry.getKey(), "");
 		Object value = getUrlPatternTypeValue(requiredUrlParameterEntry.getValue(), toParseValue);
 		parameters.add(new Pair(requiredUrlParameterEntry.getKey(), value));

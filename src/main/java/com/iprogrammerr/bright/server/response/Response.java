@@ -11,7 +11,7 @@ public interface Response {
 
     List<Header> headers();
 
-    boolean hadBody();
+    boolean hasBody();
 
     byte[] body();
 }

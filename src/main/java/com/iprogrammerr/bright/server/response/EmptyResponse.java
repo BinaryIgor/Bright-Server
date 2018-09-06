@@ -35,7 +35,7 @@ public class EmptyResponse implements Response {
     }
 
     @Override
-    public boolean hadBody() {
+    public boolean hasBody() {
 	return false;
     }
 

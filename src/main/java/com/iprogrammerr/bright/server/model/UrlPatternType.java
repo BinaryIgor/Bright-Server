@@ -13,11 +13,11 @@ public enum UrlPatternType {
 	this.type = type;
     }
 
-    public String getValue() {
+    public String value() {
 	return value;
     }
 
-    public Class getType() {
+    public Class type() {
 	return type;
     }
 

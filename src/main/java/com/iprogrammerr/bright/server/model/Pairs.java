@@ -26,7 +26,7 @@ public class Pairs {
 	return false;
     }
 
-    public <T> T get(String key, Class<T> clazz) {
+    public <T> T get(String key, Class<T> clazz) throws Exception {
 	for (Pair pair : pairs) {
 	    if (pair.getKey().equals(key) && pair.getValue().getClass().isAssignableFrom(clazz)) {
 		return (T) pair.getValue();

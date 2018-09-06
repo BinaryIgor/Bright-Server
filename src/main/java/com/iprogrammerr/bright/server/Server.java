@@ -12,8 +12,6 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
-import com.iprogrammerr.bright.server.constants.RequestMethod;
-import com.iprogrammerr.bright.server.exception.InitializationException;
 import com.iprogrammerr.bright.server.exception.ObjectNotFoundException;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
 import com.iprogrammerr.bright.server.header.Header;
@@ -22,6 +20,7 @@ import com.iprogrammerr.bright.server.protocol.RequestResponseProtocol;
 import com.iprogrammerr.bright.server.request.ConfigurableCors;
 import com.iprogrammerr.bright.server.request.Cors;
 import com.iprogrammerr.bright.server.request.Request;
+import com.iprogrammerr.bright.server.request.RequestMethod;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 import com.iprogrammerr.bright.server.response.ForbiddenResponse;
 import com.iprogrammerr.bright.server.response.InternalServerErrorResponse;
@@ -41,12 +40,9 @@ public class Server {
     private Cors cors;
 
     public Server(ServerConfiguration serverConfiguration, Executor executor, RequestResponseProtocol protocol,
-	    List<ConditionalRespondent> respondents, List<ConditionalRequestFilter> requestFilters, Cors cors) {
-	try {
-	    this.serverSocket = new ServerSocket(serverConfiguration.port());
-	} catch (IOException exception) {
-	    throw new InitializationException(exception);
-	}
+	    List<ConditionalRespondent> respondents, List<ConditionalRequestFilter> requestFilters, Cors cors)
+	    throws IOException {
+	this.serverSocket = new ServerSocket(serverConfiguration.port());
 	this.executor = executor;
 	this.protocol = protocol;
 	this.respondents = respondents;
@@ -59,39 +55,39 @@ public class Server {
     }
 
     public Server(ServerConfiguration serverConfiguration, RequestResponseProtocol requestReponseParser,
-	    List<ConditionalRespondent> respondents, List<ConditionalRequestFilter> requestFilters) {
+	    List<ConditionalRespondent> respondents, List<ConditionalRequestFilter> requestFilters) throws IOException {
 	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseParser, respondents, requestFilters,
 		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, List<ConditionalRespondent> respondents,
-	    List<ConditionalRequestFilter> requestFilters) {
+	    List<ConditionalRequestFilter> requestFilters) throws IOException {
 	this(serverConfiguration, Executors.newCachedThreadPool(),
 		new HttpOneProtocol(serverConfiguration.corsHeaders()), respondents, requestFilters,
 		new ConfigurableCors(serverConfiguration));
     }
 
-    public Server(ServerConfiguration serverConfiguration, List<ConditionalRespondent> respondents) {
+    public Server(ServerConfiguration serverConfiguration, List<ConditionalRespondent> respondents) throws IOException {
 	this(serverConfiguration, Executors.newCachedThreadPool(),
 		new HttpOneProtocol(serverConfiguration.corsHeaders()), respondents, new ArrayList<>(),
 		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, List<ConditionalRespondent> respondents,
-	    List<ConditionalRequestFilter> requestFilters, List<Header> additionalResponeHeaders) {
+	    List<ConditionalRequestFilter> requestFilters, List<Header> additionalResponeHeaders) throws IOException {
 	this(serverConfiguration, Executors.newCachedThreadPool(),
 		new HttpOneProtocol(serverConfiguration, additionalResponeHeaders), respondents, requestFilters,
 		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, Executor executor, List<ConditionalRespondent> respondents,
-	    List<ConditionalRequestFilter> requestFilters) {
+	    List<ConditionalRequestFilter> requestFilters) throws IOException {
 	this(serverConfiguration, executor, new HttpOneProtocol(serverConfiguration), respondents, requestFilters,
 		new ConfigurableCors(serverConfiguration));
     }
 
     public Server(ServerConfiguration serverConfiguration, Executor executor, List<ConditionalRespondent> respondents,
-	    List<ConditionalRequestFilter> requestFilters, List<Header> additionalResponseHeaders) {
+	    List<ConditionalRequestFilter> requestFilters, List<Header> additionalResponseHeaders) throws IOException {
 	this(serverConfiguration, executor, new HttpOneProtocol(serverConfiguration, additionalResponseHeaders),
 		respondents, requestFilters, new ConfigurableCors(serverConfiguration));
     }
@@ -116,7 +112,7 @@ public class Server {
 		Request request = protocol.read(inputStream);
 		Response response = respond(request);
 		protocol.write(outputStream, response);
-	    } catch (IOException exception) {
+	    } catch (Exception exception) {
 		exception.printStackTrace();
 	    } finally {
 		try {
@@ -144,13 +140,15 @@ public class Server {
 	    }
 	    return respondent.respond(request);
 	} catch (ObjectNotFoundException exception) {
+	    exception.printStackTrace();
 	    return new NotFoundResponse();
 	} catch (Exception exception) {
+	    exception.printStackTrace();
 	    return new InternalServerErrorResponse();
 	}
     }
 
-    private ConditionalRespondent findRespondent(Request request) {
+    private ConditionalRespondent findRespondent(Request request) throws Exception {
 	for (ConditionalRespondent respondent : respondents) {
 	    if (respondent.canRespond(request)) {
 		return respondent;
@@ -159,7 +157,7 @@ public class Server {
 	throw new ObjectNotFoundException();
     }
 
-    private Response filter(Request request) {
+    private Response filter(Request request) throws Exception {
 	Response response = runFilters(request, primaryRequestFilters);
 	if (!isResponseCodeOk(response.responseCode())) {
 	    return response;
@@ -167,7 +165,7 @@ public class Server {
 	return runFilters(request, getFilters(request));
     }
 
-    private Response runFilters(Request request, List<ConditionalRequestFilter> requestFilters) {
+    private Response runFilters(Request request, List<ConditionalRequestFilter> requestFilters) throws Exception {
 	Response response = new OkResponse();
 	for (ConditionalRequestFilter filter : requestFilters) {
 	    response = filter.filter(request);

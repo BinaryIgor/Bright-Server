@@ -23,8 +23,8 @@ public abstract class ResponseEnvelope implements Response {
     }
 
     @Override
-    public final boolean hadBody() {
-	return response.hadBody();
+    public final boolean hasBody() {
+	return response.hasBody();
     }
 
     @Override
