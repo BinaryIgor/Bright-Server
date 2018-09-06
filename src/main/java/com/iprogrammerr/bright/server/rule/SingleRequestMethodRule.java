@@ -12,7 +12,7 @@ public class SingleRequestMethodRule implements RequestMethodRule {
 
     @Override
     public boolean isCompliant(String requestMethod) {
-	return this.requestMethod.equalsByValue(requestMethod);
+	return this.requestMethod.is(requestMethod);
     }
 
 }

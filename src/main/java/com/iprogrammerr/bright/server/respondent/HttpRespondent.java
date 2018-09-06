@@ -29,7 +29,7 @@ public class HttpRespondent implements ConditionalRespondent {
 
     @Override
     public boolean canRespond(Request request) {
-	if (!requestMethod.equalsByValue(request.method())) {
+	if (!requestMethod.is(request.method())) {
 	    return false;
 	}
 	return urlPattern.match(request.url());

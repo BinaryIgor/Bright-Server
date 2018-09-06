@@ -13,7 +13,7 @@ public class ListOfRequestMethodRule implements RequestMethodRule {
     @Override
     public boolean isCompliant(String requestMethod) {
 	for (RequestMethod method : requestMethods) {
-	    if (method.equalsByValue(requestMethod)) {
+	    if (method.is(requestMethod)) {
 		return true;
 	    }
 	}

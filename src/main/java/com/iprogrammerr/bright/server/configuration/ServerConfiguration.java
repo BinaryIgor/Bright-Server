@@ -9,6 +9,7 @@ import com.iprogrammerr.bright.server.header.AccessControlAllowMethodsHeader;
 import com.iprogrammerr.bright.server.header.AccessControlAllowOriginHeader;
 import com.iprogrammerr.bright.server.header.Header;
 
+//TODO add more logic here
 public class ServerConfiguration {
 
     private String contextPath;

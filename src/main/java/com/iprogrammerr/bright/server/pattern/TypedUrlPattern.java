@@ -8,7 +8,6 @@ import java.util.Map;
 import com.iprogrammerr.bright.server.exception.CreationException;
 import com.iprogrammerr.bright.server.model.Pair;
 import com.iprogrammerr.bright.server.model.Pairs;
-import com.iprogrammerr.bright.server.model.UrlPatternType;
 
 public class TypedUrlPattern implements UrlPattern {
 
@@ -20,9 +19,15 @@ public class TypedUrlPattern implements UrlPattern {
     private static final String URL_PATTERN_PATH_VARIABLE_END = "}";
     private static final String URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
     private final String urlPattern;
+    private Type type;
 
     public TypedUrlPattern(String urlPattern) {
+	this(urlPattern, new UrlPatternType());
+    }
+
+    public TypedUrlPattern(String urlPattern, Type type) {
 	this.urlPattern = urlPattern;
+	this.type = type;
     }
 
     @Override
@@ -138,26 +143,7 @@ public class TypedUrlPattern implements UrlPattern {
 	if (keyAndType.length < 2) {
 	    throw new CreationException();
 	}
-	return new Pair(keyAndType[0], getUrlPatternTypeValue(keyAndType[1], urlSegment));
-    }
-
-    private Object getUrlPatternTypeValue(String type, String value) {
-	if (UrlPatternType.BOOLEAN.equalsByValue(type)) {
-	    return Boolean.parseBoolean(value);
-	}
-	if (UrlPatternType.INT.equalsByValue(type)) {
-	    return Integer.parseInt(value);
-	}
-	if (UrlPatternType.LONG.equalsByValue(type)) {
-	    return Long.parseLong(value);
-	}
-	if (UrlPatternType.FLOAT.equalsByValue(type)) {
-	    return Float.parseFloat(value);
-	}
-	if (UrlPatternType.DOUBLE.equalsByValue(type)) {
-	    return Double.parseDouble(value);
-	}
-	return value;
+	return new Pair(keyAndType[0], type.value(keyAndType[1], urlSegment));
     }
 
     private boolean isPathVariable(String urlPatternSegment) {
@@ -181,35 +167,13 @@ public class TypedUrlPattern implements UrlPattern {
 	Map<String, Class> typedMap = new HashMap<>();
 	try {
 	    for (Map.Entry<String, String> rawEntry : rawMap.entrySet()) {
-		typedMap.put(rawEntry.getKey(), getVariableType(rawEntry.getValue()).type());
+		typedMap.put(rawEntry.getKey(), type.type(rawEntry.getValue()));
 	    }
-	} catch (CreationException exception) {
+	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    typedMap.clear();
 	}
 	return typedMap;
-    }
-
-    private UrlPatternType getVariableType(String value) throws Exception {
-	if (UrlPatternType.BOOLEAN.equalsByValue(value)) {
-	    return UrlPatternType.BOOLEAN;
-	}
-	if (UrlPatternType.INT.equalsByValue(value)) {
-	    return UrlPatternType.INT;
-	}
-	if (UrlPatternType.LONG.equalsByValue(value)) {
-	    return UrlPatternType.LONG;
-	}
-	if (UrlPatternType.FLOAT.equalsByValue(value)) {
-	    return UrlPatternType.FLOAT;
-	}
-	if (UrlPatternType.DOUBLE.equalsByValue(value)) {
-	    return UrlPatternType.DOUBLE;
-	}
-	if (UrlPatternType.STRING.equalsByValue(value)) {
-	    return UrlPatternType.STRING;
-	}
-	throw new CreationException(value + " is not recoginizable variable type!");
     }
 
     private Map<String, String> readRawParameters(String url) {
@@ -240,7 +204,7 @@ public class TypedUrlPattern implements UrlPattern {
 	try {
 	    for (Map.Entry<String, String> requiredUrlParameterEntry : requiredUrlParameters.entrySet()) {
 		String toParseValue = rawParameters.getOrDefault(requiredUrlParameterEntry.getKey(), "");
-		Object value = getUrlPatternTypeValue(requiredUrlParameterEntry.getValue(), toParseValue);
+		Object value = type.value(requiredUrlParameterEntry.getValue(), toParseValue);
 		parameters.add(new Pair(requiredUrlParameterEntry.getKey(), value));
 	    }
 	} catch (Exception exception) {

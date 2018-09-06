@@ -19,8 +19,8 @@ import com.iprogrammerr.bright.server.protocol.HttpOneProtocol;
 import com.iprogrammerr.bright.server.protocol.RequestResponseProtocol;
 import com.iprogrammerr.bright.server.request.ConfigurableCors;
 import com.iprogrammerr.bright.server.request.Cors;
+import com.iprogrammerr.bright.server.request.OptionsMethod;
 import com.iprogrammerr.bright.server.request.Request;
-import com.iprogrammerr.bright.server.request.RequestMethod;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 import com.iprogrammerr.bright.server.response.ForbiddenResponse;
 import com.iprogrammerr.bright.server.response.InternalServerErrorResponse;
@@ -129,7 +129,7 @@ public class Server {
 	    return new NotFoundResponse();
 	}
 	try {
-	    if (RequestMethod.OPTIONS.equalsByValue(request.method()) && serverConfiguration.addCorsHeaders()) {
+	    if (serverConfiguration.addCorsHeaders() && new OptionsMethod().is(request.method())) {
 		return handleOptionsRequest(request);
 	    }
 	    request.removeContextPath(serverConfiguration.contextPath());
