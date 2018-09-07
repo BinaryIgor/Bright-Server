@@ -1,16 +1,16 @@
 package com.iprogrammerr.bright.server.pattern;
 
-import com.iprogrammerr.bright.server.model.Pairs;
+import com.iprogrammerr.bright.server.model.KeysValues;
 
 public interface UrlPattern {
 
     boolean match(String url);
-    
-    Pairs readPathVariables(String url);
-    
-    Pairs readParameters(String url);
-    
+
+    KeysValues readPathVariables(String url);
+
+    KeysValues readParameters(String url);
+
     boolean hasParameters();
-    
+
     boolean hasPathVariables();
 }

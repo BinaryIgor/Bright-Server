@@ -1,6 +1,13 @@
-package com.iprogrammerr.bright.server.request;
+package com.iprogrammerr.bright.server.configuration;
 
-import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.iprogrammerr.bright.server.header.AccessControlAllowHeadersHeader;
+import com.iprogrammerr.bright.server.header.AccessControlAllowMethodsHeader;
+import com.iprogrammerr.bright.server.header.AccessControlAllowOriginHeader;
+import com.iprogrammerr.bright.server.header.Header;
+import com.iprogrammerr.bright.server.request.Request;
 
 public class ConfigurableCors implements Cors {
 
@@ -11,17 +18,14 @@ public class ConfigurableCors implements Cors {
     private String accessControllAllowOrigin;
     private String accessControllAllowHeaders;
     private String accessControllAllowMethods;
+    private final List<Header> corsHeaders;
 
     public ConfigurableCors(String accessControllAllowOrigin, String accessControllAllowHeaders,
 	    String accessControllAllowMethods) {
 	this.accessControllAllowOrigin = accessControllAllowOrigin;
 	this.accessControllAllowHeaders = accessControllAllowHeaders;
 	this.accessControllAllowMethods = accessControllAllowMethods;
-    }
-
-    public ConfigurableCors(ServerConfiguration serverConfiguration) {
-	this(serverConfiguration.allowedOrigin(), serverConfiguration.allowedHeaders(),
-		serverConfiguration.allowedMethods());
+	this.corsHeaders = new ArrayList<>();
     }
 
     @Override
@@ -53,6 +57,17 @@ public class ConfigurableCors implements Cors {
 	    return false;
 	}
 	return true;
+    }
+
+    @Override
+    public List<Header> toAddHeaders() {
+	if (corsHeaders.isEmpty()) {
+	    corsHeaders.add(new AccessControlAllowHeadersHeader(accessControllAllowHeaders));
+	    corsHeaders.add(new AccessControlAllowMethodsHeader(accessControllAllowMethods));
+	    corsHeaders.add(new AccessControlAllowOriginHeader(accessControllAllowOrigin));
+	    System.out.println("Adding corsHeaders...");
+	}
+	return corsHeaders;
     }
 
 }

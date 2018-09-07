@@ -1,63 +1,61 @@
 # Bright Server
- Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework. Let examples speak for themselves:
+ Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework.
  ```java
-ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
+ServerConfiguration serverConfiguration = new BrightServerConfiguration(serverProperties());
 
-UrlPatternParser urlPatternParser = new TypedUrlPatternParser();
-FilterUrlPatternParser filterUrlPatternParser = new StarSymbolFilterUrlPatternParser();
+RequestMethod get = new GetMethod();
+RequestMethod post = new PostMethod();
 
-List<RequestResolver> requestResolvers = new ArrayList<>();
-RequestResolver helloResolver = new RequestResolver("hello/{id:int}", RequestMethod.GET, urlPatternParser,
-	new HelloHandler());
-requestResolvers.add(helloResolver);
+List<ConditionalRespondent> respondents = new ArrayList<>();
+ConditionalRespondent helloResolver = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
+respondents.add(helloResolver);
 
-List<RequestFilter> requestFilters = new ArrayList<>();
-RequestFilter authorizationFilter = new RequestFilter("*", new AnyRequestMethodRule(), filterUrlPatternParser,
-	new AuthorizationHandler());
+List<ConditionalRequestFilter> requestFilters = new ArrayList<>();
+ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),
+		new AuthorizationFilter());
 requestFilters.add(authorizationFilter);
-	
-Server server = new Server(serverConfiguration, requestResolvers, requestFilters);
+
+Server server = new Server(serverConfiguration, respondents, requestFilters);
 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-    server.stop();
+   server.stop();
 }));
 server.start();
 ```
 That's all. Now you have fully working http server which handles get request nad authorize it as follows:
 ```java
-public class AuthorizationHandler implements ToFilterRequestHandler {
+public class AuthorizationFilter implements RequestFilter {
 
     private static final String SECRET_TOKEN = "token";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Override
-    public Response handle(Request request) {
-	if (!request.hasHeader(HeaderKey.AUTHORIZATION)) {
-	    return new EmptyResponse(ResponseCode.FORBIDDEN);
+    public Response filter(Request request) throws Exception {
+	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
+	    System.out.println("There is no authorization header!");
+	    return new ForbiddenResponse();
 	}
-	String token = request.getHeader(HeaderKey.AUTHORIZATION);
+	String token = request.header(AUTHORIZATION_HEADER);
 	boolean valid = token.equals(SECRET_TOKEN);
 	if (!valid) {
-	    return new EmptyResponse(ResponseCode.FORBIDDEN);
+	    return new ForbiddenResponse();
 	}
-	System.out.println("Secret header of " + token + " is valid");
-	return new EmptyResponse(ResponseCode.OK);
+	return new OkResponse();
     }
 
 }
 ```
 ```java
-public class HelloHandler implements RequestHandler {
+public class HelloRespondent implements Respondent {
 
     @Override
-    public Response handle(ResolvedRequest request) {
-	int id = request.getPathVariable("id", Integer.class);
-	String message = "Hello number " + id + "!";
-	return new PlainTextResponse(ResponseCode.OK, message);
+    public Response respond(MatchedRequest request) throws Exception {
+	int id = request.pathVariable("id", Integer.class);
+	return new OkResponse(new TextPlainContentTypeHeader(), message);
     }
 }
 ```
 For more, refer to [one page docs](https://github.com/Iprogrammerr/Bright-Server/wiki).
 Project is under active development, so any feedback or opened issue is very welcome and appreciated.
-
 
  
  

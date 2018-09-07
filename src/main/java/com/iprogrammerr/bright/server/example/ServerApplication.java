@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Properties;
 
 import com.iprogrammerr.bright.server.Server;
+import com.iprogrammerr.bright.server.configuration.BrightServerConfiguration;
 import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
 import com.iprogrammerr.bright.server.filter.HttpRequestFilter;
-import com.iprogrammerr.bright.server.request.GetMethod;
-import com.iprogrammerr.bright.server.request.PostMethod;
-import com.iprogrammerr.bright.server.request.RequestMethod;
+import com.iprogrammerr.bright.server.method.GetMethod;
+import com.iprogrammerr.bright.server.method.PostMethod;
+import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
@@ -21,7 +22,7 @@ import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
 public class ServerApplication {
 
     public static void main(String[] args) throws IOException {
-	ServerConfiguration serverConfiguration = new ServerConfiguration(getServerProperties());
+	ServerConfiguration serverConfiguration = new BrightServerConfiguration(serverProperties());
 
 	RequestMethod get = new GetMethod();
 	RequestMethod post = new PostMethod();
@@ -48,7 +49,7 @@ public class ServerApplication {
 	server.start();
     }
 
-    private static Properties getServerProperties() throws IOException {
+    private static Properties serverProperties() throws IOException {
 	InputStream inputStream = ServerApplication.class.getResourceAsStream("/server.properties");
 	Properties properties = new Properties();
 	properties.load(inputStream);

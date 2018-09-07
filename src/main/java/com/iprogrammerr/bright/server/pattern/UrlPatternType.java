@@ -9,23 +9,23 @@ public class UrlPatternType implements Type {
     private static final String DOUBLE = "double";
 
     @Override
-    public Class type(String type) {
+    public <T> Class<T> type(String type) {
 	if (type.equalsIgnoreCase(BOOLEAN)) {
-	    return Boolean.class;
+	    return (Class<T>) Boolean.class;
 	}
 	if (type.equalsIgnoreCase(INT)) {
-	    return Integer.class;
+	    return (Class<T>) Integer.class;
 	}
 	if (type.equalsIgnoreCase(LONG)) {
-	    return Long.class;
+	    return (Class<T>) Long.class;
 	}
 	if (type.equalsIgnoreCase(FLOAT)) {
-	    return Float.class;
+	    return (Class<T>) Float.class;
 	}
 	if (type.equalsIgnoreCase(DOUBLE)) {
-	    return Double.class;
+	    return (Class<T>) Double.class;
 	}
-	return String.class;
+	return (Class<T>) String.class;
     }
 
     @Override

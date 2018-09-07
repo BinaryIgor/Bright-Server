@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server.request;
+package com.iprogrammerr.bright.server.method;
 
 public class PutMethod implements RequestMethod {
 

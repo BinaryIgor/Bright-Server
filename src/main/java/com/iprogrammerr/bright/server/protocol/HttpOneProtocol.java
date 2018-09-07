@@ -9,7 +9,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
 import com.iprogrammerr.bright.server.exception.ReadingRequestException;
 import com.iprogrammerr.bright.server.header.DateHeader;
 import com.iprogrammerr.bright.server.header.Header;
@@ -34,17 +33,6 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
     private static final String CONTENT_TYPE_HEADER_KEY = "Content-Type";
     private List<Header> additionalResponseHeaders;
-
-    public HttpOneProtocol(ServerConfiguration serverConfiguration, List<Header> additionalHeaders) {
-	this.additionalResponseHeaders = additionalHeaders;
-	if (serverConfiguration.addCorsHeaders()) {
-	    additionalResponseHeaders.addAll(serverConfiguration.corsHeaders());
-	}
-    }
-
-    public HttpOneProtocol(ServerConfiguration serverConfiguration) {
-	this(serverConfiguration, new ArrayList<>());
-    }
 
     public HttpOneProtocol(List<Header> additionalResponseHeaders) {
 	this.additionalResponseHeaders = additionalResponseHeaders;
