@@ -7,8 +7,8 @@ RequestMethod get = new GetMethod();
 RequestMethod post = new PostMethod();
 
 List<ConditionalRespondent> respondents = new ArrayList<>();
-ConditionalRespondent helloResolver = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
-respondents.add(helloResolver);
+ConditionalRespondent helloRespondent = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
+respondents.add(helloRespondent);
 
 List<ConditionalRequestFilter> requestFilters = new ArrayList<>();
 ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),
@@ -31,7 +31,6 @@ public class AuthorizationFilter implements RequestFilter {
     @Override
     public Response filter(Request request) throws Exception {
 	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
-	    System.out.println("There is no authorization header!");
 	    return new ForbiddenResponse();
 	}
 	String token = request.header(AUTHORIZATION_HEADER);
