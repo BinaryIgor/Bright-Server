@@ -11,7 +11,7 @@ public class HttpTypedFile implements BinaryFile {
 	this.binaryFile = binaryFile;
     }
 
-    public HttpTypedFile(File file) throws Exception {
+    public HttpTypedFile(File file) {
 	this(new TypedFile(file));
     }
 

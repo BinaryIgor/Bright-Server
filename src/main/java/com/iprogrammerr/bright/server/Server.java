@@ -103,7 +103,6 @@ public class Server {
 		    OutputStream outputStream = socket.getOutputStream()) {
 		socket.setSoTimeout(serverConfiguration.timeout());
 		Request request = protocol.read(inputStream);
-		System.out.println(request);
 		Response response = respond(request);
 		protocol.write(outputStream, response);
 		closeConnectionIfNeeded(request, socket);

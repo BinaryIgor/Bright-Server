@@ -11,7 +11,7 @@ public class FileUrlPattern implements UrlPattern {
     @Override
     public boolean match(String url) {
 	String[] segments = url.split(URL_SEGMENTS_SEPARATOR);
-	if (segments.length == 0) {
+	if (segments.length == 0 || segments[0].isEmpty()) {
 	    return true;
 	}
 	String potentialFileName = segments[segments.length - 1];

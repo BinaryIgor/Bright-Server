@@ -30,7 +30,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String HTTP = "HTTP";
     private static final String RESPONSE_CODE_HTTP_1_1_PREFIX = "HTTP/1.1 ";
     private static final String JSON_CONTENT_TYPE = "Application/json";
-    private static final String TEXT_PLAIN_CONTENT_TYPE = "text/plain";
+    private static final String TEXT_CONTENT_TYPE = "text";
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
     private static final String CONTENT_TYPE_HEADER_KEY = "Content-Type";
     private List<Header> additionalResponseHeaders;
@@ -132,17 +132,15 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	    builder.append(NEW_LINE_SEPARATOR).append(header.writable());
 	}
 	if (!response.hasBody()) {
-	    System.out.println(builder.toString());
 	    outputStream.write(builder.toString().getBytes());
 	    return;
 	}
 	builder.append(NEW_LINE_SEPARATOR).append(HEADERS_BODY_SEPARATOR);
-	if (contentType.equals(JSON_CONTENT_TYPE) || contentType.equals(TEXT_PLAIN_CONTENT_TYPE)) {
+	if (contentType.equals(JSON_CONTENT_TYPE) || contentType.contains(TEXT_CONTENT_TYPE)) {
 	    builder.append(new String(response.body()));
 	} else {
 	    builder.append(response.body());
 	}
-	System.out.println(builder.toString());
 	outputStream.write(builder.toString().getBytes());
     }
 

@@ -1,5 +1,6 @@
 package com.iprogrammerr.bright.server.response;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class CreatedResponse extends ResponseEnvelope {
     }
 
     public CreatedResponse(Header contentTypeHeader, byte[] body, Header... headers) {
-	this(contentTypeHeader, body, Arrays.asList(headers));
+	this(contentTypeHeader, body, new ArrayList<>(Arrays.asList(headers)));
     }
 
 }

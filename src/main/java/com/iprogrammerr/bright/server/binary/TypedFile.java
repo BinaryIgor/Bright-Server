@@ -8,7 +8,7 @@ public class TypedFile implements BinaryFile {
 
     private final File file;
 
-    public TypedFile(File file) throws Exception {
+    public TypedFile(File file) {
 	this.file = file;
     }
 

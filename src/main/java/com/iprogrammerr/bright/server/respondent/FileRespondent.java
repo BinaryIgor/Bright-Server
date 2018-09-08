@@ -3,11 +3,8 @@ package com.iprogrammerr.bright.server.respondent;
 import java.io.File;
 
 import com.iprogrammerr.bright.server.binary.BinaryFile;
-import com.iprogrammerr.bright.server.binary.CompressedBinary;
-import com.iprogrammerr.bright.server.binary.DeflateCompressedBinary;
 import com.iprogrammerr.bright.server.binary.HttpTypedFile;
 import com.iprogrammerr.bright.server.exception.PreConditionRequiredException;
-import com.iprogrammerr.bright.server.header.ContentEncodingHeader;
 import com.iprogrammerr.bright.server.header.ContentTypeHeader;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
@@ -50,13 +47,11 @@ public class FileRespondent implements ConditionalRespondent {
 	try {
 	    int indexOfQuestionMark = request.url().indexOf("?");
 	    String fileName = indexOfQuestionMark > 0 ? request.url().substring(0, indexOfQuestionMark) : request.url();
-	    System.out.println("Will read!" + fileName);
+	    if (fileName.isEmpty()) {
+		fileName = "index.html";
+	    }
 	    BinaryFile binaryFile = new HttpTypedFile(new File(WORKING_DIRECTORY + FILE_SEPARATOR + fileName));
-	    CompressedBinary compressedBinary = new DeflateCompressedBinary(binaryFile.content());
-	    byte[] content = compressedBinary.content();
-	    System.out.println("Content = " + content.length);
-	    return new OkResponse(new ContentTypeHeader(binaryFile.type()), content,
-		    new ContentEncodingHeader(compressedBinary.algorithm()));
+	    return new OkResponse(new ContentTypeHeader(binaryFile.type()), binaryFile.content());
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	    return new NotFoundResponse();
