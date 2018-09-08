@@ -44,6 +44,6 @@ public abstract class RequestEnvelope implements Request {
 
     @Override
     public void removeContextPath(String contextPath) {
-	request.body();
+	request.removeContextPath(contextPath);
     }
 }

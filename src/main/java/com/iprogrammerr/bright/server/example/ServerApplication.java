@@ -15,6 +15,7 @@ import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
+import com.iprogrammerr.bright.server.respondent.FileRespondent;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
 import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
@@ -28,18 +29,20 @@ public class ServerApplication {
 	RequestMethod post = new PostMethod();
 
 	List<ConditionalRespondent> respondents = new ArrayList<>();
-	ConditionalRespondent helloResolver = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
-	ConditionalRespondent complexResolver = new HttpRespondent(
+	ConditionalRespondent helloRespondent = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
+	ConditionalRespondent complexRespondent = new HttpRespondent(
 		"complex/{id:long}/search?message=string&scale=float", post, new ComplexUrlRespondent());
-	respondents.add(helloResolver);
-	respondents.add(complexResolver);
+	ConditionalRespondent fileRespondent = new FileRespondent();
+	respondents.add(helloRespondent);
+	respondents.add(complexRespondent);
+	respondents.add(fileRespondent);
 
 	List<ConditionalRequestFilter> requestFilters = new ArrayList<>();
 	ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),
 		new AuthorizationFilter());
 	ConditionalRequestFilter authorizationSecondFilter = new HttpRequestFilter("hello/*",
 		new ListOfRequestMethodRule(get, post), new AuthorizationSecondFreePassFilter());
-	requestFilters.add(authorizationFilter);
+	// requestFilters.add(authorizationFilter);
 	requestFilters.add(authorizationSecondFilter);
 
 	Server server = new Server(serverConfiguration, respondents, requestFilters);

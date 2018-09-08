@@ -103,18 +103,28 @@ public class Server {
 		    OutputStream outputStream = socket.getOutputStream()) {
 		socket.setSoTimeout(serverConfiguration.timeout());
 		Request request = protocol.read(inputStream);
+		System.out.println(request);
 		Response response = respond(request);
 		protocol.write(outputStream, response);
+		closeConnectionIfNeeded(request, socket);
 	    } catch (Exception exception) {
 		exception.printStackTrace();
-	    } finally {
-		try {
-		    socket.close();
-		} catch (IOException exception) {
-		    exception.printStackTrace();
-		}
+		closeConnection(socket);
 	    }
 	};
+    }
+
+    // TODO handle it properly
+    private void closeConnectionIfNeeded(Request request, Socket socket) throws IOException {
+	socket.close();
+    }
+
+    private void closeConnection(Socket socket) {
+	try {
+	    socket.close();
+	} catch (Exception exception) {
+	    exception.printStackTrace();
+	}
     }
 
     public Response respond(Request request) {

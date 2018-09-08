@@ -5,12 +5,11 @@ import java.util.Properties;
 import com.iprogrammerr.bright.server.loading.Loading;
 import com.iprogrammerr.bright.server.loading.StickyLoading;
 
-//TODO add more logic here
 public class BrightServerConfiguration implements ServerConfiguration {
 
     private String contextPath;
     private int port;
-    private int timeOutMillis;
+    private int timeout;
     private boolean addCorsHeaders;
     private String allowedOrigin;
     private String allowedMethods;
@@ -20,7 +19,7 @@ public class BrightServerConfiguration implements ServerConfiguration {
     public BrightServerConfiguration(Properties properties) {
 	contextPath = properties.getProperty("contextPath", "");
 	port = Integer.parseInt(properties.getProperty("port", "8080"));
-	timeOutMillis = Integer.parseInt(properties.getProperty("timeOutMillis", "5000"));
+	timeout = Integer.parseInt(properties.getProperty("timeout", "5000"));
 	addCorsHeaders = Boolean.parseBoolean(properties.getProperty("addCorsHeaders", "false"));
 	allowedOrigin = properties.getProperty("allowedOrigins", "*");
 	allowedMethods = properties.getProperty("allowedMethods", "*");
@@ -45,7 +44,7 @@ public class BrightServerConfiguration implements ServerConfiguration {
 
     @Override
     public int timeout() {
-	return timeOutMillis;
+	return timeout;
     }
 
     public boolean addCorsHeaders() {

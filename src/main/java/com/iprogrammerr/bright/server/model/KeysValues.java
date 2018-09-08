@@ -6,4 +6,6 @@ public interface KeysValues {
 
     public <T> T value(String key, Class<T> clazz) throws Exception;
 
+    public void add(KeyValue keyValue);
+
 }

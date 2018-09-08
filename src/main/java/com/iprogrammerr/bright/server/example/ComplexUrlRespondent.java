@@ -12,8 +12,7 @@ public class ComplexUrlRespondent implements Respondent {
 	long id = request.pathVariable("id", Long.class);
 	String message = request.parameter("message", String.class);
 	float scale = request.parameter("scale", Float.class);
-	System.out.println("id = " + id + " , message = " + message + ", scale = " + scale);
-	Thread.sleep(1000);
+	Thread.sleep((long) (Math.random() * 500));
 	return new OkResponse();
     }
 

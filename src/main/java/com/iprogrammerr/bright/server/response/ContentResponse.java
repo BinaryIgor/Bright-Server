@@ -13,15 +13,14 @@ public class ContentResponse implements Response {
     private byte[] body;
     private List<Header> headers;
 
-   
     public ContentResponse(int responseCode, Header contentTypeHeader, byte[] body) {
 	this(responseCode, contentTypeHeader, body, new ArrayList<>());
     }
-    
-    public ContentResponse(int responseCode, Header contentTypeHeader, byte[] body, Header...headers) {
-	this(responseCode, contentTypeHeader, body, Arrays.asList(headers));
+
+    public ContentResponse(int responseCode, Header contentTypeHeader, byte[] body, Header... headers) {
+	this(responseCode, contentTypeHeader, body, new ArrayList<>(Arrays.asList(headers)));
     }
-    
+
     public ContentResponse(int responseCode, Header contentTypeHeader, byte[] body, List<Header> headers) {
 	this.responseCode = responseCode;
 	this.body = body;
@@ -29,8 +28,7 @@ public class ContentResponse implements Response {
 	this.headers.add(contentTypeHeader);
 	this.headers.add(new ContentLengthHeader(body.length));
     }
-    
-    
+
     @Override
     public int responseCode() {
 	return responseCode;

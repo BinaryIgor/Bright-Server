@@ -65,7 +65,6 @@ public class ConfigurableCors implements Cors {
 	    corsHeaders.add(new AccessControlAllowHeadersHeader(accessControllAllowHeaders));
 	    corsHeaders.add(new AccessControlAllowMethodsHeader(accessControllAllowMethods));
 	    corsHeaders.add(new AccessControlAllowOriginHeader(accessControllAllowOrigin));
-	    System.out.println("Adding corsHeaders...");
 	}
 	return corsHeaders;
     }

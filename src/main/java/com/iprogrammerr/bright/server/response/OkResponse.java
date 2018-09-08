@@ -25,7 +25,7 @@ public class OkResponse extends ResponseEnvelope {
     }
 
     public OkResponse(Header contentTypeHeader, byte[] body, Header... headers) {
-	this(contentTypeHeader, body, Arrays.asList(headers));
+	this(contentTypeHeader, body, new ArrayList<>(Arrays.asList(headers)));
     }
 
 }

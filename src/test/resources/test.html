@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<style>
+</style>
+</head>
+<body>
+<script>
+function elt(type, props, ...children) {
+	let dom = document.createElement(type);
+	if (props) {
+		Object.assign(dom, props);
+	}
+	for (let child of children) {
+		if (typeof child != "string") {
+			dom.appendChild(child);
+		} else {
+			dom.appendChild(document.createTextNode(child));
+		}
+	}
+	return dom;
+}
+function showDialog(message) {
+	alert(message);
+}
+document.body.appendChild(elt("textarea", {rows: "10", cols: "100", onchange: function() {showDialog(this.value);}}));
+</script>
+</html>

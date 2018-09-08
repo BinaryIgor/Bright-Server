@@ -1,7 +1,5 @@
 package com.iprogrammerr.bright.server.protocol;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
@@ -9,6 +7,9 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iprogrammerr.bright.server.binary.Binary;
+import com.iprogrammerr.bright.server.binary.OnePacketBinary;
+import com.iprogrammerr.bright.server.binary.ScatteredBinary;
 import com.iprogrammerr.bright.server.exception.ReadingRequestException;
 import com.iprogrammerr.bright.server.header.DateHeader;
 import com.iprogrammerr.bright.server.header.Header;
@@ -40,7 +41,8 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 
     @Override
     public Request read(InputStream inputStream) throws Exception {
-	String[] requestLines = readRequest(inputStream);
+	Binary binary = new OnePacketBinary(inputStream);
+	String[] requestLines = new String(binary.content()).split(NEW_LINE_SEPARATOR);
 	if (requestLines.length < 1 || requestLines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
 	    throw new ReadingRequestException("Request is empty");
 	}
@@ -72,7 +74,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	if (partOfTheBody.length == bodyBytes) {
 	    return new ParsedRequest(method, path, headers, partOfTheBody);
 	}
-	byte[] body = readBody(inputStream, partOfTheBody, bodyBytes);
+	byte[] body = new ScatteredBinary(binary, partOfTheBody, bodyBytes).content();
 	return new ParsedRequest(method, path, headers, body);
     }
 
@@ -83,61 +85,6 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	} catch (NumberFormatException exception) {
 	    return 0;
 	}
-    }
-
-    private String[] readRequest(InputStream inputStream) throws IOException {
-	byte[] rawRequest = readPacket(inputStream);
-	String request = new String(rawRequest);
-	return request.split(NEW_LINE_SEPARATOR);
-    }
-
-    private byte[] readBody(InputStream inputStream, byte[] partOfTheBody, int bodyBytes) throws IOException {
-	List<byte[]> bodyParts = new ArrayList<>();
-	if (partOfTheBody.length > 0) {
-	    bodyParts.add(partOfTheBody);
-	}
-	int toReadBytes = bodyBytes - partOfTheBody.length;
-	if (toReadBytes < 1) {
-	    return partOfTheBody;
-	}
-	int bytesRead = partOfTheBody.length;
-	while (bytesRead != bodyBytes) {
-	    byte[] packet = readPacket(inputStream);
-	    bodyParts.add(packet);
-	    bytesRead += packet.length;
-	}
-	if (bodyParts.size() == 1) {
-	    return bodyParts.get(0);
-	}
-	return concatenateBytes(bodyParts);
-    }
-
-    private byte[] readPacket(InputStream inputStream) throws IOException {
-	int bytesAvailable = inputStream.available();
-	if (bytesAvailable == 0) {
-	    bytesAvailable = 512;
-	}
-	byte[] buffer = new byte[bytesAvailable];
-	int bytesRead = inputStream.read(buffer);
-	if (bytesRead <= 0) {
-	    return new byte[0];
-	}
-	if (bytesRead == buffer.length) {
-	    return buffer;
-	}
-	byte[] readBytes = new byte[bytesRead];
-	for (int i = 0; i < bytesRead; i++) {
-	    readBytes[i] = buffer[i];
-	}
-	return readBytes;
-    }
-
-    private byte[] concatenateBytes(List<byte[]> toConcatBytesArrays) throws IOException {
-	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	for (byte[] toConcatBytes : toConcatBytesArrays) {
-	    outputStream.write(toConcatBytes);
-	}
-	return outputStream.toByteArray();
     }
 
     private String readMethod(String firstLine) throws Exception {
@@ -185,6 +132,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	    builder.append(NEW_LINE_SEPARATOR).append(header.writable());
 	}
 	if (!response.hasBody()) {
+	    System.out.println(builder.toString());
 	    outputStream.write(builder.toString().getBytes());
 	    return;
 	}
@@ -194,6 +142,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	} else {
 	    builder.append(response.body());
 	}
+	System.out.println(builder.toString());
 	outputStream.write(builder.toString().getBytes());
     }
 

@@ -14,16 +14,13 @@ public class AuthorizationFilter implements RequestFilter {
     @Override
     public Response filter(Request request) throws Exception {
 	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
-	    System.out.println("There is no authorization header!");
 	    return new ForbiddenResponse();
 	}
 	String token = request.header(AUTHORIZATION_HEADER);
-	System.out.println("Secret token = " + token);
 	boolean valid = token.equals(SECRET_TOKEN);
 	if (!valid) {
 	    return new ForbiddenResponse();
 	}
-	System.out.println("Secret header of " + token + " is valid");
 	return new OkResponse();
     }
 

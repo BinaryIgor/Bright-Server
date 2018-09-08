@@ -36,4 +36,9 @@ public class StringsObjects implements KeysValues {
 	}
 	throw new ObjectNotFoundException();
     }
+
+    @Override
+    public void add(KeyValue keyValue) {
+	keysValues.add(keyValue);
+    }
 }
