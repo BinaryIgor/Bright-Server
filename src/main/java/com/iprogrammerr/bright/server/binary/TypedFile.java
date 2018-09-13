@@ -15,7 +15,7 @@ public class TypedFile implements BinaryFile {
     @Override
     public byte[] content() throws Exception {
 	try (InputStream inputStream = new FileInputStream(file)) {
-	    return new ScatteredBinary(inputStream, new byte[0], file.length()).content();
+	    return new PacketsBinary(inputStream, file.length()).content();
 	} catch (Exception exception) {
 	    throw exception;
 	}

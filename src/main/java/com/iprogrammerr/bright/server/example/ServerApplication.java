@@ -42,7 +42,7 @@ public class ServerApplication {
 		new AuthorizationFilter());
 	ConditionalRequestFilter authorizationSecondFilter = new HttpRequestFilter("hello/*",
 		new ListOfRequestMethodRule(get, post), new AuthorizationSecondFreePassFilter());
-	// requestFilters.add(authorizationFilter);
+	requestFilters.add(authorizationFilter);
 	requestFilters.add(authorizationSecondFilter);
 
 	Server server = new Server(serverConfiguration, respondents, requestFilters);

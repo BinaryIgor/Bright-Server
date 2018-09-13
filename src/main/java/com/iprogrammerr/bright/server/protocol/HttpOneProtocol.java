@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.iprogrammerr.bright.server.binary.Binary;
 import com.iprogrammerr.bright.server.binary.OnePacketBinary;
-import com.iprogrammerr.bright.server.binary.ScatteredBinary;
+import com.iprogrammerr.bright.server.binary.PacketsBinary;
 import com.iprogrammerr.bright.server.exception.ReadingRequestException;
 import com.iprogrammerr.bright.server.header.DateHeader;
 import com.iprogrammerr.bright.server.header.Header;
@@ -30,6 +30,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String HTTP = "HTTP";
     private static final String RESPONSE_CODE_HTTP_1_1_PREFIX = "HTTP/1.1 ";
     private static final String JSON_CONTENT_TYPE = "Application/json";
+    private static final String JAVASCRIPT_CONTENT_TYPE = "javascript";
     private static final String TEXT_CONTENT_TYPE = "text";
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
     private static final String CONTENT_TYPE_HEADER_KEY = "Content-Type";
@@ -74,7 +75,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	if (partOfTheBody.length == bodyBytes) {
 	    return new ParsedRequest(method, path, headers, partOfTheBody);
 	}
-	byte[] body = new ScatteredBinary(binary, partOfTheBody, bodyBytes).content();
+	byte[] body = new PacketsBinary(binary, partOfTheBody, bodyBytes).content();
 	return new ParsedRequest(method, path, headers, body);
     }
 
@@ -136,12 +137,18 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	    return;
 	}
 	builder.append(NEW_LINE_SEPARATOR).append(HEADERS_BODY_SEPARATOR);
-	if (contentType.equals(JSON_CONTENT_TYPE) || contentType.contains(TEXT_CONTENT_TYPE)) {
+	if (humanReadableContentType(contentType)) {
+	    // TODO understand reason behind this parsing
 	    builder.append(new String(response.body()));
 	} else {
 	    builder.append(response.body());
 	}
 	outputStream.write(builder.toString().getBytes());
+    }
+
+    private boolean humanReadableContentType(String contentType) {
+	return contentType.equals(JSON_CONTENT_TYPE) || contentType.contains(TEXT_CONTENT_TYPE)
+		|| contentType.contains(JAVASCRIPT_CONTENT_TYPE);
     }
 
     private String responseCodeToString(int responseCode) {

@@ -28,6 +28,8 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public class Server {
 
+    private static final String CONNECTION_HEADER = "Connection";
+    private static final String CONNECTION_CLOSE = "close";
     private ServerSocket serverSocket;
     private Executor executor;
     private ServerConfiguration serverConfiguration;
@@ -51,9 +53,9 @@ public class Server {
 	this.optionsMethod = new OptionsMethod();
     }
 
-    public Server(ServerConfiguration serverConfiguration, RequestResponseProtocol requestReponseParser,
+    public Server(ServerConfiguration serverConfiguration, RequestResponseProtocol requestReponseProtocol,
 	    List<ConditionalRespondent> respondents, List<ConditionalRequestFilter> requestFilters) throws IOException {
-	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseParser, respondents, requestFilters);
+	this(serverConfiguration, Executors.newCachedThreadPool(), requestReponseProtocol, respondents, requestFilters);
     }
 
     public Server(ServerConfiguration serverConfiguration, List<ConditionalRespondent> respondents,
@@ -97,6 +99,7 @@ public class Server {
 	}
     }
 
+    /// TODO object!
     private Runnable handleConnection(Socket socket) {
 	return () -> {
 	    try (InputStream inputStream = socket.getInputStream();
@@ -113,9 +116,12 @@ public class Server {
 	};
     }
 
-    // TODO handle it properly
-    private void closeConnectionIfNeeded(Request request, Socket socket) throws IOException {
-	socket.close();
+    private void closeConnectionIfNeeded(Request request, Socket socket) throws Exception {
+	boolean closeConnection = !request.hasHeader(CONNECTION_HEADER)
+		|| request.header(CONNECTION_HEADER).equalsIgnoreCase(CONNECTION_CLOSE);
+	if (closeConnection) {
+	    socket.close();
+	}
     }
 
     private void closeConnection(Socket socket) {

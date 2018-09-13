@@ -29,10 +29,22 @@ public class HttpTypedFile implements BinaryFile {
 	if (fileType.equals("txt")) {
 	    return "text/plain";
 	}
-	if (fileType.equals("json") || fileType.equals("js")) {
+	if (fileType.equals("json")) {
 	    return "application/" + fileType;
 	}
+	if (fileType.equals("js")) {
+	    return "application/javascript";
+	}
+	if (image(fileType)) {
+	    return "image/" + fileType;
+	}
 	return fileType;
+    }
+
+    private boolean image(String fileType) {
+	return fileType.equals("jpg") || fileType.equals("png") || fileType.equals("svg") || fileType.equals("bmp")
+		|| fileType.equals("ico") || fileType.equals("tif") || fileType.equals("tiff")
+		|| fileType.equals("webp");
     }
 
 }

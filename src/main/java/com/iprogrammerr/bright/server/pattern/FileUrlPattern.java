@@ -10,6 +10,9 @@ public class FileUrlPattern implements UrlPattern {
 
     @Override
     public boolean match(String url) {
+	if (url.endsWith(URL_SEGMENTS_SEPARATOR)) {
+	    return true;
+	}
 	String[] segments = url.split(URL_SEGMENTS_SEPARATOR);
 	if (segments.length == 0 || segments[0].isEmpty()) {
 	    return true;

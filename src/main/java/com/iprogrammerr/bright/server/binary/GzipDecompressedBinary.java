@@ -3,20 +3,20 @@ package com.iprogrammerr.bright.server.binary;
 import java.io.ByteArrayInputStream;
 import java.util.zip.GZIPInputStream;
 
-//TODO buffer lenght, bigger files?
 public class GzipDecompressedBinary implements DecompressedBinary {
 
-    private byte[] source;
-    private int decompressedLength;
+    private byte[] compressed;
+    private long originalLength;
 
-    public GzipDecompressedBinary(byte[] source) {
-	this.source = source;
+    public GzipDecompressedBinary(byte[] decompressed, long originalLength) {
+	this.compressed = decompressed;
+	this.originalLength = originalLength;
     }
 
     @Override
     public byte[] content() throws Exception {
-	try (GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(source))) {
-	    return new ScatteredBinary(inputStream, decompressedLength).content();
+	try (GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
+	    return new PacketsBinary(inputStream, originalLength).content();
 	} catch (Exception exception) {
 	    throw exception;
 	}

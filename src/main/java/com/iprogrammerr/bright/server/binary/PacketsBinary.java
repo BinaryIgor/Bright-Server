@@ -6,25 +6,25 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScatteredBinary implements Binary {
+public class PacketsBinary implements Binary {
 
     private final Binary binary;
     private final byte[] base;
     private long toRead;
 
-    public ScatteredBinary(InputStream source, byte[] base, long toRead) {
+    public PacketsBinary(InputStream source, byte[] base, long toRead) {
 	this(new OnePacketBinary(source), base, toRead);
     }
 
-    public ScatteredBinary(InputStream source, long toRead) {
+    public PacketsBinary(InputStream source, long toRead) {
 	this(new OnePacketBinary(source), new byte[0], toRead);
     }
 
-    public ScatteredBinary(Binary binary, long toRead) {
+    public PacketsBinary(Binary binary, long toRead) {
 	this(binary, new byte[0], toRead);
     }
 
-    public ScatteredBinary(Binary binary, byte[] base, long toRead) {
+    public PacketsBinary(Binary binary, byte[] base, long toRead) {
 	this.binary = binary;
 	this.base = base;
 	this.toRead = toRead;
@@ -52,10 +52,10 @@ public class ScatteredBinary implements Binary {
 	return concatenate(parts);
     }
 
-    private byte[] concatenate(List<byte[]> toConcatenateBytes) throws IOException {
+    private byte[] concatenate(List<byte[]> toConcatenate) throws IOException {
 	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	for (byte[] toConcatBytes : toConcatenateBytes) {
-	    outputStream.write(toConcatBytes);
+	for (byte[] bytes : toConcatenate) {
+	    outputStream.write(bytes);
 	}
 	return outputStream.toByteArray();
     }

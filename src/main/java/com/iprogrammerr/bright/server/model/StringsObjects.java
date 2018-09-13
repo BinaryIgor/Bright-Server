@@ -38,7 +38,34 @@ public class StringsObjects implements KeysValues {
     }
 
     @Override
-    public void add(KeyValue keyValue) {
-	keysValues.add(keyValue);
+    public KeysValues add(String key, Object value) {
+	KeyValue keyValue = new StringObject(key, value);
+	int indexOfPrevious = index(keyValue.key());
+	if (indexOfPrevious >= 0) {
+	    keysValues.set(indexOfPrevious, keyValue);
+	} else {
+	    keysValues.add(keyValue);
+	}
+	return this;
     }
+
+    private int index(String key) {
+	for (int i = 0; i < keysValues.size(); i++) {
+	    if (keysValues.get(i).key().equals(key)) {
+		return i;
+	    }
+	}
+	return -1;
+    }
+
+    @Override
+    public boolean empty() {
+	return keysValues.isEmpty();
+    }
+
+    @Override
+    public List<KeyValue> keysValues() {
+	return keysValues;
+    }
+
 }

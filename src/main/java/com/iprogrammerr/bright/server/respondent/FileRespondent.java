@@ -18,7 +18,6 @@ import com.iprogrammerr.bright.server.response.Response;
 public class FileRespondent implements ConditionalRespondent {
 
     private static final String WORKING_DIRECTORY = System.getProperty("user.dir");
-    private static final String FILE_SEPARATOR = System.getProperty("file.separator");
     private final RequestMethod requestMethod;
     private final UrlPattern urlPattern;
 
@@ -39,6 +38,7 @@ public class FileRespondent implements ConditionalRespondent {
 	return urlPattern.match(request.url());
     }
 
+    // TODO images content length mismatch
     @Override
     public Response respond(Request request) throws Exception {
 	if (!canRespond(request)) {
@@ -50,7 +50,10 @@ public class FileRespondent implements ConditionalRespondent {
 	    if (fileName.isEmpty()) {
 		fileName = "index.html";
 	    }
-	    BinaryFile binaryFile = new HttpTypedFile(new File(WORKING_DIRECTORY + FILE_SEPARATOR + fileName));
+	    if (fileName.endsWith("/")) {
+		fileName += "index.html";
+	    }
+	    BinaryFile binaryFile = new HttpTypedFile(new File(WORKING_DIRECTORY + File.separator + fileName));
 	    return new OkResponse(new ContentTypeHeader(binaryFile.type()), binaryFile.content());
 	} catch (Exception exception) {
 	    exception.printStackTrace();

@@ -1,11 +1,17 @@
 package com.iprogrammerr.bright.server.model;
 
+import java.util.List;
+
 public interface KeysValues {
 
-    public <T> boolean has(String key, Class<T> clazz);
+    <T> boolean has(String key, Class<T> clazz);
 
-    public <T> T value(String key, Class<T> clazz) throws Exception;
+    <T> T value(String key, Class<T> clazz) throws Exception;
 
-    public void add(KeyValue keyValue);
+    KeysValues add(String key, Object value);
+
+    List<KeyValue> keysValues();
+
+    boolean empty();
 
 }

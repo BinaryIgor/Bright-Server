@@ -7,19 +7,18 @@ public class GzipCompressedBinary implements CompressedBinary {
 
     private byte[] source;
 
-    private GzipCompressedBinary(byte[] source) {
+    public GzipCompressedBinary(byte[] source) {
 	this.source = source;
     }
 
     @Override
     public byte[] content() throws Exception {
-	try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(source.length);
-		GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream)) {
-	    gzipOutputStream.write(source);
-	    return byteArrayOutputStream.toByteArray();
-	} catch (Exception exception) {
-	    throw exception;
-	}
+	ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(source.length);
+	GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+	gzipOutputStream.write(source);
+	gzipOutputStream.close();
+	byteArrayOutputStream.close();
+	return byteArrayOutputStream.toByteArray();
     }
 
     @Override
