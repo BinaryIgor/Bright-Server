@@ -15,10 +15,8 @@ ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new An
 		new AuthorizationFilter());
 requestFilters.add(authorizationFilter);
 
-Server server = new Server(serverConfiguration, respondents, requestFilters);
-Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-   server.stop();
-}));
+Connector connector = new RequestResponseConnector(new AllowAllCors(), respondents, new ConditionalRequestFilters(filters));
+Server server = new Server(8080, 5000, connector);
 server.start();
 ```
 That's all. Now you have fully working http server which handles get request nad authorize it as follows:
@@ -29,16 +27,20 @@ public class AuthorizationFilter implements RequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Override
-    public Response filter(Request request) throws Exception {
+    public Response filter(Request request) {
 	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
 	    return new ForbiddenResponse();
 	}
-	String token = request.header(AUTHORIZATION_HEADER);
-	boolean valid = token.equals(SECRET_TOKEN);
-	if (!valid) {
+	try {
+	    String token = request.header(AUTHORIZATION_HEADER);
+	    boolean valid = token.equals(SECRET_TOKEN);
+	    if (!valid) {
+		return new ForbiddenResponse();
+	    }
+	    return new OkResponse();
+	} catch (Exception exception) {
 	    return new ForbiddenResponse();
 	}
-	return new OkResponse();
     }
 
 }
@@ -47,14 +49,23 @@ public class AuthorizationFilter implements RequestFilter {
 public class HelloRespondent implements Respondent {
 
     @Override
-    public Response respond(MatchedRequest request) throws Exception {
-	int id = request.pathVariable("id", Integer.class);
-	return new OkResponse(new TextPlainContentTypeHeader(), message);
+    public Response respond(MatchedRequest request) {
+	try {
+	    int id = request.pathVariable("id", Integer.class);
+	    String message = "Hello number " + id;
+	    return new OkResponse(message);
+	} catch (Exception exception) {
+	    return new BadRequestResponse(exception.getMessage());
+	}
     }
 }
 ```
 For more, refer to [one page docs](https://github.com/Iprogrammerr/Bright-Server/wiki).
 Project is under active development, so any feedback or opened issue is very welcome and appreciated.
+Because of that, docs might become outdated from time to time.
+
+## Maven
+  Api needs stabilization, so soon to be added.
 
  
  
