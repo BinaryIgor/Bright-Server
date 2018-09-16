@@ -1,10 +1,7 @@
 # Bright Server
  Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework.
  ```java
-ServerConfiguration serverConfiguration = new BrightServerConfiguration(serverProperties());
-
 RequestMethod get = new GetMethod();
-RequestMethod post = new PostMethod();
 
 List<ConditionalRespondent> respondents = new ArrayList<>();
 ConditionalRespondent helloRespondent = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
