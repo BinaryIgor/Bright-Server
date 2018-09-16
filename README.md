@@ -62,7 +62,7 @@ public class HelloRespondent implements Respondent {
 ```
 For more, refer to [one page docs](https://github.com/Iprogrammerr/Bright-Server/wiki).
 Project is under active development, so any feedback or opened issue is very welcome and appreciated.
-Because of that, docs might become outdated from time to time.
+Because of that, they might become outdated from time to time.
 
 ## Maven
   Api needs stabilization, so soon to be added.
