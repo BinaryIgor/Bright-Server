@@ -5,10 +5,10 @@ import java.io.File;
 //TODO all types
 public class HttpTypedFile implements BinaryFile {
 
-    private final BinaryFile binaryFile;
+    private final BinaryFile base;
 
-    public HttpTypedFile(BinaryFile binaryFile) {
-	this.binaryFile = binaryFile;
+    public HttpTypedFile(BinaryFile base) {
+	this.base = base;
     }
 
     public HttpTypedFile(File file) {
@@ -17,12 +17,12 @@ public class HttpTypedFile implements BinaryFile {
 
     @Override
     public byte[] content() throws Exception {
-	return binaryFile.content();
+	return base.content();
     }
 
     @Override
     public String type() {
-	String fileType = binaryFile.type();
+	String fileType = base.type();
 	if (fileType.equals("html") || fileType.equals("css")) {
 	    return "text/" + fileType;
 	}

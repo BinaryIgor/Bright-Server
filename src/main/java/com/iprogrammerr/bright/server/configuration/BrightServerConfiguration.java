@@ -7,26 +7,15 @@ import com.iprogrammerr.bright.server.loading.StickyLoading;
 
 public class BrightServerConfiguration implements ServerConfiguration {
 
-    private String contextPath;
-    private int port;
-    private int timeout;
-    private boolean addCorsHeaders;
-    private String allowedOrigin;
-    private String allowedMethods;
-    private String allowedHeaders;
-    private Loading<Cors> cors;
+    private final Loading<Cors> cors;
+    private final Properties source;
 
-    public BrightServerConfiguration(Properties properties) {
-	contextPath = properties.getProperty("contextPath", "");
-	port = Integer.parseInt(properties.getProperty("port", "8080"));
-	timeout = Integer.parseInt(properties.getProperty("timeout", "5000"));
-	addCorsHeaders = Boolean.parseBoolean(properties.getProperty("addCorsHeaders", "false"));
-	allowedOrigin = properties.getProperty("allowedOrigins", "*");
-	allowedMethods = properties.getProperty("allowedMethods", "*");
-	allowedHeaders = properties.getProperty("allowedHeaders", "*");
+    public BrightServerConfiguration(Properties source) {
+	this.source = source;
 	cors = new StickyLoading<>(() -> {
-	    if (addCorsHeaders) {
-		return new ConfigurableCors(allowedOrigin, allowedHeaders, allowedMethods);
+	    if (addCorsHeaders()) {
+		return new ConfigurableCors(source.getProperty("allowedOrigins", "*"),
+			source.getProperty("allowedMethods", "*"), source.getProperty("allowedHeaders", "*"));
 	    }
 	    return new DefaultCors();
 	});
@@ -34,21 +23,29 @@ public class BrightServerConfiguration implements ServerConfiguration {
 
     @Override
     public String contextPath() {
-	return contextPath;
+	return source.getProperty("contextPath", "");
     }
 
     @Override
     public int port() {
-	return port;
+	try {
+	    return Integer.parseInt(source.getProperty("port", "8080"));
+	} catch (Exception exception) {
+	    return 8080;
+	}
     }
 
     @Override
     public int timeout() {
-	return timeout;
+	try {
+	    return Integer.parseInt(source.getProperty("timeout", "5000"));
+	} catch (Exception exception) {
+	    return 5000;
+	}
     }
 
     public boolean addCorsHeaders() {
-	return addCorsHeaders;
+	return Boolean.parseBoolean(source.getProperty("addCorsHeaders", "false"));
     }
 
     @Override

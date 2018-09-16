@@ -5,13 +5,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.iprogrammerr.bright.server.pattern.FileUrlPattern;
-import com.iprogrammerr.bright.server.pattern.UrlPattern;
+import com.iprogrammerr.bright.server.pattern.IndexHtmlFileUrlPattern;
 
 public class FileUrlPatternTest {
 
     @Test
     public void match() {
-	UrlPattern urlPattern = new FileUrlPattern();
+	FileUrlPattern urlPattern = new IndexHtmlFileUrlPattern();
 	String url = "";
 	assertTrue(urlPattern.match(url));
     }

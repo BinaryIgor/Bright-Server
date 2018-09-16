@@ -8,41 +8,41 @@ import java.util.List;
 
 public class PacketsBinary implements Binary {
 
-    private final Binary binary;
-    private final byte[] base;
+    private final Binary base;
+    private final byte[] read;
     private long toRead;
 
-    public PacketsBinary(InputStream source, byte[] base, long toRead) {
-	this(new OnePacketBinary(source), base, toRead);
+    public PacketsBinary(InputStream source, byte[] read, long toRead) {
+	this(new OnePacketBinary(source), read, toRead);
     }
 
     public PacketsBinary(InputStream source, long toRead) {
 	this(new OnePacketBinary(source), new byte[0], toRead);
     }
 
-    public PacketsBinary(Binary binary, long toRead) {
-	this(binary, new byte[0], toRead);
+    public PacketsBinary(Binary base, long toRead) {
+	this(base, new byte[0], toRead);
     }
 
-    public PacketsBinary(Binary binary, byte[] base, long toRead) {
-	this.binary = binary;
+    public PacketsBinary(Binary base, byte[] read, long toRead) {
 	this.base = base;
+	this.read = read;
 	this.toRead = toRead;
     }
 
     @Override
     public byte[] content() throws Exception {
 	List<byte[]> parts = new ArrayList<>();
-	if (base.length > 0) {
-	    parts.add(base);
+	if (read.length > 0) {
+	    parts.add(read);
 	}
-	long toReadBytes = toRead - base.length;
+	long toReadBytes = toRead - read.length;
 	if (toReadBytes < 1) {
-	    return base;
+	    return read;
 	}
-	long bytesRead = base.length;
+	long bytesRead = read.length;
 	while (bytesRead != toRead) {
-	    byte[] packet = binary.content();
+	    byte[] packet = base.content();
 	    parts.add(packet);
 	    bytesRead += packet.length;
 	}

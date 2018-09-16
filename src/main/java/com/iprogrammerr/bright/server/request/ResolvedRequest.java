@@ -23,4 +23,14 @@ public class ResolvedRequest extends RequestEnvelope implements MatchedRequest {
 	return pathVariables.value(key, clazz);
     }
 
+    @Override
+    public <T> boolean hasParameter(String key, Class<T> clazz) {
+	return parameters.has(key, clazz);
+    }
+
+    @Override
+    public <T> boolean hasPathVariable(String key, Class<T> clazz) {
+	return pathVariables.has(key, clazz);
+    }
+
 }

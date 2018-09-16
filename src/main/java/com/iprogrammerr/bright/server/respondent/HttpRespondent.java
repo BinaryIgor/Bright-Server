@@ -29,7 +29,7 @@ public class HttpRespondent implements ConditionalRespondent {
     }
 
     @Override
-    public boolean canRespond(Request request) {
+    public boolean conditionsMet(Request request) {
 	if (!requestMethod.is(request.method())) {
 	    return false;
 	}
@@ -38,7 +38,7 @@ public class HttpRespondent implements ConditionalRespondent {
 
     @Override
     public Response respond(Request request) throws Exception {
-	if (!canRespond(request)) {
+	if (!conditionsMet(request)) {
 	    throw new PreConditionRequiredException("Request have to be resolved before it can be handled");
 	}
 	KeysValues parameters;

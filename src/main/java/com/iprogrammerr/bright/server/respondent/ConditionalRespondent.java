@@ -5,7 +5,7 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public interface ConditionalRespondent {
 
-    boolean canRespond(Request request);
+    boolean conditionsMet(Request request);
 
     Response respond(Request request) throws Exception;
 }

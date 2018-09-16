@@ -25,15 +25,11 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String HEADERS_BODY_PARSED_SEPARATOR = "\r";
     private static final int MIN_VALID_FIRST_LINE_LENGTH = 10;
     private static final int MIN_REQUEST_METHOD_LENGTH = 3;
-    private static final String HEADERS_BODY_SEPARATOR = "\r\n\r\n";
+    private static final String CRLF_CRLF = "\r\n\r\n";
     private static final String URL_SEGMENTS_SEPARATOR = "/";
     private static final String HTTP = "HTTP";
     private static final String RESPONSE_CODE_HTTP_1_1_PREFIX = "HTTP/1.1 ";
-    private static final String JSON_CONTENT_TYPE = "Application/json";
-    private static final String JAVASCRIPT_CONTENT_TYPE = "javascript";
-    private static final String TEXT_CONTENT_TYPE = "text";
     private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
-    private static final String CONTENT_TYPE_HEADER_KEY = "Content-Type";
     private List<Header> additionalResponseHeaders;
 
     public HttpOneProtocol(List<Header> additionalResponseHeaders) {
@@ -125,30 +121,14 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	for (Header header : additionalResponseHeaders) {
 	    builder.append(NEW_LINE_SEPARATOR).append(header.writable());
 	}
-	String contentType = "";
 	for (Header header : response.headers()) {
-	    if (header.is(CONTENT_TYPE_HEADER_KEY)) {
-		contentType = header.value();
-	    }
 	    builder.append(NEW_LINE_SEPARATOR).append(header.writable());
 	}
-	if (!response.hasBody()) {
-	    outputStream.write(builder.toString().getBytes());
-	    return;
-	}
-	builder.append(NEW_LINE_SEPARATOR).append(HEADERS_BODY_SEPARATOR);
-	if (humanReadableContentType(contentType)) {
-	    // TODO understand reason behind this parsing
-	    builder.append(new String(response.body()));
-	} else {
-	    builder.append(response.body());
-	}
 	outputStream.write(builder.toString().getBytes());
-    }
-
-    private boolean humanReadableContentType(String contentType) {
-	return contentType.equals(JSON_CONTENT_TYPE) || contentType.contains(TEXT_CONTENT_TYPE)
-		|| contentType.contains(JAVASCRIPT_CONTENT_TYPE);
+	if (response.hasBody()) {
+	    outputStream.write(CRLF_CRLF.getBytes());
+	    outputStream.write(response.body());
+	}
     }
 
     private String responseCodeToString(int responseCode) {

@@ -1,6 +1,5 @@
 package com.iprogrammerr.bright.server.example;
 
-import com.iprogrammerr.bright.server.header.TextPlainContentTypeHeader;
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
 import com.iprogrammerr.bright.server.response.OkResponse;
@@ -12,6 +11,6 @@ public class HelloRespondent implements Respondent {
     public Response respond(MatchedRequest request) throws Exception {
 	int id = request.pathVariable("id", Integer.class);
 	String message = "Hello number " + id;
-	return new OkResponse(new TextPlainContentTypeHeader(), message);
+	return new OkResponse(message);
     }
 }

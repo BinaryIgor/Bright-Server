@@ -1,10 +1,9 @@
 package com.iprogrammerr.bright.server.response;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.header.Header;
+import com.iprogrammerr.bright.server.response.body.ResponseBody;
 
 public class CreatedResponse extends ResponseEnvelope {
 
@@ -14,20 +13,16 @@ public class CreatedResponse extends ResponseEnvelope {
 	super(new EmptyResponse(RESPONSE_CODE));
     }
 
-    public CreatedResponse(Header contentTypeHeader, String body) {
-	this(contentTypeHeader, body.getBytes());
+    public CreatedResponse(ResponseBody body) {
+	super(new ContentResponse(RESPONSE_CODE, body));
     }
 
-    public CreatedResponse(Header contentTypeHeader, byte[] body) {
-	super(new ContentResponse(RESPONSE_CODE, contentTypeHeader, body));
+    public CreatedResponse(String message) {
+	super(new ContentResponse(RESPONSE_CODE, message));
     }
 
-    public CreatedResponse(Header contentTypeHeader, byte[] body, List<Header> headers) {
-	super(new ContentResponse(RESPONSE_CODE, contentTypeHeader, body, headers));
-    }
-
-    public CreatedResponse(Header contentTypeHeader, byte[] body, Header... headers) {
-	this(contentTypeHeader, body, new ArrayList<>(Arrays.asList(headers)));
+    public CreatedResponse(ResponseBody body, List<Header> headers) {
+	super(new ContentResponse(RESPONSE_CODE, body, headers));
     }
 
 }

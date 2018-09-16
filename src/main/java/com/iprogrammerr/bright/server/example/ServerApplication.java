@@ -22,7 +22,7 @@ import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
 
 public class ServerApplication {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 	ServerConfiguration serverConfiguration = new BrightServerConfiguration(serverProperties());
 
 	RequestMethod get = new GetMethod();

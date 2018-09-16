@@ -1,15 +1,15 @@
 package com.iprogrammerr.bright.server.response;
 
-import com.iprogrammerr.bright.server.header.Header;
-
 public class ForbiddenResponse extends ResponseEnvelope {
 
+    private static final int RESPONSE_CODE = 403;
+
     public ForbiddenResponse() {
-	super(new EmptyResponse(403));
+	super(new EmptyResponse(RESPONSE_CODE));
     }
-    
-    public ForbiddenResponse(Header contentTypeHeader, String body) {
-	super(new ContentResponse(403, contentTypeHeader, body.getBytes()));
+
+    public ForbiddenResponse(String message) {
+	super(new ContentResponse(RESPONSE_CODE, message));
     }
 
 }

@@ -6,30 +6,30 @@ import com.iprogrammerr.bright.server.header.Header;
 
 public abstract class ResponseEnvelope implements Response {
 
-    private Response response;
-    
-    public ResponseEnvelope(Response response) {
-	this.response = response;
+    private final Response base;
+
+    public ResponseEnvelope(Response base) {
+	this.base = base;
     }
-    
+
     @Override
     public final int responseCode() {
-	return response.responseCode();
+	return base.responseCode();
     }
 
     @Override
     public final List<Header> headers() {
-	return response.headers();
+	return base.headers();
     }
 
     @Override
     public final boolean hasBody() {
-	return response.hasBody();
+	return base.hasBody();
     }
 
     @Override
     public final byte[] body() {
-	return response.body();
+	return base.body();
     }
 
 }

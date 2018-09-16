@@ -16,7 +16,7 @@ public class EmptyResponse implements Response {
     }
 
     public EmptyResponse(int responseCode, Header... headers) {
-	this(responseCode, Arrays.asList(headers));
+	this(responseCode, new ArrayList<>(Arrays.asList(headers)));
     }
 
     public EmptyResponse(int responseCode, List<Header> headers) {
