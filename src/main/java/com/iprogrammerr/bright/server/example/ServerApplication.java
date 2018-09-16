@@ -42,7 +42,7 @@ public class ServerApplication {
 	filters.add(authorizationFilter);
 	filters.add(authorizationSecondFilter);
 
-	Connector connection = new RequestResponseConnector("example", new AllowAllCors(), respondents,
+	Connector connection = new RequestResponseConnector(new AllowAllCors(), respondents,
 		new ConditionalRequestFilters(filters));
 
 	Server server = new Server(8080, 5000, connection);

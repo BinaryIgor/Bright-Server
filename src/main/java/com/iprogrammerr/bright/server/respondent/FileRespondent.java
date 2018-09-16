@@ -13,11 +13,11 @@ import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.NotFoundResponse;
 import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.response.SeeOtherResponse;
 import com.iprogrammerr.bright.server.response.body.TypedResponseBody;
 
 public class FileRespondent implements ConditionalRespondent {
 
-    private static final String WORKING_DIRECTORY = System.getProperty("user.dir");
     private final RequestMethod requestMethod;
     private final FileUrlPattern urlPattern;
 
@@ -26,8 +26,12 @@ public class FileRespondent implements ConditionalRespondent {
 	this.urlPattern = urlPattern;
     }
 
+    public FileRespondent(String rootDirectory) {
+	this(new GetMethod(), new IndexHtmlFileUrlPattern(rootDirectory));
+    }
+
     public FileRespondent() {
-	this(new GetMethod(), new IndexHtmlFileUrlPattern());
+	this(System.getProperty("user.dir"));
     }
 
     @Override
@@ -44,9 +48,12 @@ public class FileRespondent implements ConditionalRespondent {
 	    throw new PreConditionRequiredException("Given request does not match respondent requirements");
 	}
 	try {
-	    File file = new File(WORKING_DIRECTORY + File.separator + urlPattern.filePath(request.url()));
+	    File file = new File(urlPattern.filePath(request.url()));
 	    if (!file.exists()) {
 		return new NotFoundResponse();
+	    }
+	    if (file.isDirectory()) {
+		return new SeeOtherResponse(request.url() + "/");
 	    }
 	    BinaryFile binaryFile = new HttpTypedFile(file);
 	    return new OkResponse(new TypedResponseBody(binaryFile.type(), binaryFile.content()));

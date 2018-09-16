@@ -11,7 +11,7 @@ public class FileUrlPatternTest {
 
     @Test
     public void match() {
-	FileUrlPattern urlPattern = new IndexHtmlFileUrlPattern();
+	FileUrlPattern urlPattern = new IndexHtmlFileUrlPattern(System.getProperty("user.dir"));
 	String url = "";
 	assertTrue(urlPattern.match(url));
     }

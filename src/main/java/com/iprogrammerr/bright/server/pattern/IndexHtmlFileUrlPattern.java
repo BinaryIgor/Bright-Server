@@ -5,36 +5,36 @@ import java.io.File;
 public class IndexHtmlFileUrlPattern implements FileUrlPattern {
 
     private static final String URL_SEGMENTS_SEPARATOR = "/";
-    private static final String DOT = ".";
+    private final String rootDirectory;
+
+    public IndexHtmlFileUrlPattern(String rootDirectory) {
+	this.rootDirectory = rootDirectory;
+    }
 
     @Override
     public boolean match(String url) {
-	if (url.endsWith(URL_SEGMENTS_SEPARATOR)) {
-	    return true;
-	}
 	String[] segments = url.split(URL_SEGMENTS_SEPARATOR);
 	if (segments.length == 0 || segments[0].isEmpty()) {
 	    return true;
 	}
-	String potentialFileName = segments[segments.length - 1];
-	int indexOfDot = potentialFileName.indexOf(DOT);
-	if (indexOfDot < 1) {
-	    return false;
-	}
-	return potentialFileName.substring(indexOfDot, potentialFileName.length()).length() > 0;
+	return new File(rootDirectory + File.separator + cutParameters(url)).exists();
     }
 
     @Override
     public String filePath(String url) {
-	int indexOfQuestionMark = url.indexOf("?");
-	String filePath = indexOfQuestionMark > 0 ? url.substring(0, indexOfQuestionMark) : url;
+	String filePath = cutParameters(url);
 	if (filePath.isEmpty()) {
 	    return "index.html";
 	}
 	if (filePath.endsWith(URL_SEGMENTS_SEPARATOR)) {
 	    filePath += "index.html";
 	}
-	return filePath.replace(URL_SEGMENTS_SEPARATOR, File.separator);
+	return rootDirectory + File.separator + filePath.replace(URL_SEGMENTS_SEPARATOR, File.separator);
+    }
+
+    private String cutParameters(String url) {
+	int indexOfQuestionMark = url.indexOf("?");
+	return indexOfQuestionMark > 0 ? url.substring(0, indexOfQuestionMark) : url;
     }
 
 }
