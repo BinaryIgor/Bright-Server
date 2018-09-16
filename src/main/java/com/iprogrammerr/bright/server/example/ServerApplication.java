@@ -14,7 +14,6 @@ import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
-import com.iprogrammerr.bright.server.respondent.FileRespondent;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
 import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
@@ -29,10 +28,8 @@ public class ServerApplication {
 	ConditionalRespondent helloRespondent = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
 	ConditionalRespondent complexRespondent = new HttpRespondent(
 		"complex/{id:long}/search?message=string&scale=float", post, new ComplexUrlRespondent());
-	ConditionalRespondent fileRespondent = new FileRespondent();
 	respondents.add(helloRespondent);
 	respondents.add(complexRespondent);
-	respondents.add(fileRespondent);
 
 	List<ConditionalRequestFilter> filters = new ArrayList<>();
 	ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),

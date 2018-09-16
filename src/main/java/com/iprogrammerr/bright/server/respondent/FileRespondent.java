@@ -30,10 +30,6 @@ public class FileRespondent implements ConditionalRespondent {
 	this(new GetMethod(), new IndexHtmlFileUrlPattern(rootDirectory));
     }
 
-    public FileRespondent() {
-	this(System.getProperty("user.dir"));
-    }
-
     @Override
     public boolean conditionsMet(Request request) {
 	if (!requestMethod.is(request.method())) {

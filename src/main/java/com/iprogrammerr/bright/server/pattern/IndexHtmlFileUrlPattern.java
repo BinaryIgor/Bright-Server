@@ -29,7 +29,7 @@ public class IndexHtmlFileUrlPattern implements FileUrlPattern {
     public String filePath(String url) {
 	String filePath = cutParameters(url);
 	if (filePath.isEmpty()) {
-	    return "index.html";
+	    return rootDirectory + File.separator + "index.html";
 	}
 	if (filePath.endsWith(URL_SEGMENTS_SEPARATOR)) {
 	    filePath += "index.html";
