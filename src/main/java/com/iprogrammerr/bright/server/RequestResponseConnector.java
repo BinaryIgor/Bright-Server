@@ -115,7 +115,8 @@ public class RequestResponseConnector implements Connector {
 		return respondent;
 	    }
 	}
-	throw new NotFoundException();
+	throw new NotFoundException(
+		String.format("There is no respondent for %s method and url: %s", request.method(), request.url()));
     }
 
     private Response respondToOptions(Request request) {

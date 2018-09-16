@@ -5,6 +5,7 @@ import java.io.File;
 public class IndexHtmlFileUrlPattern implements FileUrlPattern {
 
     private static final String URL_SEGMENTS_SEPARATOR = "/";
+    private static final String GO_TO_HIGHER_DIRECTORY = "..";
     private final String rootDirectory;
 
     public IndexHtmlFileUrlPattern(String rootDirectory) {
@@ -13,11 +14,15 @@ public class IndexHtmlFileUrlPattern implements FileUrlPattern {
 
     @Override
     public boolean match(String url) {
+	if (url.contains(GO_TO_HIGHER_DIRECTORY)) {
+	    return false;
+	}
 	String[] segments = url.split(URL_SEGMENTS_SEPARATOR);
 	if (segments.length == 0 || segments[0].isEmpty()) {
 	    return true;
 	}
-	return new File(rootDirectory + File.separator + cutParameters(url)).exists();
+	String path = rootDirectory + File.separator + cutParameters(url);
+	return new File(path).exists();
     }
 
     @Override
