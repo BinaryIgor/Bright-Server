@@ -5,9 +5,9 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public interface ConditionalRequestFilter {
 
-    boolean isPrimary();
+    boolean primary();
 
-    boolean canFilter(Request request);
+    boolean conditionsMet(Request request);
 
     Response filter(Request request) throws Exception;
 }

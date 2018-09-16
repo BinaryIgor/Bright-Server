@@ -11,7 +11,7 @@ public class StarSymbolFilterUrlPattern implements ToFilterUrlPattern{
     }
 
     @Override
-    public boolean isPrimary() {
+    public boolean primary() {
 	return urlPattern.startsWith(MATCH_ALL);
     }
 

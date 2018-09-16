@@ -25,21 +25,21 @@ public class HttpRequestFilter implements ConditionalRequestFilter {
     }
 
     @Override
-    public boolean isPrimary() {
-	return urlPattern.isPrimary();
+    public boolean primary() {
+	return urlPattern.primary();
     }
 
     @Override
-    public boolean canFilter(Request request) {
+    public boolean conditionsMet(Request request) {
 	if (!requestMethodRule.isCompliant(request.method())) {
 	    return false;
 	}
-	return urlPattern.isPrimary() || urlPattern.match(request.url());
+	return urlPattern.primary() || urlPattern.match(request.url());
     }
 
     @Override
     public Response filter(Request request) throws Exception {
-	if (!canFilter(request)) {
+	if (!conditionsMet(request)) {
 	    throw new PreConditionRequiredException("Request must be matched before it can be filtered");
 	}
 	return requestFilter.filter(request);

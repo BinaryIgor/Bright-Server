@@ -3,11 +3,11 @@ package com.iprogrammerr.bright.server.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.exception.ObjectNotFoundException;
+import com.iprogrammerr.bright.server.exception.NotFoundException;
 
 public class StringsObjects implements KeysValues {
 
-    private List<KeyValue> keysValues;
+    private final List<KeyValue> keysValues;
 
     public StringsObjects() {
 	this.keysValues = new ArrayList<>();
@@ -34,7 +34,7 @@ public class StringsObjects implements KeysValues {
 		return (T) keyValue.value();
 	    }
 	}
-	throw new ObjectNotFoundException();
+	throw new NotFoundException();
     }
 
     @Override

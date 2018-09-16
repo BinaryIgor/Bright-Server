@@ -29,8 +29,8 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String URL_SEGMENTS_SEPARATOR = "/";
     private static final String HTTP = "HTTP";
     private static final String RESPONSE_CODE_HTTP_1_1_PREFIX = "HTTP/1.1 ";
-    private static final String CONTENT_LENGTH_HEADER_KEY = "Content-Length";
-    private List<Header> additionalResponseHeaders;
+    private static final String CONTENT_LENGTH_HEADER = "Content-Length";
+    private final List<Header> additionalResponseHeaders;
 
     public HttpOneProtocol(List<Header> additionalResponseHeaders) {
 	this.additionalResponseHeaders = additionalResponseHeaders;
@@ -45,29 +45,12 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	}
 	String method = readMethod(requestLines[0]);
 	String path = readPath(requestLines[0]);
-	List<Header> headers = new ArrayList<>();
-	int i;
-	int bodyBytes = 0;
-	for (i = 1; i < requestLines.length; i++) {
-	    String line = requestLines[i];
-	    if (line.isEmpty() || line.equals(HEADERS_BODY_PARSED_SEPARATOR)) {
-		break;
-	    }
-	    Header header = readHeader(line);
-	    if (header.is(CONTENT_LENGTH_HEADER_KEY)) {
-		bodyBytes = bodyLength(header);
-	    }
-	    headers.add(header);
-	}
+	List<Header> headers = readHeaders(requestLines);
+	int bodyBytes = bodyBytes(headers);
 	if (bodyBytes == 0) {
 	    return new ParsedRequest(method, path, headers);
 	}
-	byte[] partOfTheBody;
-	if ((i + 1) < requestLines.length) {
-	    partOfTheBody = requestLines[i + 1].getBytes();
-	} else {
-	    partOfTheBody = new byte[0];
-	}
+	byte[] partOfTheBody = requestLines[requestLines.length - 1].getBytes();
 	if (partOfTheBody.length == bodyBytes) {
 	    return new ParsedRequest(method, path, headers, partOfTheBody);
 	}
@@ -75,10 +58,28 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	return new ParsedRequest(method, path, headers, body);
     }
 
-    private int bodyLength(Header header) {
+    private List<Header> readHeaders(String[] requestLines) throws Exception {
+	List<Header> headers = new ArrayList<>();
+	for (int i = 1; i < requestLines.length; i++) {
+	    String line = requestLines[i];
+	    if (line.equals(HEADERS_BODY_PARSED_SEPARATOR)) {
+		break;
+	    }
+	    headers.add(readHeader(line));
+	}
+	return headers;
+    }
+
+    private int bodyBytes(List<Header> headers) {
 	try {
-	    int bodyLength = Integer.parseInt(header.value());
-	    return bodyLength > 0 ? bodyLength : 0;
+	    int bodyBytes = 0;
+	    for (Header header : headers) {
+		if (header.is(CONTENT_LENGTH_HEADER)) {
+		    bodyBytes = Integer.parseInt(header.value());
+		    break;
+		}
+	    }
+	    return bodyBytes > 0 ? bodyBytes : 0;
 	} catch (NumberFormatException exception) {
 	    return 0;
 	}

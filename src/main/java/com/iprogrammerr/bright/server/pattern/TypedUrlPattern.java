@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.iprogrammerr.bright.server.exception.CreationException;
 import com.iprogrammerr.bright.server.model.KeyValue;
 import com.iprogrammerr.bright.server.model.KeysValues;
 import com.iprogrammerr.bright.server.model.StringObject;
@@ -138,12 +137,12 @@ public class TypedUrlPattern implements UrlPattern {
     private KeyValue readPathVariable(String urlSegment, String urlPatternSegment) throws Exception {
 	String rawPathVariable = readRawPathVariable(urlPatternSegment);
 	if (rawPathVariable.isEmpty()) {
-	    throw new CreationException();
+	    throw new Exception("Path variable is empty");
 	}
 	String[] keyAndType = readRawPathVariable(urlPatternSegment)
 		.split(URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR);
 	if (keyAndType.length < 2) {
-	    throw new CreationException();
+	    throw new Exception("Path variable is empty");
 	}
 	return new StringObject(keyAndType[0], type.value(keyAndType[1], urlSegment));
     }

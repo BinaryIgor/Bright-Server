@@ -2,7 +2,7 @@ package com.iprogrammerr.bright.server;
 
 import java.net.Socket;
 
-public interface Connection {
+public interface Connector {
 
-    Runnable handle(Socket socket);
+    Runnable plug(Socket socket);
 }

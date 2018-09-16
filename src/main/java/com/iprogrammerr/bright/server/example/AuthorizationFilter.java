@@ -12,16 +12,20 @@ public class AuthorizationFilter implements RequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Override
-    public Response filter(Request request) throws Exception {
+    public Response filter(Request request) {
 	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
 	    return new ForbiddenResponse();
 	}
-	String token = request.header(AUTHORIZATION_HEADER);
-	boolean valid = token.equals(SECRET_TOKEN);
-	if (!valid) {
+	try {
+	    String token = request.header(AUTHORIZATION_HEADER);
+	    boolean valid = token.equals(SECRET_TOKEN);
+	    if (!valid) {
+		return new ForbiddenResponse();
+	    }
+	    return new OkResponse();
+	} catch (Exception exception) {
 	    return new ForbiddenResponse();
 	}
-	return new OkResponse();
     }
 
 }

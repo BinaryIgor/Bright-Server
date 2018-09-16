@@ -1,15 +1,14 @@
 package com.iprogrammerr.bright.server.example;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
+import com.iprogrammerr.bright.server.Connector;
+import com.iprogrammerr.bright.server.RequestResponseConnector;
 import com.iprogrammerr.bright.server.Server;
-import com.iprogrammerr.bright.server.configuration.BrightServerConfiguration;
-import com.iprogrammerr.bright.server.configuration.ServerConfiguration;
+import com.iprogrammerr.bright.server.cors.AllowAllCors;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
+import com.iprogrammerr.bright.server.filter.ConditionalRequestFilters;
 import com.iprogrammerr.bright.server.filter.HttpRequestFilter;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
@@ -23,8 +22,6 @@ import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
 public class ServerApplication {
 
     public static void main(String[] args) throws Exception {
-	ServerConfiguration serverConfiguration = new BrightServerConfiguration(serverProperties());
-
 	RequestMethod get = new GetMethod();
 	RequestMethod post = new PostMethod();
 
@@ -37,26 +34,22 @@ public class ServerApplication {
 	respondents.add(complexRespondent);
 	respondents.add(fileRespondent);
 
-	List<ConditionalRequestFilter> requestFilters = new ArrayList<>();
+	List<ConditionalRequestFilter> filters = new ArrayList<>();
 	ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),
 		new AuthorizationFilter());
 	ConditionalRequestFilter authorizationSecondFilter = new HttpRequestFilter("hello/*",
 		new ListOfRequestMethodRule(get, post), new AuthorizationSecondFreePassFilter());
-	requestFilters.add(authorizationFilter);
-	requestFilters.add(authorizationSecondFilter);
+	filters.add(authorizationFilter);
+	filters.add(authorizationSecondFilter);
 
-	Server server = new Server(serverConfiguration, respondents, requestFilters);
+	Connector connection = new RequestResponseConnector("example", new AllowAllCors(), respondents,
+		new ConditionalRequestFilters(filters));
+
+	Server server = new Server(8080, 5000, connection);
 	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 	    server.stop();
 	}));
 	server.start();
     }
 
-    private static Properties serverProperties() throws IOException {
-	InputStream inputStream = ServerApplication.class.getResourceAsStream("/server.properties");
-	Properties properties = new Properties();
-	properties.load(inputStream);
-	inputStream.close();
-	return properties;
-    }
 }

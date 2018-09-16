@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server.configuration;
+package com.iprogrammerr.bright.server.cors;
 
 import java.util.List;
 

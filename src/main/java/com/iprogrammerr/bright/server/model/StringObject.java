@@ -2,8 +2,8 @@ package com.iprogrammerr.bright.server.model;
 
 public class StringObject implements KeyValue {
 
-    private String key;
-    private Object value;
+    private final String key;
+    private final Object value;
 
     public StringObject(String key, Object value) {
 	this.key = key;

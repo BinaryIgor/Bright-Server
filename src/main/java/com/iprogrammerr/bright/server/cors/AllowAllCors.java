@@ -1,27 +1,25 @@
-package com.iprogrammerr.bright.server.configuration;
+package com.iprogrammerr.bright.server.cors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.request.Request;
 
-public class DefaultCors implements Cors {
+public class AllowAllCors implements Cors {
 
-    private final List<Header> headers;
+    private final Cors base;
 
-    public DefaultCors() {
-	this.headers = new ArrayList<>();
+    public AllowAllCors() {
+	this.base = new ConfigurableCors("*", "*", "*");
     }
 
     @Override
     public boolean validate(Request request) {
-	return true;
+	return base.validate(request);
     }
 
     @Override
     public List<Header> toAddHeaders() {
-	return headers;
+	return base.toAddHeaders();
     }
-
 }

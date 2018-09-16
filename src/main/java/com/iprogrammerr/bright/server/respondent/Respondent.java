@@ -4,5 +4,5 @@ import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.response.Response;
 
 public interface Respondent {
-    Response respond(MatchedRequest request) throws Exception;
+    Response respond(MatchedRequest request);
 }

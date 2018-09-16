@@ -44,9 +44,11 @@ public class FileRespondent implements ConditionalRespondent {
 	    throw new PreConditionRequiredException("Given request does not match respondent requirements");
 	}
 	try {
-	    String filePath = WORKING_DIRECTORY + File.separator + urlPattern.filePath(request.url());
-	    System.out.println(filePath);
-	    BinaryFile binaryFile = new HttpTypedFile(new File(filePath));
+	    File file = new File(WORKING_DIRECTORY + File.separator + urlPattern.filePath(request.url()));
+	    if (!file.exists()) {
+		return new NotFoundResponse();
+	    }
+	    BinaryFile binaryFile = new HttpTypedFile(file);
 	    return new OkResponse(new TypedResponseBody(binaryFile.type(), binaryFile.content()));
 	} catch (Exception exception) {
 	    exception.printStackTrace();

@@ -3,7 +3,7 @@ package com.iprogrammerr.bright.server.request;
 import java.util.Arrays;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.exception.ObjectNotFoundException;
+import com.iprogrammerr.bright.server.exception.NotFoundException;
 import com.iprogrammerr.bright.server.header.Header;
 
 public class ParsedRequest implements Request {
@@ -61,7 +61,7 @@ public class ParsedRequest implements Request {
 		return header.value();
 	    }
 	}
-	throw new ObjectNotFoundException();
+	throw new NotFoundException();
     }
 
     @Override
