@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.model;
 
-public class StringObject implements KeyValue {
+public final class StringObject implements KeyValue {
 
     private final String key;
     private final Object value;

@@ -6,44 +6,44 @@ import com.iprogrammerr.bright.server.header.Header;
 
 public abstract class RequestEnvelope implements Request {
 
-    private Request request;
+    private final Request base;
 
-    public RequestEnvelope(Request request) {
-	this.request = request;
+    public RequestEnvelope(Request base) {
+	this.base = base;
     }
 
     @Override
-    public String url() {
-	return request.url();
+    public final String url() {
+	return base.url();
     }
 
     @Override
-    public String method() {
-	return request.method();
+    public final String method() {
+	return base.method();
     }
 
     @Override
-    public List<Header> headers() {
-	return request.headers();
+    public final List<Header> headers() {
+	return base.headers();
     }
 
     @Override
-    public boolean hasHeader(String key) {
-	return request.hasHeader(key);
+    public final boolean hasHeader(String key) {
+	return base.hasHeader(key);
     }
 
     @Override
-    public String header(String key) throws Exception {
-	return request.header(key);
+    public final String header(String key) throws Exception {
+	return base.header(key);
     }
 
     @Override
     public byte[] body() {
-	return request.body();
+	return base.body();
     }
 
     @Override
     public void removeContextPath(String contextPath) {
-	request.removeContextPath(contextPath);
+	base.removeContextPath(contextPath);
     }
 }

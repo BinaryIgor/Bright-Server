@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.method;
 
-public class DeleteMethod implements RequestMethod {
+public final class DeleteMethod implements RequestMethod {
 
     private static final String DELETE = "DELETE";
 

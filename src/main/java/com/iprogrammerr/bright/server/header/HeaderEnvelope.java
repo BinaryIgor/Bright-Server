@@ -2,7 +2,7 @@ package com.iprogrammerr.bright.server.header;
 
 public abstract class HeaderEnvelope implements Header {
 
-    private Header base;
+    private final Header base;
 
     public HeaderEnvelope(Header base) {
 	this.base = base;

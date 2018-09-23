@@ -2,10 +2,10 @@ package com.iprogrammerr.bright.server.binary;
 
 import java.io.InputStream;
 
-public class OnePacketBinary implements Binary {
+public final class OnePacketBinary implements Binary {
 
     private final InputStream source;
-    private int notAvailablePacketSize;
+    private final int notAvailablePacketSize;
 
     public OnePacketBinary(InputStream source, int notAvailablePacketSize) {
 	this.source = source;

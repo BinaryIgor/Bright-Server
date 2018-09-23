@@ -7,15 +7,15 @@ import java.io.File;
 
 import org.junit.Test;
 
-import com.iprogrammerr.bright.server.binary.BinaryFile;
-import com.iprogrammerr.bright.server.binary.TypedFile;
+import com.iprogrammerr.bright.server.binary.type.TypedBinary;
+import com.iprogrammerr.bright.server.binary.type.TypedFile;
 
 public class TypedFileTest {
 
     @Test
-    public void workingDirectory() throws Exception {
+    public void read() throws Exception {
 	File sourceFile = new File(TypedFileTest.class.getResource("/test.html").getFile());
-	BinaryFile binaryFile = new TypedFile(sourceFile);
+	TypedBinary binaryFile = new TypedFile(sourceFile);
 	assertTrue(binaryFile.type().equals("html"));
 	byte[] content = binaryFile.content();
 	assertEquals(content.length, sourceFile.length());

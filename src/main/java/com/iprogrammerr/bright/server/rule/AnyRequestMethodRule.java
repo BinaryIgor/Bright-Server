@@ -1,9 +1,9 @@
 package com.iprogrammerr.bright.server.rule;
 
-public class AnyRequestMethodRule implements RequestMethodRule {
+public final class AnyRequestMethodRule implements RequestMethodRule {
 
     @Override
-    public boolean isCompliant(String requestMethod) {
+    public boolean compliant(String requestMethod) {
 	return true;
     }
 

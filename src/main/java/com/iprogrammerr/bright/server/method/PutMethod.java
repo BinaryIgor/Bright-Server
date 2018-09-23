@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.method;
 
-public class PutMethod implements RequestMethod {
+public final class PutMethod implements RequestMethod {
 
     private static final String PUT = "PUT";
 

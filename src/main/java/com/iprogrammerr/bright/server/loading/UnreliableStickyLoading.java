@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.loading;
 
-public class UnreliableStickyLoading<T> implements UnreliableLoading<T> {
+public final class UnreliableStickyLoading<T> implements UnreliableLoading<T> {
 
     private final UnreliableLoading<T> base;
     private T value;

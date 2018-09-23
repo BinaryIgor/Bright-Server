@@ -1,16 +1,21 @@
 package com.iprogrammerr.bright.server.request;
 
 import com.iprogrammerr.bright.server.model.KeysValues;
+import com.iprogrammerr.bright.server.model.StringsObjects;
 
-public class ResolvedRequest extends RequestEnvelope implements MatchedRequest {
+public final class ResolvedRequest extends RequestEnvelope implements MatchedRequest {
 
-    private KeysValues parameters;
-    private KeysValues pathVariables;
+    private final KeysValues parameters;
+    private final KeysValues pathVariables;
 
     public ResolvedRequest(Request request, KeysValues parameters, KeysValues pathVariables) {
 	super(request);
 	this.parameters = parameters;
 	this.pathVariables = pathVariables;
+    }
+
+    public ResolvedRequest(Request request) {
+	this(request, new StringsObjects(), new StringsObjects());
     }
 
     @Override

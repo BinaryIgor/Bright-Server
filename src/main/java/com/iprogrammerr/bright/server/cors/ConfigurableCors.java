@@ -3,21 +3,21 @@ package com.iprogrammerr.bright.server.cors;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.header.AccessControlAllowHeadersHeader;
-import com.iprogrammerr.bright.server.header.AccessControlAllowMethodsHeader;
-import com.iprogrammerr.bright.server.header.AccessControlAllowOriginHeader;
 import com.iprogrammerr.bright.server.header.Header;
+import com.iprogrammerr.bright.server.header.template.AccessControlAllowHeadersHeader;
+import com.iprogrammerr.bright.server.header.template.AccessControlAllowMethodsHeader;
+import com.iprogrammerr.bright.server.header.template.AccessControlAllowOriginHeader;
 import com.iprogrammerr.bright.server.request.Request;
 
-public class ConfigurableCors implements Cors {
+public final class ConfigurableCors implements Cors {
 
     private static final String ALLOW_ALL = "*";
     private static final String ACCESS_CONTROL_ORIGIN = "Origin";
     private static final String ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
     private static final String ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method";
-    private String accessControllAllowOrigin;
-    private String accessControllAllowHeaders;
-    private String accessControllAllowMethods;
+    private final String accessControllAllowOrigin;
+    private final String accessControllAllowHeaders;
+    private final String accessControllAllowMethods;
     private final List<Header> corsHeaders;
 
     public ConfigurableCors(String accessControllAllowOrigin, String accessControllAllowHeaders,
@@ -34,7 +34,6 @@ public class ConfigurableCors implements Cors {
 		&& request.hasHeader(ACCESS_CONTROL_REQUEST_HEADERS)
 		&& request.hasHeader(ACCESS_CONTROL_REQUEST_METHOD);
 	if (!haveRequiredHeaders) {
-	    System.out.println("There is no required headers!");
 	    return false;
 	}
 	try {

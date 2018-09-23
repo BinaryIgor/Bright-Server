@@ -1,17 +1,16 @@
 package com.iprogrammerr.bright.server.filter;
 
-import com.iprogrammerr.bright.server.exception.PreConditionRequiredException;
 import com.iprogrammerr.bright.server.pattern.StarSymbolFilterUrlPattern;
 import com.iprogrammerr.bright.server.pattern.ToFilterUrlPattern;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.rule.RequestMethodRule;
 
-public class HttpRequestFilter implements ConditionalRequestFilter {
+public final class HttpRequestFilter implements ConditionalRequestFilter {
 
-    private ToFilterUrlPattern urlPattern;
-    private RequestMethodRule requestMethodRule;
-    private RequestFilter requestFilter;
+    private final ToFilterUrlPattern urlPattern;
+    private final RequestMethodRule requestMethodRule;
+    private final RequestFilter requestFilter;
 
     public HttpRequestFilter(ToFilterUrlPattern urlPattern, RequestMethodRule requestMethodRule,
 	    RequestFilter requestFilter) {
@@ -31,16 +30,14 @@ public class HttpRequestFilter implements ConditionalRequestFilter {
 
     @Override
     public boolean conditionsMet(Request request) {
-	if (!requestMethodRule.isCompliant(request.method())) {
-	    return false;
-	}
-	return urlPattern.primary() || urlPattern.match(request.url());
+	return requestMethodRule.compliant(request.method())
+		&& (urlPattern.primary() || urlPattern.match(request.url()));
     }
 
     @Override
     public Response filter(Request request) throws Exception {
 	if (!conditionsMet(request)) {
-	    throw new PreConditionRequiredException("Request must be matched before it can be filtered");
+	    throw new Exception("Given request does not meet filter conditions");
 	}
 	return requestFilter.filter(request);
     }

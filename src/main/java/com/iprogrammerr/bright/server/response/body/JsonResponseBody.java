@@ -9,7 +9,7 @@ public class JsonResponseBody implements ResponseBody {
     }
 
     @Override
-    public String contentType() {
+    public String type() {
 	return "application/json";
     }
 

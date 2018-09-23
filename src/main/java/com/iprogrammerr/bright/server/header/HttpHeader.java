@@ -1,9 +1,9 @@
 package com.iprogrammerr.bright.server.header;
 
-public class HttpHeader implements Header {
+public final class HttpHeader implements Header {
 
-    private String key;
-    private String value;
+    private final String key;
+    private final String value;
 
     public HttpHeader(String key, String value) {
 	this.key = key;

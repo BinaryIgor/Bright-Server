@@ -13,8 +13,8 @@ public abstract class ResponseEnvelope implements Response {
     }
 
     @Override
-    public final int responseCode() {
-	return base.responseCode();
+    public final int code() {
+	return base.code();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.method;
 
-public class HeadMethod implements RequestMethod {
+public final class HeadMethod implements RequestMethod {
 
     private static final String HEAD = "HEAD";
 

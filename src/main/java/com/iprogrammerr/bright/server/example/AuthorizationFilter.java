@@ -2,11 +2,11 @@ package com.iprogrammerr.bright.server.example;
 
 import com.iprogrammerr.bright.server.filter.RequestFilter;
 import com.iprogrammerr.bright.server.request.Request;
-import com.iprogrammerr.bright.server.response.ForbiddenResponse;
-import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.response.template.ForbiddenResponse;
+import com.iprogrammerr.bright.server.response.template.OkResponse;
 
-public class AuthorizationFilter implements RequestFilter {
+public final class AuthorizationFilter implements RequestFilter {
 
     private static final String SECRET_TOKEN = "token";
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -16,16 +16,19 @@ public class AuthorizationFilter implements RequestFilter {
 	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
 	    return new ForbiddenResponse();
 	}
+	Response response;
 	try {
 	    String token = request.header(AUTHORIZATION_HEADER);
 	    boolean valid = token.equals(SECRET_TOKEN);
 	    if (!valid) {
-		return new ForbiddenResponse();
+		response = new ForbiddenResponse();
+	    } else {
+		response = new OkResponse();
 	    }
-	    return new OkResponse();
 	} catch (Exception exception) {
-	    return new ForbiddenResponse();
+	    response = new ForbiddenResponse();
 	}
+	return response;
     }
 
 }

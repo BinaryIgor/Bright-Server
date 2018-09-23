@@ -6,12 +6,12 @@ import java.util.List;
 import com.iprogrammerr.bright.server.exception.NotFoundException;
 import com.iprogrammerr.bright.server.header.Header;
 
-public class ParsedRequest implements Request {
+public final class ParsedRequest implements Request {
 
-    private String method;
+    private final String method;
     private String url;
-    private List<Header> headers;
-    private byte[] body;
+    private final List<Header> headers;
+    private final byte[] body;
 
     public ParsedRequest(String method, String url, List<Header> headers, byte[] body) {
 	this.method = method;

@@ -11,7 +11,7 @@ public class TypedResponseBody implements ResponseBody {
     }
 
     @Override
-    public String contentType() {
+    public String type() {
 	return type;
     }
 

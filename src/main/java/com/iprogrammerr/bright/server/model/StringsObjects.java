@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.iprogrammerr.bright.server.exception.NotFoundException;
 
-public class StringsObjects implements KeysValues {
+public final class StringsObjects implements KeysValues {
 
     private final List<KeyValue> keysValues;
 

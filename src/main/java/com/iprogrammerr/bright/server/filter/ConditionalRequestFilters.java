@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.request.Request;
-import com.iprogrammerr.bright.server.response.ForbiddenResponse;
-import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.response.template.ForbiddenResponse;
+import com.iprogrammerr.bright.server.response.template.OkResponse;
 
-public class ConditionalRequestFilters implements Filters {
+public final class ConditionalRequestFilters implements Filters {
 
     private final List<ConditionalRequestFilter> filters;
 
@@ -31,7 +31,7 @@ public class ConditionalRequestFilters implements Filters {
 	    List<ConditionalRequestFilter> requestFilters = matchFilters(request);
 	    for (ConditionalRequestFilter filter : requestFilters) {
 		Response response = filter.filter(request);
-		if (!properResponseCode(response.responseCode())) {
+		if (!properResponseCode(response.code())) {
 		    return response;
 		}
 	    }

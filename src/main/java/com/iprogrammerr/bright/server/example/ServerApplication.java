@@ -6,13 +6,15 @@ import java.util.List;
 import com.iprogrammerr.bright.server.Connector;
 import com.iprogrammerr.bright.server.RequestResponseConnector;
 import com.iprogrammerr.bright.server.Server;
+import com.iprogrammerr.bright.server.application.Application;
+import com.iprogrammerr.bright.server.application.HttpApplication;
 import com.iprogrammerr.bright.server.cors.AllowAllCors;
 import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
-import com.iprogrammerr.bright.server.filter.ConditionalRequestFilters;
 import com.iprogrammerr.bright.server.filter.HttpRequestFilter;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
+import com.iprogrammerr.bright.server.protocol.HttpOneProtocol;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
@@ -39,13 +41,11 @@ public class ServerApplication {
 	filters.add(authorizationFilter);
 	filters.add(authorizationSecondFilter);
 
-	Connector connection = new RequestResponseConnector(new AllowAllCors(), respondents,
-		new ConditionalRequestFilters(filters));
+	Application application = new HttpApplication(new AllowAllCors(), respondents, filters);
 
-	Server server = new Server(8080, 5000, connection);
-	Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-	    server.stop();
-	}));
+	Connector connector = new RequestResponseConnector(new HttpOneProtocol(), application);
+
+	Server server = new Server(8080, 5000, connector);
 	server.start();
     }
 

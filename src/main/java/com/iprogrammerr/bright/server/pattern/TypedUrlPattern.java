@@ -10,7 +10,7 @@ import com.iprogrammerr.bright.server.model.KeysValues;
 import com.iprogrammerr.bright.server.model.StringObject;
 import com.iprogrammerr.bright.server.model.StringsObjects;
 
-public class TypedUrlPattern implements UrlPattern {
+public final class TypedUrlPattern implements UrlPattern {
 
     private static final String URL_SEGMENTS_SEPARATOR = "/";
     private static final String PARAMETERS_BEGINING = "?";
@@ -20,7 +20,7 @@ public class TypedUrlPattern implements UrlPattern {
     private static final String URL_PATTERN_PATH_VARIABLE_END = "}";
     private static final String URL_PATTERN_PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
     private final String urlPattern;
-    private Type type;
+    private final Type type;
 
     public TypedUrlPattern(String urlPattern) {
 	this(urlPattern, new UrlPatternType());

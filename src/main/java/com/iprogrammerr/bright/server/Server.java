@@ -9,20 +9,25 @@ import java.util.concurrent.Executors;
 import com.iprogrammerr.bright.server.loading.UnreliableLoading;
 import com.iprogrammerr.bright.server.loading.UnreliableStickyLoading;
 
-public class Server {
+public final class Server {
 
     private final int timeout;
     private final UnreliableLoading<ServerSocket> serverSocket;
     private final Executor executor;
     private final Connector connector;
 
-    public Server(int port, int timeout, Executor executor, Connector connector) {
-	this.serverSocket = new UnreliableStickyLoading<>(() -> {
-	    return new ServerSocket(port);
-	});
+    public Server(UnreliableLoading<ServerSocket> serverSocket, int port, int timeout, Executor executor,
+	    Connector connector) {
+	this.serverSocket = serverSocket;
 	this.timeout = timeout;
 	this.executor = executor;
 	this.connector = connector;
+    }
+
+    public Server(int port, int timeout, Executor executor, Connector connector) {
+	this(new UnreliableStickyLoading<>(() -> {
+	    return new ServerSocket(port);
+	}), port, timeout, executor, connector);
     }
 
     public Server(int port, int timeout, Connector connector) {

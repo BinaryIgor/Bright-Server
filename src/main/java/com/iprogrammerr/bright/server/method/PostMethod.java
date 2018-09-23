@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.method;
 
-public class PostMethod implements RequestMethod {
+public final class PostMethod implements RequestMethod {
 
     private static final String POST = "POST";
 

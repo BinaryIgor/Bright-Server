@@ -4,35 +4,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.header.ContentLengthHeader;
-import com.iprogrammerr.bright.server.header.ContentTypeHeader;
 import com.iprogrammerr.bright.server.header.Header;
+import com.iprogrammerr.bright.server.header.template.ContentLengthHeader;
+import com.iprogrammerr.bright.server.header.template.ContentTypeHeader;
 import com.iprogrammerr.bright.server.response.body.ResponseBody;
 
-public class ContentResponse implements Response {
+public final class ContentResponse implements Response {
 
-    private int responseCode;
-    private byte[] body;
-    private List<Header> headers;
+    private final int code;
+    private final byte[] body;
+    private final List<Header> headers;
 
-    public ContentResponse(int responseCode, ResponseBody body) {
-	this(responseCode, body.contentType(), body.content(), new ArrayList<>());
+    public ContentResponse(int code, ResponseBody body) {
+	this(code, body.type(), body.content(), new ArrayList<>());
     }
 
-    public ContentResponse(int responseCode, ResponseBody body, Header... headers) {
-	this(responseCode, body.contentType(), body.content(), new ArrayList<>(Arrays.asList(headers)));
+    public ContentResponse(int code, ResponseBody body, Header... headers) {
+	this(code, body.type(), body.content(), new ArrayList<>(Arrays.asList(headers)));
     }
 
-    public ContentResponse(int responseCode, ResponseBody body, List<Header> headers) {
-	this(responseCode, body.contentType(), body.content(), headers);
+    public ContentResponse(int code, ResponseBody body, List<Header> headers) {
+	this(code, body.type(), body.content(), headers);
     }
 
-    public ContentResponse(int responseCode, String textBody) {
-	this(responseCode, "text/plain", textBody.getBytes(), new ArrayList<>());
+    public ContentResponse(int code, String textBody) {
+	this(code, "text/plain", textBody.getBytes(), new ArrayList<>());
     }
 
-    public ContentResponse(int responseCode, String contentType, byte[] body, List<Header> headers) {
-	this.responseCode = responseCode;
+    public ContentResponse(int code, String contentType, byte[] body, List<Header> headers) {
+	this.code = code;
 	this.body = body;
 	this.headers = headers;
 	this.headers.add(new ContentTypeHeader(contentType));
@@ -40,8 +40,8 @@ public class ContentResponse implements Response {
     }
 
     @Override
-    public int responseCode() {
-	return responseCode;
+    public int code() {
+	return code;
     }
 
     @Override

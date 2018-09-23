@@ -1,29 +1,30 @@
 package com.iprogrammerr.simple.http.server;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.iprogrammerr.bright.server.binary.BinaryFile;
-import com.iprogrammerr.bright.server.binary.CompressedBinary;
-import com.iprogrammerr.bright.server.binary.DecompressedBinary;
-import com.iprogrammerr.bright.server.binary.DeflateCompressedBinary;
-import com.iprogrammerr.bright.server.binary.DeflateDecompressedBinary;
-import com.iprogrammerr.bright.server.binary.TypedFile;
+import com.iprogrammerr.bright.server.binary.processed.CompressedBinary;
+import com.iprogrammerr.bright.server.binary.processed.DecompressedBinary;
+import com.iprogrammerr.bright.server.binary.processed.DeflateCompressedBinary;
+import com.iprogrammerr.bright.server.binary.processed.DeflateDecompressedBinary;
+import com.iprogrammerr.bright.server.binary.type.TypedBinary;
+import com.iprogrammerr.bright.server.binary.type.TypedFile;
 
 public class DeflateBinaryTest {
 
     @Test
-    public void deflate() throws Exception {
-	File indexHtml = new File(DeflateBinaryTest.class.getResource("/test.html").getFile());
-	BinaryFile binaryFile = new TypedFile(indexHtml);
+    public void compressDecompress() throws Exception {
+	File indexHtml = new File(getClass().getResource("/test.html").getFile());
+	TypedBinary binaryFile = new TypedFile(indexHtml);
 	byte[] source = binaryFile.content();
 	CompressedBinary compressedBinary = new DeflateCompressedBinary(source);
 	byte[] compressed = compressedBinary.content();
-	DecompressedBinary decompressedBinary = new DeflateDecompressedBinary(compressed);
+	DecompressedBinary decompressedBinary = new DeflateDecompressedBinary(compressed, source.length);
 	byte[] decompressed = decompressedBinary.content();
-	assertEquals(source.length, decompressed.length);
+	assertTrue(Arrays.equals(source, decompressed));
     }
 }

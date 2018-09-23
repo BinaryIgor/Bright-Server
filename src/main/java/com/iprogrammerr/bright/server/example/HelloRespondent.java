@@ -2,11 +2,11 @@ package com.iprogrammerr.bright.server.example;
 
 import com.iprogrammerr.bright.server.request.MatchedRequest;
 import com.iprogrammerr.bright.server.respondent.Respondent;
-import com.iprogrammerr.bright.server.response.BadRequestResponse;
-import com.iprogrammerr.bright.server.response.OkResponse;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.response.template.BadRequestResponse;
+import com.iprogrammerr.bright.server.response.template.OkResponse;
 
-public class HelloRespondent implements Respondent {
+public final class HelloRespondent implements Respondent {
 
     @Override
     public Response respond(MatchedRequest request) {

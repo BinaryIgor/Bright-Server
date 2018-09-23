@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.method;
 
-public class GetMethod implements RequestMethod {
+public final class GetMethod implements RequestMethod {
 
     private static final String GET = "GET";
 

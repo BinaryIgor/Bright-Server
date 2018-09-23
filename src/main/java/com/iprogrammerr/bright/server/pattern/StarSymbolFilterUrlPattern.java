@@ -1,11 +1,11 @@
 package com.iprogrammerr.bright.server.pattern;
 
-public class StarSymbolFilterUrlPattern implements ToFilterUrlPattern{
+public final class StarSymbolFilterUrlPattern implements ToFilterUrlPattern {
 
     private static final String MATCH_ALL = "*";
     private static final String URL_SEGMENTS_SEPARATOR = "/";
-    private String urlPattern;
-    
+    private final String urlPattern;
+
     public StarSymbolFilterUrlPattern(String urlPattern) {
 	this.urlPattern = urlPattern;
     }

@@ -6,27 +6,27 @@ import java.util.List;
 
 import com.iprogrammerr.bright.server.header.Header;
 
-public class EmptyResponse implements Response {
+public final class EmptyResponse implements Response {
 
-    private int responseCode;
-    private List<Header> headers;
+    private final int code;
+    private final List<Header> headers;
 
-    public EmptyResponse(int responseCode) {
-	this(responseCode, new ArrayList<>());
+    public EmptyResponse(int code) {
+	this(code, new ArrayList<>());
     }
 
-    public EmptyResponse(int responseCode, Header... headers) {
-	this(responseCode, new ArrayList<>(Arrays.asList(headers)));
+    public EmptyResponse(int code, Header... headers) {
+	this(code, new ArrayList<>(Arrays.asList(headers)));
     }
 
-    public EmptyResponse(int responseCode, List<Header> headers) {
-	this.responseCode = responseCode;
+    public EmptyResponse(int code, List<Header> headers) {
+	this.code = code;
 	this.headers = headers;
     }
 
     @Override
-    public int responseCode() {
-	return responseCode;
+    public int code() {
+	return code;
     }
 
     @Override

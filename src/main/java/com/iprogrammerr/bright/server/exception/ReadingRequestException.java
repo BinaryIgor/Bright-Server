@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.exception;
 
-public class ReadingRequestException extends Exception {
+public final class ReadingRequestException extends Exception {
 
     public ReadingRequestException() {
 

@@ -2,7 +2,7 @@ package com.iprogrammerr.bright.server.pattern;
 
 import java.io.File;
 
-public class IndexHtmlFileUrlPattern implements FileUrlPattern {
+public final class IndexHtmlFileUrlPattern implements FileUrlPattern {
 
     private static final String URL_SEGMENTS_SEPARATOR = "/";
     private static final String GO_TO_HIGHER_DIRECTORY = "..";
@@ -29,12 +29,13 @@ public class IndexHtmlFileUrlPattern implements FileUrlPattern {
     public String filePath(String url) {
 	String filePath = cutParameters(url);
 	if (filePath.isEmpty()) {
-	    return rootDirectory + File.separator + "index.html";
-	}
-	if (filePath.endsWith(URL_SEGMENTS_SEPARATOR)) {
+	    filePath = rootDirectory + File.separator + "index.html";
+	} else if (filePath.endsWith(URL_SEGMENTS_SEPARATOR)) {
 	    filePath += "index.html";
+	} else {
+	    filePath = rootDirectory + File.separator + filePath.replace(URL_SEGMENTS_SEPARATOR, File.separator);
 	}
-	return rootDirectory + File.separator + filePath.replace(URL_SEGMENTS_SEPARATOR, File.separator);
+	return filePath;
     }
 
     private String cutParameters(String url) {

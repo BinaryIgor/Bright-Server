@@ -6,11 +6,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketsBinary implements Binary {
+public final class PacketsBinary implements Binary {
 
     private final Binary base;
     private final byte[] read;
-    private long toRead;
+    private final long toRead;
 
     public PacketsBinary(InputStream source, byte[] read, long toRead) {
 	this(new OnePacketBinary(source), read, toRead);
@@ -38,7 +38,7 @@ public class PacketsBinary implements Binary {
 	}
 	long toReadBytes = toRead - read.length;
 	if (toReadBytes < 1) {
-	    return read;
+	    throw new Exception(String.format("%d is not proper bytes number to read", toReadBytes));
 	}
 	long bytesRead = read.length;
 	while (bytesRead != toRead) {
@@ -46,10 +46,13 @@ public class PacketsBinary implements Binary {
 	    parts.add(packet);
 	    bytesRead += packet.length;
 	}
+	byte[] concatenated;
 	if (parts.size() == 1) {
-	    return parts.get(0);
+	    concatenated = parts.get(0);
+	} else {
+	    concatenated = concatenate(parts);
 	}
-	return concatenate(parts);
+	return concatenated;
     }
 
     private byte[] concatenate(List<byte[]> toConcatenate) throws IOException {

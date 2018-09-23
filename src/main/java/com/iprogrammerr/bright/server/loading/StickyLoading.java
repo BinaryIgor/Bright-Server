@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.loading;
 
-public class StickyLoading<T> implements Loading<T> {
+public final class StickyLoading<T> implements Loading<T> {
 
     private final Loading<T> base;
     private T value;

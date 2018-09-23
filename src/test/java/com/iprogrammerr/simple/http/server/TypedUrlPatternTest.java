@@ -46,7 +46,7 @@ public class TypedUrlPatternTest {
     }
 
     @Test
-    public void readParametersTest() throws Exception {
+    public void readParameters() throws Exception {
 	String url = "riddle/user?id=1&search=10.33&fast=true&super=dada";
 	urlPattern = new TypedUrlPattern("riddle/user?id=long&search=float&fast=boolean");
 	KeysValues parameters = urlPattern.readParameters(url);

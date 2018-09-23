@@ -2,7 +2,6 @@ package com.iprogrammerr.bright.server.respondent;
 
 import java.util.ArrayList;
 
-import com.iprogrammerr.bright.server.exception.PreConditionRequiredException;
 import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.model.KeysValues;
 import com.iprogrammerr.bright.server.model.StringsObjects;
@@ -12,11 +11,11 @@ import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.request.ResolvedRequest;
 import com.iprogrammerr.bright.server.response.Response;
 
-public class HttpRespondent implements ConditionalRespondent {
+public final class HttpRespondent implements ConditionalRespondent {
 
-    private UrlPattern urlPattern;
-    private RequestMethod requestMethod;
-    private Respondent respondent;
+    private final UrlPattern urlPattern;
+    private final RequestMethod requestMethod;
+    private final Respondent respondent;
 
     public HttpRespondent(UrlPattern urlPattern, RequestMethod requestMethod, Respondent respondent) {
 	this.urlPattern = urlPattern;
@@ -30,16 +29,13 @@ public class HttpRespondent implements ConditionalRespondent {
 
     @Override
     public boolean conditionsMet(Request request) {
-	if (!requestMethod.is(request.method())) {
-	    return false;
-	}
-	return urlPattern.match(request.url());
+	return requestMethod.is(request.method()) && urlPattern.match(request.url());
     }
 
     @Override
     public Response respond(Request request) throws Exception {
 	if (!conditionsMet(request)) {
-	    throw new PreConditionRequiredException("Request have to be resolved before it can be handled");
+	    throw new Exception("Given request does not meet respondent condtions");
 	}
 	KeysValues parameters;
 	if (urlPattern.hasParameters()) {

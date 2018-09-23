@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.method;
 
-public class OptionsMethod implements RequestMethod {
+public final class OptionsMethod implements RequestMethod {
 
     private static final String OPTIONS = "OPTIONS";
 

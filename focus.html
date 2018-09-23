@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<style>
+</style>
+</head>
+<body>
+<p>Name: <input type="text" data-help="Your full name"></p>
+<p>Age: <input type="text" data-help="Your age in years"></p>
+<p id = "help"></p>
+</body>
+<script>
+let help = document.querySelector("#help");
+let fields = document.querySelectorAll("input");
+for (let field of Array.from(fields)) {
+	field.addEventListener("focus", event => {
+		let text = event.target.getAttribute("data-help");
+		help.textContent = text;
+	});
+	field.addEventListener("blur", event => {
+		help.textContent = "";
+	});
+}
+let a = 0.5200, b = 0.700;
+let c = a + b;
+console.log(`Strange number ${c}`);
+</script>
+</html>

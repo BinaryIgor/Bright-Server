@@ -31,25 +31,21 @@ public class UrlPatternType implements Type {
     @Override
     public Object value(String type, String value) throws Exception {
 	Class clazz = type(type);
+	Object parsedValue;
 	if (Boolean.class.isAssignableFrom(clazz)) {
-	    return Boolean.parseBoolean(value);
+	    parsedValue = Boolean.parseBoolean(value);
+	} else if (Integer.class.isAssignableFrom(clazz)) {
+	    parsedValue = Integer.parseInt(value);
+	} else if (Long.class.isAssignableFrom(clazz)) {
+	    parsedValue = Long.parseLong(value);
+	} else if (Float.class.isAssignableFrom(clazz)) {
+	    parsedValue = Float.parseFloat(value);
+	} else if (Double.class.isAssignableFrom(clazz)) {
+	    parsedValue = Double.parseDouble(value);
+	} else {
+	    parsedValue = value;
 	}
-	if (Boolean.class.isAssignableFrom(clazz)) {
-	    return Boolean.parseBoolean(value);
-	}
-	if (Integer.class.isAssignableFrom(clazz)) {
-	    return Integer.parseInt(value);
-	}
-	if (Long.class.isAssignableFrom(clazz)) {
-	    return Long.parseLong(value);
-	}
-	if (Float.class.isAssignableFrom(clazz)) {
-	    return Float.parseFloat(value);
-	}
-	if (Double.class.isAssignableFrom(clazz)) {
-	    return Double.parseDouble(value);
-	}
-	return value;
+	return parsedValue;
     }
 
 }
