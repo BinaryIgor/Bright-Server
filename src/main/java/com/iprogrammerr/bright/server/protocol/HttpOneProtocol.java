@@ -8,7 +8,6 @@ import java.util.List;
 import com.iprogrammerr.bright.server.binary.Binary;
 import com.iprogrammerr.bright.server.binary.OnePacketBinary;
 import com.iprogrammerr.bright.server.binary.PacketsBinary;
-import com.iprogrammerr.bright.server.exception.ReadingRequestException;
 import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.header.HttpHeader;
 import com.iprogrammerr.bright.server.request.ParsedRequest;
@@ -35,7 +34,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	Binary binary = new OnePacketBinary(inputStream);
 	String[] requestLines = new String(binary.content()).split(NEW_LINE_SEPARATOR);
 	if (requestLines.length < 1 || requestLines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
-	    throw new ReadingRequestException("Request is empty");
+	    throw new Exception("Request is empty");
 	}
 	String method = readMethod(requestLines[0]);
 	String path = readPath(requestLines[0]);
@@ -82,7 +81,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private String readMethod(String firstLine) throws Exception {
 	int indexOfSeparator = firstLine.indexOf("/");
 	if (indexOfSeparator <= MIN_REQUEST_METHOD_LENGTH) {
-	    throw new ReadingRequestException();
+	    throw new Exception("First request line is invalid");
 	}
 	return firstLine.substring(0, indexOfSeparator - 1);
     }
@@ -90,11 +89,11 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private String readPath(String firstLine) throws Exception {
 	int indexOfSeparator = firstLine.indexOf(URL_SEGMENTS_SEPARATOR);
 	if (indexOfSeparator <= MIN_REQUEST_METHOD_LENGTH) {
-	    throw new ReadingRequestException();
+	    throw new Exception("First request line is invalid");
 	}
 	int indexOfHttp = firstLine.indexOf(HTTP);
 	if (indexOfHttp <= MIN_REQUEST_METHOD_LENGTH) {
-	    throw new ReadingRequestException();
+	    throw new Exception("First request line is invalid");
 	}
 	return firstLine.substring(indexOfSeparator + 1, indexOfHttp).trim();
     }
@@ -102,7 +101,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private Header readHeader(String headerToParse) throws Exception {
 	String[] keyValue = headerToParse.split(HEADER_KEY_VALUE_SEPARATOR);
 	if (keyValue.length < 2) {
-	    throw new ReadingRequestException(keyValue[0] + " is not a proper header");
+	    throw new Exception(keyValue[0] + " is not a proper header");
 	}
 	return new HttpHeader(keyValue[0].trim(), keyValue[1].trim());
     }

@@ -20,7 +20,7 @@ import com.iprogrammerr.bright.server.respondent.HttpRespondent;
 import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
 import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
 
-public class ServerApplication {
+public final class SimpleApplication {
 
     public static void main(String[] args) throws Exception {
 	RequestMethod get = new GetMethod();
@@ -48,5 +48,4 @@ public class ServerApplication {
 	Server server = new Server(8080, 5000, connector);
 	server.start();
     }
-
 }

@@ -1,20 +1,26 @@
 # Bright Server
  Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework.
  ```java
-RequestMethod get = new GetMethod();
+public final class SimpleApplication {
 
-List<ConditionalRespondent> respondents = new ArrayList<>();
-ConditionalRespondent helloRespondent = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
-respondents.add(helloRespondent);
+    public static void main(String[] args) throws Exception {
+        RequestMethod get = new GetMethod();
+	
+        List<ConditionalRespondent> respondents = new ArrayList<>();
+        ConditionalRespondent helloRespondent = new HttpRespondent("hello/{id:int}", get, new HelloRespondent());
+        respondents.add(helloRespondent);
 
-List<ConditionalRequestFilter> requestFilters = new ArrayList<>();
-ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),
-		new AuthorizationFilter());
-requestFilters.add(authorizationFilter);
+        List<ConditionalRequestFilter> filters = new ArrayList<>();
+        ConditionalRequestFilter authorizationFilter = new HttpRequestFilter("*", new AnyRequestMethodRule(),
+           new AuthorizationFilter());
+        filters.add(authorizationFilter);
 
-Connector connector = new RequestResponseConnector(new AllowAllCors(), respondents, new ConditionalRequestFilters(filters));
-Server server = new Server(8080, 5000, connector);
-server.start();
+        Application application = new HttpApplication(new AllowAllCors(), respondents, filters);
+        Connector connector = new RequestResponseConnector(new HttpOneProtocol(), application);
+        Server server = new Server(8080, 5000, connector);
+        server.start();
+    }
+}
 ```
 That's all. Now you have fully working http server which handles get request nad authorize it as follows:
 ```java
@@ -58,6 +64,7 @@ public class HelloRespondent implements Respondent {
 }
 ```
 For more, refer to [one page docs](https://github.com/Iprogrammerr/Bright-Server/wiki).
+Be sure to check out [examples](https://github.com/Iprogrammerr/Bright-Server/tree/master/src/main/java/com/iprogrammerr/bright/server/example), which are always the best documentation.
 Project is under active development, so any feedback or opened issue is very welcome and appreciated.
 Because of that, they might become outdated from time to time.
 
