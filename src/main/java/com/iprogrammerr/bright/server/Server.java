@@ -1,6 +1,5 @@
 package com.iprogrammerr.bright.server;
 
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executor;
@@ -50,7 +49,7 @@ public final class Server {
 		Socket socket = serverSocket.accept();
 		socket.setSoTimeout(timeout);
 		executor.execute(connector.plug(socket));
-	    } catch (IOException exception) {
+	    } catch (Exception exception) {
 		exception.printStackTrace();
 	    }
 	}

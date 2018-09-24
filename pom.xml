@@ -5,13 +5,25 @@
 	<groupId>com.iprogrammerr</groupId>
 	<artifactId>bright-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>bright-server</name>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>
+		Easy to use, robust, reliable and flexible standalone java http server and lightweight web framework.
+	</description>
+	<url>https://github.com/Iprogrammerr/Bright-Server</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<dependencies>
 		<dependency>
