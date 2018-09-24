@@ -69,7 +69,13 @@ Project is under active development, so any feedback or opened issue is very wel
 Because of that, they might become outdated from time to time.
 
 ## Maven
-  Api needs stabilization, so soon to be added.
+```xml
+<dependency>
+  <groupId>com.iprogrammerr</groupId>
+  <artifactId>bright-server</artifactId>
+  <version>1.0-beta-1</version>
+</dependency>
+```
   
 ## Example
   In development: (https://github.com/Iprogrammerr/Riddle/)
