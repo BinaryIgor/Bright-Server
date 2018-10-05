@@ -7,7 +7,7 @@ import com.iprogrammerr.bright.server.request.Request;
 
 public interface Cors {
 
-    boolean validate(Request request);
+    boolean isValid(Request request);
 
     List<Header> toAddHeaders();
 }

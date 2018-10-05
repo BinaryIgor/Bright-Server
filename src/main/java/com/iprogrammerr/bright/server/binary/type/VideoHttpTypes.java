@@ -6,16 +6,16 @@ public final class VideoHttpTypes implements HttpTypes {
 
     @Override
     public String type(String type) {
-	if (know(type)) {
+	if (isKnown(type)) {
 	    type = "video/" + type;
 	}
 	return type;
     }
 
     @Override
-    public boolean know(String type) {
-	for (String videoType : VIDEO_TYPES) {
-	    if (videoType.equals(type)) {
+    public boolean isKnown(String type) {
+	for (String vt : VIDEO_TYPES) {
+	    if (vt.equals(type)) {
 		return true;
 	    }
 	}

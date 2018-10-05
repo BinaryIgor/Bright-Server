@@ -18,7 +18,7 @@ public final class GzipFileRespondent implements FileRespondent {
     }
 
     @Override
-    public Response respond(TypedBinary file) {
+    public Response response(TypedBinary file) {
 	try {
 	    GzipCompressedBinary compressedBinary = new GzipCompressedBinary(file.content());
 	    return new OkResponse(new TypedResponseBody(types.type(file.type()), compressedBinary.content()),

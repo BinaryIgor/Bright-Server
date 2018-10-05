@@ -3,11 +3,11 @@ package com.iprogrammerr.bright.server.filter;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 
-public interface ConditionalRequestFilter {
+public interface ConditionalFilter {
 
-    boolean primary();
+    boolean isPrimary();
 
-    boolean conditionsMet(Request request);
+    boolean areConditionsMet(Request request);
 
-    Response filter(Request request) throws Exception;
+    Response filtered(Request request) throws Exception;
 }

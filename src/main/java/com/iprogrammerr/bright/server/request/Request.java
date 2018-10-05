@@ -18,5 +18,5 @@ public interface Request {
 
     byte[] body();
 
-    void removeContextPath(String contextPath);
+    void removeContext(String context);
 }

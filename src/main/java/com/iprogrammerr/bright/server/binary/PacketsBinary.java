@@ -33,32 +33,32 @@ public final class PacketsBinary implements Binary {
     @Override
     public byte[] content() throws Exception {
 	List<byte[]> parts = new ArrayList<>();
-	if (read.length > 0) {
-	    parts.add(read);
+	if (this.read.length > 0) {
+	    parts.add(this.read);
 	}
-	long toReadBytes = toRead - read.length;
-	if (toReadBytes < 1) {
-	    throw new Exception(String.format("%d is not proper bytes number to read", toReadBytes));
+	long toRead = this.toRead - this.read.length;
+	if (toRead < 1) {
+	    throw new Exception(String.format("%d is not proper bytes number to read", toRead));
 	}
-	long bytesRead = read.length;
-	while (bytesRead != toRead) {
-	    byte[] packet = base.content();
+	long read = this.read.length;
+	while (read != toRead) {
+	    byte[] packet = this.base.content();
 	    parts.add(packet);
-	    bytesRead += packet.length;
+	    read += packet.length;
 	}
 	byte[] concatenated;
 	if (parts.size() == 1) {
 	    concatenated = parts.get(0);
 	} else {
-	    concatenated = concatenate(parts);
+	    concatenated = concatenated(parts);
 	}
 	return concatenated;
     }
 
-    private byte[] concatenate(List<byte[]> toConcatenate) throws IOException {
+    private byte[] concatenated(List<byte[]> parts) throws IOException {
 	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	for (byte[] bytes : toConcatenate) {
-	    outputStream.write(bytes);
+	for (byte[] part : parts) {
+	    outputStream.write(part);
 	}
 	return outputStream.toByteArray();
     }

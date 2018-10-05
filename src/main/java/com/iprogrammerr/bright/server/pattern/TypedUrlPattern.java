@@ -32,17 +32,17 @@ public final class TypedUrlPattern implements UrlPattern {
     }
 
     @Override
-    public boolean match(String url) {
+    public boolean isMatched(String url) {
 	try {
 	    Map<String, Class> requiredUrlPathVariables = readRequiredUrlPathVariables();
 	    boolean haveRequiredUrlPathVariables = requiredUrlPathVariables.isEmpty()
-		    || checkVariables(requiredUrlPathVariables, readPathVariables(url));
+		    || checkVariables(requiredUrlPathVariables, pathVariables(url));
 	    if (!haveRequiredUrlPathVariables) {
 		return false;
 	    }
 	    Map<String, Class> requiredUrlParameters = readRequiredUrlParameters();
 	    boolean haveRequiredUrlParameters = requiredUrlParameters.isEmpty()
-		    || checkVariables(requiredUrlParameters, readParameters(url));
+		    || checkVariables(requiredUrlParameters, parameters(url));
 	    if (!haveRequiredUrlParameters) {
 		return false;
 	    }
@@ -113,7 +113,7 @@ public final class TypedUrlPattern implements UrlPattern {
     }
 
     @Override
-    public KeysValues readPathVariables(String url) {
+    public KeysValues pathVariables(String url) {
 	List<KeyValue> pathVariables = new ArrayList<>();
 	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
 	String[] urlPatternSegments = urlPattern.split(URL_SEGMENTS_SEPARATOR);
@@ -195,7 +195,7 @@ public final class TypedUrlPattern implements UrlPattern {
     }
 
     @Override
-    public KeysValues readParameters(String url) {
+    public KeysValues parameters(String url) {
 	List<KeyValue> parameters = new ArrayList<>();
 	Map<String, String> rawParameters = readRawParameters(url);
 	Map<String, String> requiredUrlParameters = readRawParameters(urlPattern);

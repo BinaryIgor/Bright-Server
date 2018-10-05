@@ -9,7 +9,7 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 public final class ComplexUrlRespondent implements Respondent {
 
     @Override
-    public Response respond(MatchedRequest request) {
+    public Response response(MatchedRequest request) {
 	try {
 	    long id = request.pathVariable("id", Long.class);
 	    String message = request.parameter("message", String.class);

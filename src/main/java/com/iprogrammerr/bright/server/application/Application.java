@@ -6,5 +6,5 @@ import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 
 public interface Application {
-    Optional<Response> respond(Request request);
+    Optional<Response> response(Request request);
 }

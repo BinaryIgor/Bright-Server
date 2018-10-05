@@ -13,9 +13,9 @@ public final class DeflateCompressedBinary implements CompressedBinary {
     @Override
     public byte[] content() throws Exception {
 	Deflater deflater = new Deflater();
-	deflater.setInput(source);
+	deflater.setInput(this.source);
 	deflater.finish();
-	byte[] buffer = new byte[source.length];
+	byte[] buffer = new byte[this.source.length];
 	int newLength = deflater.deflate(buffer);
 	byte[] compressed = new byte[newLength];
 	deflater.end();

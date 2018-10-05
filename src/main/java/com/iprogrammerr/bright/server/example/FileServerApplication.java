@@ -2,8 +2,8 @@ package com.iprogrammerr.bright.server.example;
 
 import java.util.Optional;
 
-import com.iprogrammerr.bright.server.Connector;
-import com.iprogrammerr.bright.server.RequestResponseConnector;
+import com.iprogrammerr.bright.server.Connection;
+import com.iprogrammerr.bright.server.RequestResponseConnection;
 import com.iprogrammerr.bright.server.Server;
 import com.iprogrammerr.bright.server.application.Application;
 import com.iprogrammerr.bright.server.binary.type.AudioHttpTypes;
@@ -28,18 +28,18 @@ public final class FileServerApplication implements Application {
 	System.out.println("Starting with: " + configuration.print());
 	ConditionalRespondent fileRespondent = new FilesRespondent(configuration.rootDirectory(),
 		new ExampleFileRespondent(new StaticHttpTypes(), new AudioHttpTypes()));
-	Connector connector = new RequestResponseConnector(new HttpOneProtocol(),
+	Connection connector = new RequestResponseConnection(new HttpOneProtocol(),
 		new FileServerApplication(fileRespondent));
 	Server server = new Server(configuration.port(), configuration.timeout(), connector);
 	server.start();
     }
 
     @Override
-    public Optional<Response> respond(Request request) {
+    public Optional<Response> response(Request request) {
 	Optional<Response> response;
-	if (fileRespondent.conditionsMet(request)) {
+	if (fileRespondent.areConditionsMet(request)) {
 	    try {
-		response = Optional.of(fileRespondent.respond(request));
+		response = Optional.of(fileRespondent.response(request));
 	    } catch (Exception exception) {
 		exception.printStackTrace();
 		response = Optional.of(new InternalServerErrorResponse());

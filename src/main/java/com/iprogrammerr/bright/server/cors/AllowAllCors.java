@@ -14,12 +14,12 @@ public final class AllowAllCors implements Cors {
     }
 
     @Override
-    public boolean validate(Request request) {
-	return base.validate(request);
+    public boolean isValid(Request request) {
+	return this.base.isValid(request);
     }
 
     @Override
     public List<Header> toAddHeaders() {
-	return base.toAddHeaders();
+	return this.base.toAddHeaders();
     }
 }

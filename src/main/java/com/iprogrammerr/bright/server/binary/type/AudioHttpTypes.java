@@ -7,16 +7,16 @@ public final class AudioHttpTypes implements HttpTypes {
 
     @Override
     public String type(String type) {
-	if (know(type)) {
+	if (isKnown(type)) {
 	    type = "audio/" + type;
 	}
 	return type;
     }
 
     @Override
-    public boolean know(String type) {
-	for (String audioType : AUDIO_TYPES) {
-	    if (audioType.equals(type)) {
+    public boolean isKnown(String type) {
+	for (String at : AUDIO_TYPES) {
+	    if (at.equals(type)) {
 		return true;
 	    }
 	}

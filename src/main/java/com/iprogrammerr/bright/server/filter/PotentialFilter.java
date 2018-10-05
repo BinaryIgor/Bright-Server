@@ -6,40 +6,40 @@ import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.rule.RequestMethodRule;
 
-public final class HttpRequestFilter implements ConditionalRequestFilter {
+public final class PotentialFilter implements ConditionalFilter {
 
     private final ToFilterUrlPattern urlPattern;
     private final RequestMethodRule requestMethodRule;
-    private final RequestFilter requestFilter;
+    private final Filter requestFilter;
 
-    public HttpRequestFilter(ToFilterUrlPattern urlPattern, RequestMethodRule requestMethodRule,
-	    RequestFilter requestFilter) {
+    public PotentialFilter(ToFilterUrlPattern urlPattern, RequestMethodRule requestMethodRule,
+	    Filter requestFilter) {
 	this.urlPattern = urlPattern;
 	this.requestMethodRule = requestMethodRule;
 	this.requestFilter = requestFilter;
     }
 
-    public HttpRequestFilter(String urlPattern, RequestMethodRule requestMethodRule, RequestFilter requestFilter) {
+    public PotentialFilter(String urlPattern, RequestMethodRule requestMethodRule, Filter requestFilter) {
 	this(new StarSymbolFilterUrlPattern(urlPattern), requestMethodRule, requestFilter);
     }
 
     @Override
-    public boolean primary() {
-	return urlPattern.primary();
+    public boolean isPrimary() {
+	return urlPattern.isPrimary();
     }
 
     @Override
-    public boolean conditionsMet(Request request) {
-	return requestMethodRule.compliant(request.method())
-		&& (urlPattern.primary() || urlPattern.match(request.url()));
+    public boolean areConditionsMet(Request request) {
+	return requestMethodRule.isCompliant(request.method())
+		&& (urlPattern.isPrimary() || urlPattern.isMatched(request.url()));
     }
 
     @Override
-    public Response filter(Request request) throws Exception {
-	if (!conditionsMet(request)) {
+    public Response filtered(Request request) throws Exception {
+	if (!areConditionsMet(request)) {
 	    throw new Exception("Given request does not meet filter conditions");
 	}
-	return requestFilter.filter(request);
+	return requestFilter.filtered(request);
     }
 
 }

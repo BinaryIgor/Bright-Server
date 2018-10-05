@@ -7,16 +7,16 @@ import com.iprogrammerr.bright.server.response.body.TypedResponseBody;
 import com.iprogrammerr.bright.server.response.template.NotFoundResponse;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 
-public final class SimpleFileRespondent implements FileRespondent {
+public final class RawFileRespondent implements FileRespondent {
 
     private final HttpTypes types;
 
-    public SimpleFileRespondent(HttpTypes types) {
+    public RawFileRespondent(HttpTypes types) {
 	this.types = types;
     }
 
     @Override
-    public Response respond(TypedBinary file) {
+    public Response response(TypedBinary file) {
 	try {
 	    return new OkResponse(new TypedResponseBody(types.type(file.type()), file.content()));
 	} catch (Exception exception) {

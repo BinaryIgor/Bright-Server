@@ -15,8 +15,8 @@ public final class DeflateDecompressedBinary implements DecompressedBinary {
     @Override
     public byte[] content() throws Exception {
 	Inflater inflater = new Inflater();
-	inflater.setInput(source);
-	byte[] buffer = new byte[decompressedSize];
+	inflater.setInput(this.source);
+	byte[] buffer = new byte[this.decompressedSize];
 	int newLength = inflater.inflate(buffer);
 	byte[] decompressed = new byte[newLength];
 	for (int i = 0; i < newLength; i++) {

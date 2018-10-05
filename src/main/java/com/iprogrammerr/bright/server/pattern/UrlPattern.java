@@ -4,11 +4,11 @@ import com.iprogrammerr.bright.server.model.KeysValues;
 
 public interface UrlPattern {
 
-    boolean match(String url);
+    boolean isMatched(String url);
 
-    KeysValues readPathVariables(String url);
+    KeysValues pathVariables(String url);
 
-    KeysValues readParameters(String url);
+    KeysValues parameters(String url);
 
     boolean hasParameters();
 

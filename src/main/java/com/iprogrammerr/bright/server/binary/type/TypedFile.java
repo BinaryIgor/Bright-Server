@@ -16,21 +16,19 @@ public final class TypedFile implements TypedBinary {
 
     @Override
     public byte[] content() throws Exception {
-	try (InputStream inputStream = new FileInputStream(file)) {
-	    return new PacketsBinary(inputStream, file.length()).content();
-	} catch (Exception exception) {
-	    throw exception;
+	try (InputStream is = new FileInputStream(this.file)) {
+	    return new PacketsBinary(is, this.file.length()).content();
 	}
     }
 
     @Override
     public String type() {
-	String fileName = file.getName();
-	int indexOfDot = fileName.indexOf(".") + 1;
-	if (indexOfDot == 0 || indexOfDot == (fileName.length() - 1)) {
+	String name = this.file.getName();
+	int dotIndex = name.indexOf(".") + 1;
+	if (dotIndex == 0 || dotIndex == (name.length() - 1)) {
 	    return "";
 	}
-	return fileName.substring(indexOfDot, fileName.length());
+	return name.substring(dotIndex, name.length());
     }
 
 }

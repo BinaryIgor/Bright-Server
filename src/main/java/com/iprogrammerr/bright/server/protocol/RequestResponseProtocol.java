@@ -8,9 +8,9 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public interface RequestResponseProtocol {
 
-    Request read(InputStream inputStream) throws Exception;
+    Request request(InputStream inputStream) throws Exception;
 
     void write(OutputStream outputStream, Response response) throws Exception;
 
-    boolean closeConnection(Request request);
+    boolean shouldClose(Request request);
 }

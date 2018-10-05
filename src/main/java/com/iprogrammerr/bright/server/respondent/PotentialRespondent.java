@@ -11,45 +11,45 @@ import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.request.ResolvedRequest;
 import com.iprogrammerr.bright.server.response.Response;
 
-public final class HttpRespondent implements ConditionalRespondent {
+public final class PotentialRespondent implements ConditionalRespondent {
 
     private final UrlPattern urlPattern;
     private final RequestMethod requestMethod;
     private final Respondent respondent;
 
-    public HttpRespondent(UrlPattern urlPattern, RequestMethod requestMethod, Respondent respondent) {
+    public PotentialRespondent(UrlPattern urlPattern, RequestMethod requestMethod, Respondent respondent) {
 	this.urlPattern = urlPattern;
 	this.requestMethod = requestMethod;
 	this.respondent = respondent;
     }
 
-    public HttpRespondent(String urlPattern, RequestMethod requestMethod, Respondent respondent) {
+    public PotentialRespondent(String urlPattern, RequestMethod requestMethod, Respondent respondent) {
 	this(new TypedUrlPattern(urlPattern), requestMethod, respondent);
     }
 
     @Override
-    public boolean conditionsMet(Request request) {
-	return requestMethod.is(request.method()) && urlPattern.match(request.url());
+    public boolean areConditionsMet(Request request) {
+	return requestMethod.is(request.method()) && urlPattern.isMatched(request.url());
     }
 
     @Override
-    public Response respond(Request request) throws Exception {
-	if (!conditionsMet(request)) {
+    public Response response(Request request) throws Exception {
+	if (!areConditionsMet(request)) {
 	    throw new Exception("Given request does not meet respondent condtions");
 	}
 	KeysValues parameters;
 	if (urlPattern.hasParameters()) {
-	    parameters = urlPattern.readParameters(request.url());
+	    parameters = urlPattern.parameters(request.url());
 	} else {
 	    parameters = new StringsObjects(new ArrayList<>());
 	}
 	KeysValues pathVariables;
 	if (urlPattern.hasPathVariables()) {
-	    pathVariables = urlPattern.readPathVariables(request.url());
+	    pathVariables = urlPattern.pathVariables(request.url());
 	} else {
 	    pathVariables = new StringsObjects(new ArrayList<>());
 	}
-	return respondent.respond(new ResolvedRequest(request, parameters, pathVariables));
+	return respondent.response(new ResolvedRequest(request, parameters, pathVariables));
     }
 
 }

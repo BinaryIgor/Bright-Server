@@ -15,26 +15,25 @@ public final class StaticHttpTypes implements HttpTypes {
 	    type = "text/plain";
 	} else if (type.equals("js")) {
 	    type = "application/javascript";
-	} else if (application(type)) {
+	} else if (isApplication(type)) {
 	    type = "application/" + type;
-	} else if (image(type)) {
+	} else if (isImage(type)) {
 	    type = "image/" + type;
 	}
 	return type;
     }
 
-    private boolean application(String type) {
-	for (String applicationType : APPLICATION_TYPES) {
-	    if (applicationType.equals(type)) {
-		return true;
-	    }
-	}
-	return false;
+    private boolean isApplication(String type) {
+	return isType(type, APPLICATION_TYPES);
     }
 
-    private boolean image(String type) {
-	for (String imageType : IMAGE_TYPES) {
-	    if (imageType.equals(type)) {
+    private boolean isImage(String type) {
+	return isType(type, IMAGE_TYPES);
+    }
+
+    private boolean isType(String type, String[] types) {
+	for (String t : types) {
+	    if (t.equals(type)) {
 		return true;
 	    }
 	}
@@ -42,9 +41,9 @@ public final class StaticHttpTypes implements HttpTypes {
     }
 
     @Override
-    public boolean know(String type) {
-	return type.equals("html") || type.equals("css") || type.equals("txt") || type.equals("js") || application(type)
-		|| image(type);
+    public boolean isKnown(String type) {
+	return type.equals("html") || type.equals("css") || type.equals("txt") || type.equals("js")
+		|| isApplication(type) || isImage(type);
     }
 
 }

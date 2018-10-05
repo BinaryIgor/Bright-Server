@@ -31,14 +31,14 @@ public final class StringsObjects implements KeysValues {
     public <T> T value(String key, Class<T> clazz) throws Exception {
 	for (KeyValue keyValue : keysValues) {
 	    if (keyValue.key().equals(key) && keyValue.value().getClass().isAssignableFrom(clazz)) {
-		return (T) keyValue.value();
+		return clazz.cast(keyValue.value());
 	    }
 	}
 	throw new NotFoundException();
     }
 
     @Override
-    public KeysValues add(String key, Object value) {
+    public KeysValues put(String key, Object value) {
 	KeyValue keyValue = new StringObject(key, value);
 	int indexOfPrevious = index(keyValue.key());
 	if (indexOfPrevious >= 0) {
@@ -59,7 +59,7 @@ public final class StringsObjects implements KeysValues {
     }
 
     @Override
-    public boolean empty() {
+    public boolean isEmpty() {
 	return keysValues.isEmpty();
     }
 

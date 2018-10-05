@@ -2,7 +2,7 @@ package com.iprogrammerr.bright.server.pattern;
 
 public interface ToFilterUrlPattern {
 
-    boolean primary();
+    boolean isPrimary();
 
-    boolean match(String url);
+    boolean isMatched(String url);
 }

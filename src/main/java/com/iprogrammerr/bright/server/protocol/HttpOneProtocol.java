@@ -30,7 +30,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String CONTENT_LENGTH_HEADER = "Content-Length";
 
     @Override
-    public Request read(InputStream inputStream) throws Exception {
+    public Request request(InputStream inputStream) throws Exception {
 	Binary binary = new OnePacketBinary(inputStream);
 	String[] requestLines = new String(binary.content()).split(NEW_LINE_SEPARATOR);
 	if (requestLines.length < 1 || requestLines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
@@ -125,7 +125,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     }
 
     @Override
-    public boolean closeConnection(Request request) {
+    public boolean shouldClose(Request request) {
 	boolean close;
 	try {
 	    close = !request.hasHeader(CONNECTION_HEADER)

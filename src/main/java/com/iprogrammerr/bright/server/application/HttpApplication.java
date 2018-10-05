@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import com.iprogrammerr.bright.server.cors.Cors;
 import com.iprogrammerr.bright.server.exception.NotFoundException;
-import com.iprogrammerr.bright.server.filter.ConditionalRequestFilter;
-import com.iprogrammerr.bright.server.filter.ConditionalRequestFilters;
+import com.iprogrammerr.bright.server.filter.ConditionalFilter;
+import com.iprogrammerr.bright.server.filter.ConditionalFilters;
 import com.iprogrammerr.bright.server.method.OptionsMethod;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
@@ -21,90 +21,90 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 public final class HttpApplication implements Application {
 
     private static final OptionsMethod OPTIONS_METHOD = new OptionsMethod();
-    private final String contextPath;
+    private final String context;
     private final Cors cors;
     private final List<ConditionalRespondent> respondents;
-    private final ConditionalRequestFilters filters;
+    private final ConditionalFilters filters;
 
-    public HttpApplication(String contextPath, Cors cors, List<ConditionalRespondent> respondents,
-	    ConditionalRequestFilters filters) {
-	this.contextPath = contextPath;
+    public HttpApplication(String context, Cors cors, List<ConditionalRespondent> respondents,
+	    ConditionalFilters filters) {
+	this.context = context;
 	this.cors = cors;
 	this.respondents = respondents;
 	this.filters = filters;
     }
 
     public HttpApplication(String contextPath, Cors cors, List<ConditionalRespondent> respondents,
-	    List<ConditionalRequestFilter> filters) {
-	this(contextPath, cors, respondents, new ConditionalRequestFilters(filters));
+	    List<ConditionalFilter> filters) {
+	this(contextPath, cors, respondents, new ConditionalFilters(filters));
     }
 
-    public HttpApplication(Cors cors, List<ConditionalRespondent> respondents, List<ConditionalRequestFilter> filters) {
-	this("", cors, respondents, new ConditionalRequestFilters(filters));
+    public HttpApplication(Cors cors, List<ConditionalRespondent> respondents, List<ConditionalFilter> filters) {
+	this("", cors, respondents, new ConditionalFilters(filters));
     }
 
     public HttpApplication(String contextPath, Cors cors, List<ConditionalRespondent> respondents) {
-	this(contextPath, cors, respondents, new ConditionalRequestFilters());
+	this(contextPath, cors, respondents, new ConditionalFilters());
     }
 
     public HttpApplication(Cors cors, List<ConditionalRespondent> respondents) {
-	this("", cors, respondents, new ConditionalRequestFilters());
+	this("", cors, respondents, new ConditionalFilters());
     }
 
     @Override
-    public Optional<Response> respond(Request request) {
+    public Optional<Response> response(Request request) {
 	Optional<Response> response;
-	if (!contextPath.isEmpty() && !request.url().startsWith(contextPath)) {
+	if (!this.context.isEmpty() && !request.url().startsWith(this.context)) {
 	    response = Optional.empty();
 	} else if (OPTIONS_METHOD.is(request.method())) {
-	    response = Optional.of(respondToOptions(request));
+	    response = Optional.of(optionsResponse(request));
 	} else {
-	    response = Optional.of(findResponse(request));
+	    response = Optional.of(validRequestResponse(request));
 	}
 	return response;
     }
 
-    private Response findResponse(Request request) {
+    private Response validRequestResponse(Request request) {
 	Response response;
 	try {
-	    request.removeContextPath(contextPath);
-	    ConditionalRespondent respondent = findRespondent(request);
-	    response = filters.run(request);
-	    if (properResponseCode(response.code())) {
-		response = cors.toAddHeaders().isEmpty() ? respondent.respond(request)
-			: new WithAdditionalHeadersResponse(respondent.respond(request), cors.toAddHeaders());
+	    request.removeContext(this.context);
+	    ConditionalRespondent cr = respondent(request);
+	    response = this.filters.filtered(request);
+	    if (hasProperCode(response.code())) {
+		response = this.cors.toAddHeaders().isEmpty() ? cr.response(request)
+			: new WithAdditionalHeadersResponse(cr.response(request), this.cors.toAddHeaders());
 	    }
-	} catch (NotFoundException exception) {
-	    exception.printStackTrace();
+	} catch (NotFoundException e) {
+	    e.printStackTrace();
 	    response = new NotFoundResponse();
-	} catch (Exception exception) {
-	    exception.printStackTrace();
+	} catch (Exception e) {
+	    e.printStackTrace();
 	    response = new InternalServerErrorResponse();
 	}
 	return response;
     }
 
-    private ConditionalRespondent findRespondent(Request request) throws Exception {
-	for (ConditionalRespondent respondent : respondents) {
-	    if (respondent.conditionsMet(request)) {
-		return respondent;
+    private ConditionalRespondent respondent(Request request) throws Exception {
+	for (ConditionalRespondent cr : this.respondents) {
+	    if (cr.areConditionsMet(request)) {
+		return cr;
 	    }
 	}
 	throw new NotFoundException(
 		String.format("There is no respondent for %s method and url: %s", request.method(), request.url()));
     }
 
-    private Response respondToOptions(Request request) {
+    private Response optionsResponse(Request request) {
 	Response response;
-	if (!cors.validate(request)) {
+	if (!this.cors.isValid(request)) {
 	    response = new ForbiddenResponse();
 	} else {
-	    response = new OkResponse(cors.toAddHeaders());
+	    response = new OkResponse(this.cors.toAddHeaders());
 	}
 	return response;
     }
 
-    private boolean properResponseCode(int responseCode) {
+    private boolean hasProperCode(int responseCode) {
 	return responseCode >= 200 && responseCode < 300;
     }
 

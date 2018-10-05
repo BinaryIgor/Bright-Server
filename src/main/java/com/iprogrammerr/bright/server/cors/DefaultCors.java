@@ -15,13 +15,13 @@ public final class DefaultCors implements Cors {
     }
 
     @Override
-    public boolean validate(Request request) {
+    public boolean isValid(Request request) {
 	return true;
     }
 
     @Override
     public List<Header> toAddHeaders() {
-	return headers;
+	return this.headers;
     }
 
 }

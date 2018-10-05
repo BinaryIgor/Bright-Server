@@ -11,7 +11,7 @@ public final class ListOfRequestMethodRule implements RequestMethodRule {
     }
 
     @Override
-    public boolean compliant(String requestMethod) {
+    public boolean isCompliant(String requestMethod) {
 	for (RequestMethod method : requestMethods) {
 	    if (method.is(requestMethod)) {
 		return true;

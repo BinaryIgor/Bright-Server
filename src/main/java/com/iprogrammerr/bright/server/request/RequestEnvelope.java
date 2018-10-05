@@ -38,12 +38,12 @@ public abstract class RequestEnvelope implements Request {
     }
 
     @Override
-    public byte[] body() {
+    public final byte[] body() {
 	return base.body();
     }
 
     @Override
-    public void removeContextPath(String contextPath) {
-	base.removeContextPath(contextPath);
+    public final void removeContext(String contextPath) {
+	base.removeContext(contextPath);
     }
 }

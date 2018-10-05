@@ -11,7 +11,7 @@ public final class SingleRequestMethodRule implements RequestMethodRule {
     }
 
     @Override
-    public boolean compliant(String requestMethod) {
+    public boolean isCompliant(String requestMethod) {
 	return this.requestMethod.is(requestMethod);
     }
 

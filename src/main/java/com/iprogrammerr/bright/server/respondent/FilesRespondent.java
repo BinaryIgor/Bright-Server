@@ -31,17 +31,17 @@ public final class FilesRespondent implements ConditionalRespondent {
 
     public FilesRespondent(String rootDirectory) {
 	this(new GetMethod(), new IndexHtmlFileUrlPattern(rootDirectory),
-		new SimpleFileRespondent(new StaticHttpTypes()));
+		new RawFileRespondent(new StaticHttpTypes()));
     }
 
     @Override
-    public boolean conditionsMet(Request request) {
-	return requestMethod.is(request.method()) && urlPattern.match(request.url());
+    public boolean areConditionsMet(Request request) {
+	return requestMethod.is(request.method()) && urlPattern.isMatched(request.url());
     }
 
     @Override
-    public Response respond(Request request) throws Exception {
-	if (!conditionsMet(request)) {
+    public Response response(Request request) throws Exception {
+	if (!areConditionsMet(request)) {
 	    throw new Exception("Given request does not match respondent requirements");
 	}
 	Response response;
@@ -51,7 +51,7 @@ public final class FilesRespondent implements ConditionalRespondent {
 	} else if (file.isDirectory()) {
 	    response = new SeeOtherResponse(request.url() + "/");
 	} else {
-	    response = respondent.respond(new TypedFile(file));
+	    response = respondent.response(new TypedFile(file));
 	}
 	return response;
     }

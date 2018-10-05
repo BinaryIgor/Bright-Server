@@ -8,10 +8,9 @@ public interface KeysValues {
 
     <T> T value(String key, Class<T> clazz) throws Exception;
 
-    KeysValues add(String key, Object value);
+    KeysValues put(String key, Object value);
 
     List<KeyValue> keysValues();
 
-    boolean empty();
-
+    boolean isEmpty();
 }

@@ -17,10 +17,8 @@ public final class GzipDecompressedBinary implements DecompressedBinary {
 
     @Override
     public byte[] content() throws Exception {
-	try (GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(compressed))) {
-	    return new PacketsBinary(inputStream, originalLength).content();
-	} catch (Exception exception) {
-	    throw exception;
+	try (GZIPInputStream is = new GZIPInputStream(new ByteArrayInputStream(this.compressed))) {
+	    return new PacketsBinary(is, this.originalLength).content();
 	}
     }
 

@@ -5,11 +5,11 @@ import java.io.InputStream;
 public final class OnePacketBinary implements Binary {
 
     private final InputStream source;
-    private final int notAvailablePacketSize;
+    private final int defaultPacketSize;
 
-    public OnePacketBinary(InputStream source, int notAvailablePacketSize) {
+    public OnePacketBinary(InputStream source, int defaultPacketSize) {
 	this.source = source;
-	this.notAvailablePacketSize = notAvailablePacketSize;
+	this.defaultPacketSize = defaultPacketSize;
     }
 
     public OnePacketBinary(InputStream source) {
@@ -18,21 +18,22 @@ public final class OnePacketBinary implements Binary {
 
     @Override
     public byte[] content() throws Exception {
-	int bytesAvailable = source.available();
-	if (bytesAvailable == 0) {
-	    bytesAvailable = notAvailablePacketSize;
+	int available = this.source.available();
+	if (available == 0) {
+	    available = this.defaultPacketSize;
 	}
-	byte[] buffer = new byte[bytesAvailable];
-	int bytesRead = source.read(buffer);
-	if (bytesRead <= 0) {
-	    return new byte[0];
-	}
-	if (bytesRead == buffer.length) {
-	    return buffer;
-	}
-	byte[] readBytes = new byte[bytesRead];
-	for (int i = 0; i < bytesRead; i++) {
-	    readBytes[i] = buffer[i];
+	byte[] buffer = new byte[available];
+	int read = this.source.read(buffer);
+	byte[] readBytes;
+	if (read <= 0) {
+	    readBytes = new byte[0];
+	} else if (read == buffer.length) {
+	    readBytes = buffer;
+	} else {
+	    readBytes = new byte[read];
+	    for (int i = 0; i < read; i++) {
+		readBytes[i] = buffer[i];
+	    }
 	}
 	return readBytes;
     }

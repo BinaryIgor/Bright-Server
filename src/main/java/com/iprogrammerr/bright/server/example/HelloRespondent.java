@@ -9,7 +9,7 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 public final class HelloRespondent implements Respondent {
 
     @Override
-    public Response respond(MatchedRequest request) {
+    public Response response(MatchedRequest request) {
 	try {
 	    int id = request.pathVariable("id", Integer.class);
 	    String message = "Hello number " + id;

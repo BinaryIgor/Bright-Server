@@ -11,12 +11,12 @@ public final class StarSymbolFilterUrlPattern implements ToFilterUrlPattern {
     }
 
     @Override
-    public boolean primary() {
+    public boolean isPrimary() {
 	return urlPattern.startsWith(MATCH_ALL);
     }
 
     @Override
-    public boolean match(String url) {
+    public boolean isMatched(String url) {
 	if (urlPattern.startsWith(MATCH_ALL)) {
 	    return true;
 	}

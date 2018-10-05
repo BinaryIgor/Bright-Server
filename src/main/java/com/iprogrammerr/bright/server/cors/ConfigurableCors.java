@@ -15,57 +15,45 @@ public final class ConfigurableCors implements Cors {
     private static final String ACCESS_CONTROL_ORIGIN = "Origin";
     private static final String ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
     private static final String ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method";
-    private final String accessControllAllowOrigin;
-    private final String accessControllAllowHeaders;
-    private final String accessControllAllowMethods;
-    private final List<Header> corsHeaders;
+    private final String allowOrigin;
+    private final String allowHeaders;
+    private final String allowMethods;
+    private final List<Header> headers;
 
-    public ConfigurableCors(String accessControllAllowOrigin, String accessControllAllowHeaders,
-	    String accessControllAllowMethods) {
-	this.accessControllAllowOrigin = accessControllAllowOrigin;
-	this.accessControllAllowHeaders = accessControllAllowHeaders;
-	this.accessControllAllowMethods = accessControllAllowMethods;
-	this.corsHeaders = new ArrayList<>();
+    public ConfigurableCors(String allowOrigin, String allowHeaders, String allowMethods) {
+	this.allowOrigin = allowOrigin;
+	this.allowHeaders = allowHeaders;
+	this.allowMethods = allowMethods;
+	this.headers = new ArrayList<>();
     }
 
     @Override
-    public boolean validate(Request request) {
-	boolean haveRequiredHeaders = request.hasHeader(ACCESS_CONTROL_ORIGIN)
-		&& request.hasHeader(ACCESS_CONTROL_REQUEST_HEADERS)
+    public boolean isValid(Request request) {
+	boolean valid = request.hasHeader(ACCESS_CONTROL_ORIGIN) && request.hasHeader(ACCESS_CONTROL_REQUEST_HEADERS)
 		&& request.hasHeader(ACCESS_CONTROL_REQUEST_METHOD);
-	if (!haveRequiredHeaders) {
-	    return false;
+	if (valid) {
+	    try {
+		valid = (this.allowOrigin.equals(ALLOW_ALL)
+			|| this.allowOrigin.equals(request.header(ACCESS_CONTROL_ORIGIN)))
+			&& (this.allowMethods.equals(ALLOW_ALL)
+				|| this.allowMethods.contains(request.header(ACCESS_CONTROL_REQUEST_METHOD)))
+			&& (this.allowHeaders.equals(ALLOW_ALL)
+				|| this.allowHeaders.contains(request.header(ACCESS_CONTROL_REQUEST_HEADERS)));
+	    } catch (Exception e) {
+		valid = false;
+	    }
 	}
-	try {
-	    boolean originAllowed = accessControllAllowOrigin.equals(ALLOW_ALL)
-		    || accessControllAllowOrigin.equals(request.header(ACCESS_CONTROL_ORIGIN));
-	    if (!originAllowed) {
-		return false;
-	    }
-	    boolean methodAllowed = accessControllAllowMethods.equals(ALLOW_ALL)
-		    || accessControllAllowMethods.contains(request.header(ACCESS_CONTROL_REQUEST_METHOD));
-	    if (!methodAllowed) {
-		return false;
-	    }
-	    boolean headersAllowed = accessControllAllowHeaders.equals(ALLOW_ALL)
-		    || accessControllAllowHeaders.contains(request.header(ACCESS_CONTROL_REQUEST_HEADERS));
-	    if (!headersAllowed) {
-		return false;
-	    }
-	} catch (Exception exception) {
-	    return false;
-	}
-	return true;
+	return valid;
     }
 
     @Override
     public List<Header> toAddHeaders() {
-	if (corsHeaders.isEmpty()) {
-	    corsHeaders.add(new AccessControlAllowHeadersHeader(accessControllAllowHeaders));
-	    corsHeaders.add(new AccessControlAllowMethodsHeader(accessControllAllowMethods));
-	    corsHeaders.add(new AccessControlAllowOriginHeader(accessControllAllowOrigin));
+	if (this.headers.isEmpty()) {
+	    this.headers.add(new AccessControlAllowHeadersHeader(this.allowHeaders));
+	    this.headers.add(new AccessControlAllowMethodsHeader(this.allowMethods));
+	    this.headers.add(new AccessControlAllowOriginHeader(this.allowOrigin));
 	}
-	return corsHeaders;
+	return headers;
     }
 
 }

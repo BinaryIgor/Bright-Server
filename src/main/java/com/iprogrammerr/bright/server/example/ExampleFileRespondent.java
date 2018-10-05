@@ -22,7 +22,7 @@ public class ExampleFileRespondent implements FileRespondent {
     }
 
     @Override
-    public Response respond(TypedBinary file) {
+    public Response response(TypedBinary file) {
 	Response response;
 	try {
 	    String type = file.type();
@@ -41,7 +41,7 @@ public class ExampleFileRespondent implements FileRespondent {
     }
 
     private String httpType(String type) {
-	if (staticTypes.know(type)) {
+	if (staticTypes.isKnown(type)) {
 	    return staticTypes.type(type);
 	}
 	return audioTypes.type(type);

@@ -12,12 +12,12 @@ public final class StringObject implements KeyValue {
 
     @Override
     public String key() {
-	return key;
+	return this.key;
     }
 
     @Override
     public Object value() {
-	return value;
+	return this.value;
     }
 
 }

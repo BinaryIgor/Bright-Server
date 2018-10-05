@@ -15,20 +15,20 @@ public class StarSymbolFilterUrlPatternTest {
     public void properMatch() {
 	urlPattern = new StarSymbolFilterUrlPattern("user/");
 	String url = "user/search/1/name";
-	assertTrue(urlPattern.match(url));
+	assertTrue(urlPattern.isMatched(url));
 	urlPattern = new StarSymbolFilterUrlPattern("*");
-	assertTrue(urlPattern.match(url));
+	assertTrue(urlPattern.isMatched(url));
 	urlPattern = new StarSymbolFilterUrlPattern("user/search/*/*");
-	assertTrue(urlPattern.match(url));
+	assertTrue(urlPattern.isMatched(url));
     }
 
     @Test
     public void improperMatch() {
 	urlPattern = new StarSymbolFilterUrlPattern("search/");
 	String url = "user/search/1/name";
-	assertFalse(urlPattern.match(url));
+	assertFalse(urlPattern.isMatched(url));
 	urlPattern = new StarSymbolFilterUrlPattern("user/*");
-	assertFalse(urlPattern.match(url));
+	assertFalse(urlPattern.isMatched(url));
 
     }
 }
