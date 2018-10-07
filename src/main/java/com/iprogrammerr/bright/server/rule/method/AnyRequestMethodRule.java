@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server.rule;
+package com.iprogrammerr.bright.server.rule.method;
 
 public final class AnyRequestMethodRule implements RequestMethodRule {
 

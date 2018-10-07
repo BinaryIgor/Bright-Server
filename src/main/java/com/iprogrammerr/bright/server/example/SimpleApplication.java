@@ -17,8 +17,8 @@ import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.protocol.HttpOneProtocol;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 import com.iprogrammerr.bright.server.respondent.PotentialRespondent;
-import com.iprogrammerr.bright.server.rule.AnyRequestMethodRule;
-import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
+import com.iprogrammerr.bright.server.rule.method.AnyRequestMethodRule;
+import com.iprogrammerr.bright.server.rule.method.ListOfRequestMethodRule;
 
 public final class SimpleApplication {
 

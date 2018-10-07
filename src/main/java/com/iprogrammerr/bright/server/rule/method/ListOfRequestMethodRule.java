@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server.rule;
+package com.iprogrammerr.bright.server.rule.method;
 
 import com.iprogrammerr.bright.server.method.RequestMethod;
 

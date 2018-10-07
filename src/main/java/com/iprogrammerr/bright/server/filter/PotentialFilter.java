@@ -1,29 +1,33 @@
 package com.iprogrammerr.bright.server.filter;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import com.iprogrammerr.bright.server.pattern.AsteriskFilterUrlPattern;
-import com.iprogrammerr.bright.server.pattern.AsteriskFilterUrlPatternsMapping;
 import com.iprogrammerr.bright.server.pattern.FilterUrlPattern;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
-import com.iprogrammerr.bright.server.rule.RequestMethodRule;
+import com.iprogrammerr.bright.server.rule.filter.FilterRule;
+import com.iprogrammerr.bright.server.rule.filter.FilterRulesMapping;
+import com.iprogrammerr.bright.server.rule.filter.ToFilterRequestRule;
+import com.iprogrammerr.bright.server.rule.method.RequestMethodRule;
 
 public final class PotentialFilter implements ConditionalFilter {
 
-    private final List<FilterUrlPattern> urlPatterns;
-    private final RequestMethodRule methodRule;
+    private final Iterable<FilterRule> filterRules;
     private final Filter filter;
 
-    public PotentialFilter(List<FilterUrlPattern> urlPatterns, RequestMethodRule methodRule, Filter filter) {
-	this.urlPatterns = urlPatterns;
-	this.methodRule = methodRule;
+    public PotentialFilter(Iterable<FilterRule> filterRules, Filter filter) {
+	this.filterRules = filterRules;
 	this.filter = filter;
     }
 
+    public PotentialFilter(Filter filter, FilterRule... filterRules) {
+	this(Arrays.asList(filterRules), filter);
+    }
+
     public PotentialFilter(FilterUrlPattern urlPattern, RequestMethodRule methodRule, Filter filter) {
-	this(Collections.singletonList(urlPattern), methodRule, filter);
+	this(Collections.singletonList(new ToFilterRequestRule(methodRule, urlPattern)), filter);
     }
 
     public PotentialFilter(String urlPattern, RequestMethodRule methodRule, Filter filter) {
@@ -31,13 +35,13 @@ public final class PotentialFilter implements ConditionalFilter {
     }
 
     public PotentialFilter(RequestMethodRule methodRule, Filter filter, String... urlPatterns) {
-	this(new AsteriskFilterUrlPatternsMapping().value(urlPatterns), methodRule, filter);
+	this(new FilterRulesMapping(methodRule).value(urlPatterns), filter);
     }
 
     @Override
     public boolean isPrimary() {
-	for (FilterUrlPattern up : this.urlPatterns) {
-	    if (up.isPrimary()) {
+	for (FilterRule fr : this.filterRules) {
+	    if (fr.isPrimary()) {
 		return true;
 	    }
 	}
@@ -46,12 +50,8 @@ public final class PotentialFilter implements ConditionalFilter {
 
     @Override
     public boolean areConditionsMet(Request request) {
-	return this.methodRule.isCompliant(request.method()) && (isPrimary() || isMatched(request.url()));
-    }
-
-    private boolean isMatched(String url) {
-	for (FilterUrlPattern pattern : this.urlPatterns) {
-	    if (pattern.isMatched(url)) {
+	for (FilterRule fr : this.filterRules) {
+	    if (fr.isCompliant(request)) {
 		return true;
 	    }
 	}
