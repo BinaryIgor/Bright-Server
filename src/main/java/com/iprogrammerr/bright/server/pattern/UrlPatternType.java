@@ -8,39 +8,39 @@ public class UrlPatternType implements Type {
     private static final String FLOAT = "float";
     private static final String DOUBLE = "double";
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> Class<T> type(String type) {
+	Class<T> typeClass;
 	if (type.equalsIgnoreCase(BOOLEAN)) {
-	    return (Class<T>) Boolean.class;
+	    typeClass = (Class<T>) Boolean.class;
+	} else if (type.equalsIgnoreCase(INT)) {
+	    typeClass = (Class<T>) Integer.class;
+	} else if (type.equalsIgnoreCase(LONG)) {
+	    typeClass = (Class<T>) Long.class;
+	} else if (type.equalsIgnoreCase(FLOAT)) {
+	    typeClass = (Class<T>) Float.class;
+	} else if (type.equalsIgnoreCase(DOUBLE)) {
+	    typeClass = (Class<T>) Double.class;
+	} else {
+	    typeClass = (Class<T>) String.class;
 	}
-	if (type.equalsIgnoreCase(INT)) {
-	    return (Class<T>) Integer.class;
-	}
-	if (type.equalsIgnoreCase(LONG)) {
-	    return (Class<T>) Long.class;
-	}
-	if (type.equalsIgnoreCase(FLOAT)) {
-	    return (Class<T>) Float.class;
-	}
-	if (type.equalsIgnoreCase(DOUBLE)) {
-	    return (Class<T>) Double.class;
-	}
-	return (Class<T>) String.class;
+	return typeClass;
     }
 
     @Override
-    public Object value(String type, String value) throws Exception {
-	Class clazz = type(type);
+    public <T> Object value(Class<T> type, String value) throws Exception {
+	value = value.trim();
 	Object parsedValue;
-	if (Boolean.class.isAssignableFrom(clazz)) {
+	if (Boolean.class.isAssignableFrom(type)) {
 	    parsedValue = Boolean.parseBoolean(value);
-	} else if (Integer.class.isAssignableFrom(clazz)) {
+	} else if (Integer.class.isAssignableFrom(type)) {
 	    parsedValue = Integer.parseInt(value);
-	} else if (Long.class.isAssignableFrom(clazz)) {
+	} else if (Long.class.isAssignableFrom(type)) {
 	    parsedValue = Long.parseLong(value);
-	} else if (Float.class.isAssignableFrom(clazz)) {
+	} else if (Float.class.isAssignableFrom(type)) {
 	    parsedValue = Float.parseFloat(value);
-	} else if (Double.class.isAssignableFrom(clazz)) {
+	} else if (Double.class.isAssignableFrom(type)) {
 	    parsedValue = Double.parseDouble(value);
 	} else {
 	    parsedValue = value;

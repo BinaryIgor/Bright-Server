@@ -12,7 +12,7 @@ public final class AuthorizationFilter implements Filter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Override
-    public Response filtered(Request request) {
+    public Response response(Request request) {
 	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
 	    return new ForbiddenResponse();
 	}
@@ -25,7 +25,7 @@ public final class AuthorizationFilter implements Filter {
 	    } else {
 		response = new OkResponse();
 	    }
-	} catch (Exception exception) {
+	} catch (Exception e) {
 	    response = new ForbiddenResponse();
 	}
 	return response;

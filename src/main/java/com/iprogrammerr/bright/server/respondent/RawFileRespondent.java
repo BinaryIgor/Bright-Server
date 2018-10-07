@@ -17,12 +17,14 @@ public final class RawFileRespondent implements FileRespondent {
 
     @Override
     public Response response(TypedBinary file) {
+	Response response;
 	try {
-	    return new OkResponse(new TypedResponseBody(types.type(file.type()), file.content()));
-	} catch (Exception exception) {
-	    exception.printStackTrace();
-	    return new NotFoundResponse();
+	    response = new OkResponse(new TypedResponseBody(this.types.type(file.type()), file.content()));
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    response = new NotFoundResponse();
 	}
+	return response;
     }
 
 }

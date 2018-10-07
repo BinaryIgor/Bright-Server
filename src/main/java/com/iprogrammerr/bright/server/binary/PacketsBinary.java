@@ -1,7 +1,6 @@
 package com.iprogrammerr.bright.server.binary;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +8,11 @@ import java.util.List;
 public final class PacketsBinary implements Binary {
 
     private final Binary base;
-    private final byte[] read;
+    private final byte[] readPart;
     private final long toRead;
 
-    public PacketsBinary(InputStream source, byte[] read, long toRead) {
-	this(new OnePacketBinary(source), read, toRead);
+    public PacketsBinary(InputStream source, byte[] readPart, long toRead) {
+	this(new OnePacketBinary(source), readPart, toRead);
     }
 
     public PacketsBinary(InputStream source, long toRead) {
@@ -24,23 +23,23 @@ public final class PacketsBinary implements Binary {
 	this(base, new byte[0], toRead);
     }
 
-    public PacketsBinary(Binary base, byte[] read, long toRead) {
+    public PacketsBinary(Binary base, byte[] readPart, long toRead) {
 	this.base = base;
-	this.read = read;
+	this.readPart = readPart;
 	this.toRead = toRead;
     }
 
     @Override
     public byte[] content() throws Exception {
 	List<byte[]> parts = new ArrayList<>();
-	if (this.read.length > 0) {
-	    parts.add(this.read);
+	if (this.readPart.length > 0) {
+	    parts.add(this.readPart);
 	}
-	long toRead = this.toRead - this.read.length;
+	long toRead = this.toRead - this.readPart.length;
 	if (toRead < 1) {
-	    throw new Exception(String.format("%d is not proper bytes number to read", toRead));
+	    throw new Exception(String.format("%d is not a proper bytes number to read", toRead));
 	}
-	long read = this.read.length;
+	long read = this.readPart.length;
 	while (read != toRead) {
 	    byte[] packet = this.base.content();
 	    parts.add(packet);
@@ -55,12 +54,12 @@ public final class PacketsBinary implements Binary {
 	return concatenated;
     }
 
-    private byte[] concatenated(List<byte[]> parts) throws IOException {
-	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private byte[] concatenated(List<byte[]> parts) throws Exception {
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	for (byte[] part : parts) {
-	    outputStream.write(part);
+	    baos.write(part);
 	}
-	return outputStream.toByteArray();
+	return baos.toByteArray();
     }
 
 }

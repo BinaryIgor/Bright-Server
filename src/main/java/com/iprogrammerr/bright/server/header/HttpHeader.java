@@ -12,12 +12,12 @@ public final class HttpHeader implements Header {
 
     @Override
     public String key() {
-	return key;
+	return this.key;
     }
 
     @Override
     public String value() {
-	return value;
+	return this.value;
     }
 
     @Override
@@ -27,12 +27,7 @@ public final class HttpHeader implements Header {
 
     @Override
     public String writable() {
-	return key + ": " + value;
-    }
-
-    @Override
-    public String toString() {
-	return writable();
+	return this.key + ": " + this.value;
     }
 
 }

@@ -26,29 +26,29 @@ public final class ConditionalFilters implements Filters {
     }
 
     @Override
-    public Response filtered(Request request) {
+    public Response response(Request request) {
 	try {
-	    List<ConditionalFilter> requestFilters = matchedFilters(request);
-	    for (ConditionalFilter filter : requestFilters) {
-		Response response = filter.filtered(request);
+	    List<ConditionalFilter> filters = matchedFilters(request);
+	    for (ConditionalFilter filter : filters) {
+		Response response = filter.response(request);
 		if (!hasProperCode(response)) {
 		    return response;
 		}
 	    }
 	    return new OkResponse();
-	} catch (Exception exception) {
+	} catch (Exception e) {
 	    return new ForbiddenResponse();
 	}
     }
 
     private List<ConditionalFilter> matchedFilters(Request request) {
-	List<ConditionalFilter> matchedFilters = new ArrayList<>();
+	List<ConditionalFilter> filters = new ArrayList<>();
 	for (ConditionalFilter filter : this.filters) {
 	    if (filter.areConditionsMet(request)) {
-		matchedFilters.add(filter);
+		filters.add(filter);
 	    }
 	}
-	return matchedFilters;
+	return filters;
     }
 
     private boolean hasProperCode(Response response) {

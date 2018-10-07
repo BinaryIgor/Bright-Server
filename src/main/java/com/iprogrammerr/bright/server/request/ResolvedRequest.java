@@ -20,22 +20,22 @@ public final class ResolvedRequest extends RequestEnvelope implements MatchedReq
 
     @Override
     public <T> T parameter(String key, Class<T> clazz) throws Exception {
-	return parameters.value(key, clazz);
+	return this.parameters.value(key, clazz);
     }
 
     @Override
     public <T> T pathVariable(String key, Class<T> clazz) throws Exception {
-	return pathVariables.value(key, clazz);
+	return this.pathVariables.value(key, clazz);
     }
 
     @Override
     public <T> boolean hasParameter(String key, Class<T> clazz) {
-	return parameters.has(key, clazz);
+	return this.parameters.has(key, clazz);
     }
 
     @Override
     public <T> boolean hasPathVariable(String key, Class<T> clazz) {
-	return pathVariables.has(key, clazz);
+	return this.pathVariables.has(key, clazz);
     }
 
 }

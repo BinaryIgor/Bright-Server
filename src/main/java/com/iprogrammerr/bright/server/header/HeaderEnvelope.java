@@ -10,22 +10,22 @@ public abstract class HeaderEnvelope implements Header {
 
     @Override
     public final String key() {
-	return base.key();
+	return this.base.key();
     }
 
     @Override
     public final String value() {
-	return base.value();
+	return this.base.value();
     }
 
     @Override
     public final boolean is(String key) {
-	return base.is(key);
+	return this.base.is(key);
     }
 
     @Override
     public final String writable() {
-	return base.writable();
+	return this.base.writable();
     }
 
 }

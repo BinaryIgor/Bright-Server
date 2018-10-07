@@ -16,90 +16,91 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public class HttpOneProtocol implements RequestResponseProtocol {
 
-    private static final String CONNECTION_HEADER = "Connection";
-    private static final String CONNECTION_CLOSE = "close";
-    private static final String NEW_LINE_SEPARATOR = "\n";
-    private static final String HEADER_KEY_VALUE_SEPARATOR = ": ";
+    private static final String CONNECTION = "Connection";
+    private static final String CLOSE = "close";
+    private static final String NEW_LINE = "\n";
+    private static final String KEY_VALUE_SEPARATOR = ": ";
     private static final String HEADERS_BODY_PARSED_SEPARATOR = "\r";
     private static final int MIN_VALID_FIRST_LINE_LENGTH = 10;
     private static final int MIN_REQUEST_METHOD_LENGTH = 3;
     private static final String CRLF_CRLF = "\r\n\r\n";
-    private static final String URL_SEGMENTS_SEPARATOR = "/";
+    private static final String SEGMENTS_SEPARATOR = "/";
     private static final String HTTP = "HTTP";
-    private static final String RESPONSE_CODE_HTTP_1_1_PREFIX = "HTTP/1.1 ";
-    private static final String CONTENT_LENGTH_HEADER = "Content-Length";
+    private static final String RESPONSE_CODE_PREFIX = "HTTP/1.1 ";
+    private static final String CONTENT_LENGTH = "Content-Length";
 
     @Override
     public Request request(InputStream inputStream) throws Exception {
 	Binary binary = new OnePacketBinary(inputStream);
-	String[] requestLines = new String(binary.content()).split(NEW_LINE_SEPARATOR);
+	String[] requestLines = new String(binary.content()).split(NEW_LINE);
 	if (requestLines.length < 1 || requestLines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
 	    throw new Exception("Request is empty");
 	}
-	String method = readMethod(requestLines[0]);
-	String path = readPath(requestLines[0]);
-	List<Header> headers = readHeaders(requestLines);
+	String method = method(requestLines[0]);
+	String path = path(requestLines[0]);
+	List<Header> headers = headers(requestLines);
 	int bodyBytes = bodyBytes(headers);
+	Request request;
 	if (bodyBytes == 0) {
-	    return new ParsedRequest(method, path, headers);
+	    request = new ParsedRequest(method, path, headers);
+	} else {
+	    byte[] bodyPart = requestLines[requestLines.length - 1].getBytes();
+	    request = bodyPart.length >= bodyBytes ? new ParsedRequest(method, path, headers, bodyPart)
+		    : new ParsedRequest(method, path, headers,
+			    new PacketsBinary(binary, bodyPart, bodyBytes).content());
 	}
-	byte[] partOfTheBody = requestLines[requestLines.length - 1].getBytes();
-	if (partOfTheBody.length == bodyBytes) {
-	    return new ParsedRequest(method, path, headers, partOfTheBody);
-	}
-	byte[] body = new PacketsBinary(binary, partOfTheBody, bodyBytes).content();
-	return new ParsedRequest(method, path, headers, body);
+	return request;
     }
 
-    private List<Header> readHeaders(String[] requestLines) throws Exception {
+    private List<Header> headers(String[] lines) throws Exception {
 	List<Header> headers = new ArrayList<>();
-	for (int i = 1; i < requestLines.length; i++) {
-	    String line = requestLines[i];
+	for (int i = 1; i < lines.length; i++) {
+	    String line = lines[i];
 	    if (line.equals(HEADERS_BODY_PARSED_SEPARATOR)) {
 		break;
 	    }
-	    headers.add(readHeader(line));
+	    headers.add(header(line));
 	}
 	return headers;
     }
 
     private int bodyBytes(List<Header> headers) {
+	int bodyBytes = 0;
 	try {
-	    int bodyBytes = 0;
 	    for (Header header : headers) {
-		if (header.is(CONTENT_LENGTH_HEADER)) {
+		if (header.is(CONTENT_LENGTH)) {
 		    bodyBytes = Integer.parseInt(header.value());
 		    break;
 		}
 	    }
-	    return bodyBytes > 0 ? bodyBytes : 0;
-	} catch (NumberFormatException exception) {
-	    return 0;
+	} catch (Exception e) {
+	    bodyBytes = 0;
 	}
+	return bodyBytes;
     }
 
-    private String readMethod(String firstLine) throws Exception {
-	int indexOfSeparator = firstLine.indexOf("/");
-	if (indexOfSeparator <= MIN_REQUEST_METHOD_LENGTH) {
+    private String method(String line) throws Exception {
+	int separator = line.indexOf(SEGMENTS_SEPARATOR);
+	if (separator <= MIN_REQUEST_METHOD_LENGTH) {
 	    throw new Exception("First request line is invalid");
 	}
-	return firstLine.substring(0, indexOfSeparator - 1);
+	return line.substring(0, separator - 1);
     }
 
-    private String readPath(String firstLine) throws Exception {
-	int indexOfSeparator = firstLine.indexOf(URL_SEGMENTS_SEPARATOR);
-	if (indexOfSeparator <= MIN_REQUEST_METHOD_LENGTH) {
+    private String path(String line) throws Exception {
+	int separator = line.indexOf(SEGMENTS_SEPARATOR);
+	if (separator <= MIN_REQUEST_METHOD_LENGTH) {
 	    throw new Exception("First request line is invalid");
 	}
-	int indexOfHttp = firstLine.indexOf(HTTP);
-	if (indexOfHttp <= MIN_REQUEST_METHOD_LENGTH) {
+	int http = line.indexOf(HTTP);
+	if (http <= 2 * MIN_REQUEST_METHOD_LENGTH) {
 	    throw new Exception("First request line is invalid");
 	}
-	return firstLine.substring(indexOfSeparator + 1, indexOfHttp).trim();
+	return line.substring(separator + 1, http).trim();
     }
 
-    private Header readHeader(String headerToParse) throws Exception {
-	String[] keyValue = headerToParse.split(HEADER_KEY_VALUE_SEPARATOR);
+    private Header header(String header) throws Exception {
+	String[] keyValue = header.split(KEY_VALUE_SEPARATOR);
 	if (keyValue.length < 2) {
 	    throw new Exception(keyValue[0] + " is not a proper header");
 	}
@@ -109,9 +110,9 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     @Override
     public void write(OutputStream outputStream, Response response) throws Exception {
 	StringBuilder builder = new StringBuilder();
-	builder.append(responseCodeToString(response.code()));
+	builder.append(stringedResponseCode(response.code()));
 	for (Header header : response.headers()) {
-	    builder.append(NEW_LINE_SEPARATOR).append(header.writable());
+	    builder.append(NEW_LINE).append(header.writable());
 	}
 	outputStream.write(builder.toString().getBytes());
 	if (response.hasBody()) {
@@ -120,17 +121,16 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	}
     }
 
-    private String responseCodeToString(int responseCode) {
-	return RESPONSE_CODE_HTTP_1_1_PREFIX + responseCode;
+    private String stringedResponseCode(int responseCode) {
+	return RESPONSE_CODE_PREFIX + responseCode;
     }
 
     @Override
     public boolean shouldClose(Request request) {
 	boolean close;
 	try {
-	    close = !request.hasHeader(CONNECTION_HEADER)
-		    || request.header(CONNECTION_HEADER).equalsIgnoreCase(CONNECTION_CLOSE);
-	} catch (Exception exception) {
+	    close = !request.hasHeader(CONNECTION) || request.header(CONNECTION).equalsIgnoreCase(CLOSE);
+	} catch (Exception e) {
 	    close = true;
 	}
 	return close;

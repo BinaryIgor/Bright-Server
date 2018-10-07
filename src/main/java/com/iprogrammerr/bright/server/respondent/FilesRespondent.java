@@ -30,13 +30,12 @@ public final class FilesRespondent implements ConditionalRespondent {
     }
 
     public FilesRespondent(String rootDirectory) {
-	this(new GetMethod(), new IndexHtmlFileUrlPattern(rootDirectory),
-		new RawFileRespondent(new StaticHttpTypes()));
+	this(new GetMethod(), new IndexHtmlFileUrlPattern(rootDirectory), new RawFileRespondent(new StaticHttpTypes()));
     }
 
     @Override
     public boolean areConditionsMet(Request request) {
-	return requestMethod.is(request.method()) && urlPattern.isMatched(request.url());
+	return this.requestMethod.is(request.method()) && this.urlPattern.isMatched(request.url());
     }
 
     @Override
@@ -45,13 +44,13 @@ public final class FilesRespondent implements ConditionalRespondent {
 	    throw new Exception("Given request does not match respondent requirements");
 	}
 	Response response;
-	File file = new File(urlPattern.filePath(request.url()));
+	File file = new File(this.urlPattern.filePath(request.url()));
 	if (!file.exists()) {
 	    response = new NotFoundResponse();
 	} else if (file.isDirectory()) {
 	    response = new SeeOtherResponse(request.url() + "/");
 	} else {
-	    response = respondent.response(new TypedFile(file));
+	    response = this.respondent.response(new TypedFile(file));
 	}
 	return response;
     }

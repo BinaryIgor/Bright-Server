@@ -3,7 +3,6 @@ package com.iprogrammerr.bright.server.request;
 import java.util.Arrays;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.exception.NotFoundException;
 import com.iprogrammerr.bright.server.header.Header;
 
 public final class ParsedRequest implements Request {
@@ -26,27 +25,27 @@ public final class ParsedRequest implements Request {
 
     @Override
     public String url() {
-	return url;
+	return this.url;
     }
 
     @Override
     public String method() {
-	return method;
+	return this.method;
     }
 
     @Override
     public List<Header> headers() {
-	return headers;
+	return this.headers;
     }
 
     @Override
     public byte[] body() {
-	return body;
+	return this.body;
     }
 
     @Override
     public boolean hasHeader(String key) {
-	for (Header header : headers) {
+	for (Header header : this.headers) {
 	    if (header.is(key)) {
 		return true;
 	    }
@@ -56,18 +55,18 @@ public final class ParsedRequest implements Request {
 
     @Override
     public String header(String key) throws Exception {
-	for (Header header : headers) {
+	for (Header header : this.headers) {
 	    if (header.is(key)) {
 		return header.value();
 	    }
 	}
-	throw new NotFoundException();
+	throw new Exception();
     }
 
     @Override
-    public void removeContext(String contextPath) {
-	if (url.startsWith(contextPath) && !contextPath.isEmpty()) {
-	    url = url.replace(contextPath + "/", "");
+    public void removeContext(String context) {
+	if (this.url.startsWith(context) && !context.isEmpty()) {
+	    url = url.replace(context + "/", "");
 	}
 
     }

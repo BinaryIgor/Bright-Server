@@ -3,8 +3,6 @@ package com.iprogrammerr.bright.server.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iprogrammerr.bright.server.exception.NotFoundException;
-
 public final class StringsObjects implements KeysValues {
 
     private final List<KeyValue> keysValues;
@@ -19,8 +17,8 @@ public final class StringsObjects implements KeysValues {
 
     @Override
     public <T> boolean has(String key, Class<T> clazz) {
-	for (KeyValue keyValue : keysValues) {
-	    if (keyValue.key().equals(key) && keyValue.value().getClass().isAssignableFrom(clazz)) {
+	for (KeyValue kv : this.keysValues) {
+	    if (kv.key().equals(key) && kv.value().getClass().isAssignableFrom(clazz)) {
 		return true;
 	    }
 	}
@@ -29,12 +27,12 @@ public final class StringsObjects implements KeysValues {
 
     @Override
     public <T> T value(String key, Class<T> clazz) throws Exception {
-	for (KeyValue keyValue : keysValues) {
-	    if (keyValue.key().equals(key) && keyValue.value().getClass().isAssignableFrom(clazz)) {
-		return clazz.cast(keyValue.value());
+	for (KeyValue kv : this.keysValues) {
+	    if (kv.key().equals(key) && kv.value().getClass().isAssignableFrom(clazz)) {
+		return clazz.cast(kv.value());
 	    }
 	}
-	throw new NotFoundException();
+	throw new Exception();
     }
 
     @Override
@@ -42,16 +40,16 @@ public final class StringsObjects implements KeysValues {
 	KeyValue keyValue = new StringObject(key, value);
 	int indexOfPrevious = index(keyValue.key());
 	if (indexOfPrevious >= 0) {
-	    keysValues.set(indexOfPrevious, keyValue);
+	    this.keysValues.set(indexOfPrevious, keyValue);
 	} else {
-	    keysValues.add(keyValue);
+	    this.keysValues.add(keyValue);
 	}
 	return this;
     }
 
     private int index(String key) {
-	for (int i = 0; i < keysValues.size(); i++) {
-	    if (keysValues.get(i).key().equals(key)) {
+	for (int i = 0; i < this.keysValues.size(); i++) {
+	    if (this.keysValues.get(i).key().equals(key)) {
 		return i;
 	    }
 	}
@@ -60,12 +58,12 @@ public final class StringsObjects implements KeysValues {
 
     @Override
     public boolean isEmpty() {
-	return keysValues.isEmpty();
+	return this.keysValues.isEmpty();
     }
 
     @Override
     public List<KeyValue> keysValues() {
-	return keysValues;
+	return this.keysValues;
     }
 
 }

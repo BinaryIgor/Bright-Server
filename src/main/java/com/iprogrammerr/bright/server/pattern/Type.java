@@ -4,5 +4,5 @@ public interface Type {
 
     <T> Class<T> type(String type);
 
-    Object value(String type, String value) throws Exception;
+    <T> Object value(Class<T> type, String value) throws Exception;
 }

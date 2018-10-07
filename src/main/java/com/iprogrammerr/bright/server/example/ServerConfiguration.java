@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.example;
 
-public class ServerConfiguration {
+public final class ServerConfiguration {
 
     private final String[] args;
 
@@ -9,60 +9,66 @@ public class ServerConfiguration {
     }
 
     public int port() {
-	if (args.length < 1) {
-	    return 8080;
-	}
-	try {
-	    String value = value("port");
-	    if (value.isEmpty()) {
-		return 8080;
+	int port;
+	if (this.args.length < 1) {
+	    port = 8080;
+	} else {
+	    try {
+		String value = value("port");
+		if (value.isEmpty()) {
+		    port = 8080;
+		}
+		port = Integer.parseInt(value.trim());
+	    } catch (Exception e) {
+		port = 8080;
 	    }
-	    return Integer.parseInt(value.trim());
-	} catch (Exception exception) {
-	    return 8080;
 	}
+	return port;
     }
 
     public int timeout() {
-	if (args.length < 1) {
-	    return 5000;
-	}
-	try {
-	    String value = value("timeout");
-	    if (value.isEmpty()) {
-		return 5000;
+	int timeout;
+	if (this.args.length < 1) {
+	    timeout = 5000;
+	} else {
+	    try {
+		String value = value("timeout");
+		if (value.isEmpty()) {
+		    timeout = 5000;
+		}
+		timeout = Integer.parseInt(value.trim());
+	    } catch (Exception e) {
+		timeout = 5000;
 	    }
-	    return Integer.parseInt(value.trim());
-	} catch (Exception exception) {
-	    return 5000;
 	}
+	return timeout;
     }
 
     public String rootDirectory() throws Exception {
-	if (args.length < 1) {
+	if (this.args.length < 1) {
 	    throw new Exception("root directory is required!");
 	}
-	String rootDirectory = value("root_directory");
-	if (rootDirectory.isEmpty()) {
+	String directory = value("root_directory");
+	if (directory.isEmpty()) {
 	    throw new Exception("root directory can not be empty!");
 	}
-	return rootDirectory;
+	return directory;
     }
 
     private String value(String key) {
 	String keyValue = keyValue(key);
-	if (!keyValue.contains(key) || !keyValue.contains("=")) {
-	    return "";
+	String value;
+	if (!keyValue.contains(key)) {
+	    value = "";
+	} else {
+	    String[] split = keyValue.split("=");
+	    value = split.length >= 2 ? split[1] : "";
 	}
-	String[] keyAndValue = keyValue.split("=");
-	if (keyAndValue.length < 2) {
-	    return "";
-	}
-	return keyAndValue[1];
+	return value;
     }
 
     private String keyValue(String key) {
-	for (String arg : args) {
+	for (String arg : this.args) {
 	    if (arg.contains(key)) {
 		return arg;
 	    }

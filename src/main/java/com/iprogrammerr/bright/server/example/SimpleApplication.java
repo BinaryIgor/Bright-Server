@@ -43,9 +43,9 @@ public final class SimpleApplication {
 
 	Application application = new HttpApplication(new AllowAllCors(), respondents, filters);
 
-	Connection connector = new RequestResponseConnection(new HttpOneProtocol(), application);
+	Connection connection = new RequestResponseConnection(new HttpOneProtocol(), application);
 
-	Server server = new Server(8080, 5000, connector);
+	Server server = new Server(8080, 5000, connection);
 	server.start();
     }
 }

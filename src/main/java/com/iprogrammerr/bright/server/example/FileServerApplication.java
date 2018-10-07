@@ -28,20 +28,20 @@ public final class FileServerApplication implements Application {
 	System.out.println("Starting with: " + configuration.print());
 	ConditionalRespondent fileRespondent = new FilesRespondent(configuration.rootDirectory(),
 		new ExampleFileRespondent(new StaticHttpTypes(), new AudioHttpTypes()));
-	Connection connector = new RequestResponseConnection(new HttpOneProtocol(),
+	Connection connection = new RequestResponseConnection(new HttpOneProtocol(),
 		new FileServerApplication(fileRespondent));
-	Server server = new Server(configuration.port(), configuration.timeout(), connector);
+	Server server = new Server(configuration.port(), configuration.timeout(), connection);
 	server.start();
     }
 
     @Override
     public Optional<Response> response(Request request) {
 	Optional<Response> response;
-	if (fileRespondent.areConditionsMet(request)) {
+	if (this.fileRespondent.areConditionsMet(request)) {
 	    try {
-		response = Optional.of(fileRespondent.response(request));
-	    } catch (Exception exception) {
-		exception.printStackTrace();
+		response = Optional.of(this.fileRespondent.response(request));
+	    } catch (Exception e) {
+		e.printStackTrace();
 		response = Optional.of(new InternalServerErrorResponse());
 	    }
 	} else {

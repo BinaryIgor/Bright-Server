@@ -4,5 +4,5 @@ import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 
 public interface Filters {
-    Response filtered(Request request);
+    Response response(Request request);
 }

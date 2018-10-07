@@ -8,7 +8,7 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 public final class AuthorizationSecondFreePassFilter implements Filter {
 
     @Override
-    public Response filtered(Request request) {
+    public Response response(Request request) {
 	System.out.println("Everyone can go!");
 	return new OkResponse();
     }

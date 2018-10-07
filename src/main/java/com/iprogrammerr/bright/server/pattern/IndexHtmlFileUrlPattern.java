@@ -4,8 +4,8 @@ import java.io.File;
 
 public final class IndexHtmlFileUrlPattern implements FileUrlPattern {
 
-    private static final String URL_SEGMENTS_SEPARATOR = "/";
-    private static final String GO_TO_HIGHER_DIRECTORY = "..";
+    private static final String SEGMENTS_SEPARATOR = "/";
+    private static final String HIGHER_DIRECTORY = "..";
     private final String rootDirectory;
 
     public IndexHtmlFileUrlPattern(String rootDirectory) {
@@ -14,28 +14,28 @@ public final class IndexHtmlFileUrlPattern implements FileUrlPattern {
 
     @Override
     public boolean isMatched(String url) {
-	if (url.contains(GO_TO_HIGHER_DIRECTORY)) {
-	    return false;
+	boolean matched;
+	if (url.contains(HIGHER_DIRECTORY)) {
+	    matched = false;
+	} else {
+	    String[] segments = url.split(SEGMENTS_SEPARATOR);
+	    matched = segments.length == 0 || segments[0].isEmpty() ? true
+		    : new File(this.rootDirectory + File.separator + withoutParameters(url)).exists();
 	}
-	String[] segments = url.split(URL_SEGMENTS_SEPARATOR);
-	if (segments.length == 0 || segments[0].isEmpty()) {
-	    return true;
-	}
-	String path = this.rootDirectory + File.separator + withoutParameters(url);
-	return new File(path).exists();
+	return matched;
     }
 
     @Override
     public String filePath(String url) {
-	String filePath = withoutParameters(url);
-	if (filePath.isEmpty()) {
-	    filePath = this.rootDirectory + File.separator + "index.html";
-	} else if (filePath.endsWith(URL_SEGMENTS_SEPARATOR)) {
-	    filePath += "index.html";
+	String path = withoutParameters(url);
+	if (path.isEmpty()) {
+	    path = this.rootDirectory + File.separator + "index.html";
+	} else if (path.endsWith(SEGMENTS_SEPARATOR)) {
+	    path += "index.html";
 	} else {
-	    filePath = this.rootDirectory + File.separator + filePath.replace(URL_SEGMENTS_SEPARATOR, File.separator);
+	    path = this.rootDirectory + File.separator + path.replace(SEGMENTS_SEPARATOR, File.separator);
 	}
-	return filePath;
+	return path;
     }
 
     private String withoutParameters(String url) {

@@ -14,9 +14,9 @@ public final class GzipCompressedBinary implements CompressedBinary {
     @Override
     public byte[] content() throws Exception {
 	ByteArrayOutputStream baos = new ByteArrayOutputStream(this.source.length);
-	GZIPOutputStream gzos = new GZIPOutputStream(baos);
-	gzos.write(this.source);
-	gzos.close();
+	GZIPOutputStream gos = new GZIPOutputStream(baos);
+	gos.write(this.source);
+	gos.close();
 	return baos.toByteArray();
     }
 

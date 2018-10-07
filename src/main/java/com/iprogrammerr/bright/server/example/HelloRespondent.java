@@ -14,8 +14,8 @@ public final class HelloRespondent implements Respondent {
 	    int id = request.pathVariable("id", Integer.class);
 	    String message = "Hello number " + id;
 	    return new OkResponse(message);
-	} catch (Exception exception) {
-	    return new BadRequestResponse(exception.getMessage());
+	} catch (Exception e) {
+	    return new BadRequestResponse(e.getMessage());
 	}
     }
 }

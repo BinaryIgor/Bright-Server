@@ -5,8 +5,8 @@ public final class PostMethod implements RequestMethod {
     private static final String POST = "POST";
 
     @Override
-    public boolean is(String requestMethod) {
-	return POST.equalsIgnoreCase(requestMethod);
+    public boolean is(String method) {
+	return POST.equalsIgnoreCase(method);
     }
 
 }

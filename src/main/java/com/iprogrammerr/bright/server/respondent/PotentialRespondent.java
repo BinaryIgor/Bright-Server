@@ -29,7 +29,7 @@ public final class PotentialRespondent implements ConditionalRespondent {
 
     @Override
     public boolean areConditionsMet(Request request) {
-	return requestMethod.is(request.method()) && urlPattern.isMatched(request.url());
+	return this.requestMethod.is(request.method()) && this.urlPattern.isMatched(request.url());
     }
 
     @Override
@@ -38,18 +38,18 @@ public final class PotentialRespondent implements ConditionalRespondent {
 	    throw new Exception("Given request does not meet respondent condtions");
 	}
 	KeysValues parameters;
-	if (urlPattern.hasParameters()) {
-	    parameters = urlPattern.parameters(request.url());
+	if (this.urlPattern.hasParameters()) {
+	    parameters = this.urlPattern.parameters(request.url());
 	} else {
 	    parameters = new StringsObjects(new ArrayList<>());
 	}
 	KeysValues pathVariables;
-	if (urlPattern.hasPathVariables()) {
-	    pathVariables = urlPattern.pathVariables(request.url());
+	if (this.urlPattern.hasPathVariables()) {
+	    pathVariables = this.urlPattern.pathVariables(request.url());
 	} else {
 	    pathVariables = new StringsObjects(new ArrayList<>());
 	}
-	return respondent.response(new ResolvedRequest(request, parameters, pathVariables));
+	return this.respondent.response(new ResolvedRequest(request, parameters, pathVariables));
     }
 
 }

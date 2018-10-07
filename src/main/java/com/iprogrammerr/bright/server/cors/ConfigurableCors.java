@@ -7,6 +7,8 @@ import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.header.template.AccessControlAllowHeadersHeader;
 import com.iprogrammerr.bright.server.header.template.AccessControlAllowMethodsHeader;
 import com.iprogrammerr.bright.server.header.template.AccessControlAllowOriginHeader;
+import com.iprogrammerr.bright.server.initialization.Initialization;
+import com.iprogrammerr.bright.server.initialization.StickyInitialization;
 import com.iprogrammerr.bright.server.request.Request;
 
 public final class ConfigurableCors implements Cors {
@@ -18,13 +20,19 @@ public final class ConfigurableCors implements Cors {
     private final String allowOrigin;
     private final String allowHeaders;
     private final String allowMethods;
-    private final List<Header> headers;
+    private final Initialization<List<Header>> headers;
 
     public ConfigurableCors(String allowOrigin, String allowHeaders, String allowMethods) {
 	this.allowOrigin = allowOrigin;
 	this.allowHeaders = allowHeaders;
 	this.allowMethods = allowMethods;
-	this.headers = new ArrayList<>();
+	this.headers = new StickyInitialization<>(() -> {
+	    List<Header> headers = new ArrayList<>();
+	    headers.add(new AccessControlAllowHeadersHeader(this.allowHeaders));
+	    headers.add(new AccessControlAllowMethodsHeader(this.allowMethods));
+	    headers.add(new AccessControlAllowOriginHeader(this.allowOrigin));
+	    return headers;
+	});
     }
 
     @Override
@@ -48,12 +56,7 @@ public final class ConfigurableCors implements Cors {
 
     @Override
     public List<Header> toAddHeaders() {
-	if (this.headers.isEmpty()) {
-	    this.headers.add(new AccessControlAllowHeadersHeader(this.allowHeaders));
-	    this.headers.add(new AccessControlAllowMethodsHeader(this.allowMethods));
-	    this.headers.add(new AccessControlAllowOriginHeader(this.allowOrigin));
-	}
-	return headers;
+	return this.headers.value();
     }
 
 }

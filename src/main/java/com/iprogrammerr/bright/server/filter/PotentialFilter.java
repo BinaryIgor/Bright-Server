@@ -1,45 +1,69 @@
 package com.iprogrammerr.bright.server.filter;
 
-import com.iprogrammerr.bright.server.pattern.StarSymbolFilterUrlPattern;
-import com.iprogrammerr.bright.server.pattern.ToFilterUrlPattern;
+import java.util.Collections;
+import java.util.List;
+
+import com.iprogrammerr.bright.server.pattern.AsteriskFilterUrlPattern;
+import com.iprogrammerr.bright.server.pattern.AsteriskFilterUrlPatternsMapping;
+import com.iprogrammerr.bright.server.pattern.FilterUrlPattern;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.rule.RequestMethodRule;
 
 public final class PotentialFilter implements ConditionalFilter {
 
-    private final ToFilterUrlPattern urlPattern;
-    private final RequestMethodRule requestMethodRule;
-    private final Filter requestFilter;
+    private final List<FilterUrlPattern> urlPatterns;
+    private final RequestMethodRule methodRule;
+    private final Filter filter;
 
-    public PotentialFilter(ToFilterUrlPattern urlPattern, RequestMethodRule requestMethodRule,
-	    Filter requestFilter) {
-	this.urlPattern = urlPattern;
-	this.requestMethodRule = requestMethodRule;
-	this.requestFilter = requestFilter;
+    public PotentialFilter(List<FilterUrlPattern> urlPatterns, RequestMethodRule methodRule, Filter filter) {
+	this.urlPatterns = urlPatterns;
+	this.methodRule = methodRule;
+	this.filter = filter;
     }
 
-    public PotentialFilter(String urlPattern, RequestMethodRule requestMethodRule, Filter requestFilter) {
-	this(new StarSymbolFilterUrlPattern(urlPattern), requestMethodRule, requestFilter);
+    public PotentialFilter(FilterUrlPattern urlPattern, RequestMethodRule methodRule, Filter filter) {
+	this(Collections.singletonList(urlPattern), methodRule, filter);
+    }
+
+    public PotentialFilter(String urlPattern, RequestMethodRule methodRule, Filter filter) {
+	this(new AsteriskFilterUrlPattern(urlPattern), methodRule, filter);
+    }
+
+    public PotentialFilter(RequestMethodRule methodRule, Filter filter, String... urlPatterns) {
+	this(new AsteriskFilterUrlPatternsMapping().value(urlPatterns), methodRule, filter);
     }
 
     @Override
     public boolean isPrimary() {
-	return urlPattern.isPrimary();
+	for (FilterUrlPattern up : this.urlPatterns) {
+	    if (up.isPrimary()) {
+		return true;
+	    }
+	}
+	return false;
     }
 
     @Override
     public boolean areConditionsMet(Request request) {
-	return requestMethodRule.isCompliant(request.method())
-		&& (urlPattern.isPrimary() || urlPattern.isMatched(request.url()));
+	return this.methodRule.isCompliant(request.method()) && (isPrimary() || isMatched(request.url()));
+    }
+
+    private boolean isMatched(String url) {
+	for (FilterUrlPattern pattern : this.urlPatterns) {
+	    if (pattern.isMatched(url)) {
+		return true;
+	    }
+	}
+	return false;
     }
 
     @Override
-    public Response filtered(Request request) throws Exception {
+    public Response response(Request request) throws Exception {
 	if (!areConditionsMet(request)) {
 	    throw new Exception("Given request does not meet filter conditions");
 	}
-	return requestFilter.filtered(request);
+	return this.filter.response(request);
     }
 
 }

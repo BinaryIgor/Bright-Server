@@ -5,8 +5,8 @@ public final class HeadMethod implements RequestMethod {
     private static final String HEAD = "HEAD";
 
     @Override
-    public boolean is(String requestMethod) {
-	return HEAD.equalsIgnoreCase(requestMethod);
+    public boolean is(String method) {
+	return HEAD.equalsIgnoreCase(method);
     }
 
 }

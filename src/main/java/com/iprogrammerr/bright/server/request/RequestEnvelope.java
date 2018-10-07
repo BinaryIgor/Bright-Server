@@ -14,27 +14,27 @@ public abstract class RequestEnvelope implements Request {
 
     @Override
     public final String url() {
-	return base.url();
+	return this.base.url();
     }
 
     @Override
     public final String method() {
-	return base.method();
+	return this.base.method();
     }
 
     @Override
     public final List<Header> headers() {
-	return base.headers();
+	return this.base.headers();
     }
 
     @Override
     public final boolean hasHeader(String key) {
-	return base.hasHeader(key);
+	return this.base.hasHeader(key);
     }
 
     @Override
     public final String header(String key) throws Exception {
-	return base.header(key);
+	return this.base.header(key);
     }
 
     @Override
@@ -44,6 +44,6 @@ public abstract class RequestEnvelope implements Request {
 
     @Override
     public final void removeContext(String contextPath) {
-	base.removeContext(contextPath);
+	this.base.removeContext(contextPath);
     }
 }

@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.pattern;
 
-public interface ToFilterUrlPattern {
+public interface FilterUrlPattern {
 
     boolean isPrimary();
 

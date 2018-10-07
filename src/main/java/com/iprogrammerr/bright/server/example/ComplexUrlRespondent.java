@@ -16,8 +16,8 @@ public final class ComplexUrlRespondent implements Respondent {
 	    float scale = request.parameter("scale", Float.class);
 	    String mirror = String.format("id=%d, message=%s, scale=%.3f", id, message, scale);
 	    return new OkResponse(mirror);
-	} catch (Exception exception) {
-	    return new BadRequestResponse(exception.getMessage());
+	} catch (Exception e) {
+	    return new BadRequestResponse(e.getMessage());
 	}
     }
 

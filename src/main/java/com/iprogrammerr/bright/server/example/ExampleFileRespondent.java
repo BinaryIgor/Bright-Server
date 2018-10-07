@@ -29,22 +29,22 @@ public class ExampleFileRespondent implements FileRespondent {
 	    if (!type.equals(TO_COMPRESS_TYPE)) {
 		response = new OkResponse(new TypedResponseBody(httpType(type), file.content()));
 	    } else {
-		GzipCompressedBinary compressedBinary = new GzipCompressedBinary(file.content());
-		response = new OkResponse(new TypedResponseBody(httpType(type), compressedBinary.content()),
-			new ContentEncodingHeader(compressedBinary.algorithm()));
+		GzipCompressedBinary gcb = new GzipCompressedBinary(file.content());
+		response = new OkResponse(new TypedResponseBody(httpType(type), gcb.content()),
+			new ContentEncodingHeader(gcb.algorithm()));
 	    }
-	} catch (Exception exception) {
-	    exception.printStackTrace();
+	} catch (Exception e) {
+	    e.printStackTrace();
 	    response = new NotFoundResponse();
 	}
 	return response;
     }
 
     private String httpType(String type) {
-	if (staticTypes.isKnown(type)) {
-	    return staticTypes.type(type);
+	if (this.staticTypes.isKnown(type)) {
+	    return this.staticTypes.type(type);
 	}
-	return audioTypes.type(type);
+	return this.audioTypes.type(type);
     }
 
 }

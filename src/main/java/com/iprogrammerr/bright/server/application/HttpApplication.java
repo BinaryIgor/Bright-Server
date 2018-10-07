@@ -69,7 +69,7 @@ public final class HttpApplication implements Application {
 	try {
 	    request.removeContext(this.context);
 	    ConditionalRespondent cr = respondent(request);
-	    response = this.filters.filtered(request);
+	    response = this.filters.response(request);
 	    if (hasProperCode(response.code())) {
 		response = this.cors.toAddHeaders().isEmpty() ? cr.response(request)
 			: new WithAdditionalHeadersResponse(cr.response(request), this.cors.toAddHeaders());

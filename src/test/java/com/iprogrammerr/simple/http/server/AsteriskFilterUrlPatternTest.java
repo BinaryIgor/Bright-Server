@@ -5,29 +5,29 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.iprogrammerr.bright.server.pattern.StarSymbolFilterUrlPattern;
+import com.iprogrammerr.bright.server.pattern.AsteriskFilterUrlPattern;
 
-public class StarSymbolFilterUrlPatternTest {
+public class AsteriskFilterUrlPatternTest {
 
-    private StarSymbolFilterUrlPattern urlPattern;
+    private AsteriskFilterUrlPattern urlPattern;
 
     @Test
     public void properMatch() {
-	urlPattern = new StarSymbolFilterUrlPattern("user/");
+	urlPattern = new AsteriskFilterUrlPattern("user/");
 	String url = "user/search/1/name";
 	assertTrue(urlPattern.isMatched(url));
-	urlPattern = new StarSymbolFilterUrlPattern("*");
+	urlPattern = new AsteriskFilterUrlPattern("*");
 	assertTrue(urlPattern.isMatched(url));
-	urlPattern = new StarSymbolFilterUrlPattern("user/search/*/*");
+	urlPattern = new AsteriskFilterUrlPattern("user/search/*/*");
 	assertTrue(urlPattern.isMatched(url));
     }
 
     @Test
     public void improperMatch() {
-	urlPattern = new StarSymbolFilterUrlPattern("search/");
+	urlPattern = new AsteriskFilterUrlPattern("search/");
 	String url = "user/search/1/name";
 	assertFalse(urlPattern.isMatched(url));
-	urlPattern = new StarSymbolFilterUrlPattern("user/*");
+	urlPattern = new AsteriskFilterUrlPattern("user/*");
 	assertFalse(urlPattern.isMatched(url));
 
     }
