@@ -15,22 +15,22 @@ public final class WithAdditionalHeadersResponse implements Response {
 
     @Override
     public int code() {
-	return base.code();
+	return this.base.code();
     }
 
     @Override
     public List<Header> headers() {
-	return base.headers();
+	return this.base.headers();
     }
 
     @Override
     public boolean hasBody() {
-	return base.hasBody();
+	return this.base.hasBody();
     }
 
     @Override
     public byte[] body() {
-	return base.body();
+	return this.base.body();
     }
 
 }

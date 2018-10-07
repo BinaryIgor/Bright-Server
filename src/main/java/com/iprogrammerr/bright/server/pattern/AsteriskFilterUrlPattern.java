@@ -20,7 +20,7 @@ public final class AsteriskFilterUrlPattern implements FilterUrlPattern {
 	if (this.urlPattern.startsWith(MATCH_ALL)) {
 	    return true;
 	}
-	String[] urlSegments = url.split(URL_SEGMENTS_SEPARATOR);
+	String[] urlSegments = withoutParameters(url).split(URL_SEGMENTS_SEPARATOR);
 	String[] urlPatternSegments = this.urlPattern.split(URL_SEGMENTS_SEPARATOR);
 	boolean matched = true;
 	if (this.urlPattern.endsWith(URL_SEGMENTS_SEPARATOR) && urlSegments.length >= urlPatternSegments.length) {
@@ -41,6 +41,11 @@ public final class AsteriskFilterUrlPattern implements FilterUrlPattern {
 	    }
 	}
 	return matched;
+    }
+
+    private String withoutParameters(String url) {
+	int questionMark = url.indexOf("?");
+	return questionMark > 0 ? url.substring(0, questionMark) : url;
     }
 
 }

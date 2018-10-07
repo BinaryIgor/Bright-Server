@@ -9,11 +9,9 @@ import com.iprogrammerr.bright.server.pattern.AsteriskFilterUrlPattern;
 
 public class AsteriskFilterUrlPatternTest {
 
-    private AsteriskFilterUrlPattern urlPattern;
-
     @Test
-    public void properMatch() {
-	urlPattern = new AsteriskFilterUrlPattern("user/");
+    public void canMatch() {
+	AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("user/");
 	String url = "user/search/1/name";
 	assertTrue(urlPattern.isMatched(url));
 	urlPattern = new AsteriskFilterUrlPattern("*");
@@ -23,8 +21,8 @@ public class AsteriskFilterUrlPatternTest {
     }
 
     @Test
-    public void improperMatch() {
-	urlPattern = new AsteriskFilterUrlPattern("search/");
+    public void canRefuseMatches() {
+	AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("search/");
 	String url = "user/search/1/name";
 	assertFalse(urlPattern.isMatched(url));
 	urlPattern = new AsteriskFilterUrlPattern("user/*");

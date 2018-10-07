@@ -13,9 +13,19 @@ import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 import com.iprogrammerr.bright.server.rule.ListOfRequestMethodRule;
+import com.iprogrammerr.bright.server.rule.SingleRequestMethodRule;
 import com.iprogrammerr.simple.http.server.mock.MockedRequest;
 
 public class PotentialFilterTest {
+
+    @Test
+    public void canMatchSingle() {
+	ConditionalFilter filter = new PotentialFilter(new SingleRequestMethodRule(new GetMethod()),
+		req -> new OkResponse(), "user/*/search");
+	Request request = new MockedRequest("user/1/search?scale=9.5", "get");
+	assertTrue(filter.areConditionsMet(request));
+
+    }
 
     @Test
     public void canMatchMultiple() {
@@ -25,9 +35,13 @@ public class PotentialFilterTest {
 		"user/*", "game/*/search");
 	Request request = new MockedRequest("user/1", "get");
 	assertTrue(filter.areConditionsMet(request));
+	request = new MockedRequest("user/1", "post");
+	assertTrue(filter.areConditionsMet(request));
 	request = new MockedRequest("game/444/search", "post");
 	assertTrue(filter.areConditionsMet(request));
 	request = new MockedRequest("game/1", "post");
+	assertFalse(filter.areConditionsMet(request));
+	request = new MockedRequest("game/1", "get");
 	assertFalse(filter.areConditionsMet(request));
     }
 }

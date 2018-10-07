@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.response.body;
 
-public class TypedResponseBody implements ResponseBody {
+public final class TypedResponseBody implements ResponseBody {
 
     private final String type;
     private final byte[] content;
@@ -12,12 +12,12 @@ public class TypedResponseBody implements ResponseBody {
 
     @Override
     public String type() {
-	return type;
+	return this.type;
     }
 
     @Override
     public byte[] content() {
-	return content;
+	return this.content;
     }
 
 }

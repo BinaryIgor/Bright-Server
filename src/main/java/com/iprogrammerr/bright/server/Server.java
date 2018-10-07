@@ -47,7 +47,7 @@ public final class Server {
 	while (!serverSocket.isClosed()) {
 	    try {
 		Socket socket = serverSocket.accept();
-		socket.setSoTimeout(timeout);
+		socket.setSoTimeout(this.timeout);
 		this.executor.execute(() -> this.connection.connect(socket));
 	    } catch (Exception e) {
 		e.printStackTrace();

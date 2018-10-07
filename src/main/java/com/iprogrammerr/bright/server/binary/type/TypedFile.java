@@ -24,11 +24,11 @@ public final class TypedFile implements TypedBinary {
     @Override
     public String type() {
 	String name = this.file.getName();
-	int dotIndex = name.indexOf(".") + 1;
-	if (dotIndex == 0 || dotIndex == (name.length() - 1)) {
+	int dotIndex = name.indexOf(".");
+	if (dotIndex <= 0 || dotIndex == (name.length() - 1)) {
 	    return "";
 	}
-	return name.substring(dotIndex, name.length());
+	return name.substring(dotIndex + 1, name.length());
     }
 
 }

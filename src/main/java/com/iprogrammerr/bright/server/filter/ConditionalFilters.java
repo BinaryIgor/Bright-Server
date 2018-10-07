@@ -3,6 +3,9 @@ package com.iprogrammerr.bright.server.filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iprogrammerr.bright.server.initialization.Initialization;
+import com.iprogrammerr.bright.server.initialization.MappedInitialization;
+import com.iprogrammerr.bright.server.initialization.StickyInitialization;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.template.ForbiddenResponse;
@@ -10,25 +13,38 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 
 public final class ConditionalFilters implements Filters {
 
-    private final List<ConditionalFilter> filters;
+    private final Initialization<Iterable<ConditionalFilter>> filters;
 
-    public ConditionalFilters(ConditionalFilter primaryFilter, List<ConditionalFilter> filters) {
+    public ConditionalFilters(Initialization<Iterable<ConditionalFilter>> filters) {
 	this.filters = filters;
-	this.filters.add(0, primaryFilter);
     }
 
-    public ConditionalFilters(List<ConditionalFilter> filters) {
-	this.filters = filters;
+    public ConditionalFilters(Iterable<ConditionalFilter> filters) {
+	this(new StickyInitialization<>(
+		new MappedInitialization<Iterable<ConditionalFilter>, Iterable<ConditionalFilter>>(filters, cfs -> {
+		    List<ConditionalFilter> sorted = new ArrayList<>();
+		    for (ConditionalFilter cf : cfs) {
+			if (cf.isPrimary()) {
+			    sorted.add(cf);
+			}
+		    }
+		    for (ConditionalFilter cf : cfs) {
+			if (!cf.isPrimary()) {
+			    sorted.add(cf);
+			}
+		    }
+		    return sorted;
+		})));
     }
 
     public ConditionalFilters() {
-	this.filters = new ArrayList<>();
+	this(new StickyInitialization<>(() -> new ArrayList<>()));
     }
 
     @Override
     public Response response(Request request) {
 	try {
-	    List<ConditionalFilter> filters = matchedFilters(request);
+	    Iterable<ConditionalFilter> filters = matchedFilters(request);
 	    for (ConditionalFilter filter : filters) {
 		Response response = filter.response(request);
 		if (!hasProperCode(response)) {
@@ -41,9 +57,9 @@ public final class ConditionalFilters implements Filters {
 	}
     }
 
-    private List<ConditionalFilter> matchedFilters(Request request) {
+    private Iterable<ConditionalFilter> matchedFilters(Request request) {
 	List<ConditionalFilter> filters = new ArrayList<>();
-	for (ConditionalFilter filter : this.filters) {
+	for (ConditionalFilter filter : this.filters.value()) {
 	    if (filter.areConditionsMet(request)) {
 		filters.add(filter);
 	    }

@@ -41,12 +41,12 @@ public final class ContentResponse implements Response {
 
     @Override
     public int code() {
-	return code;
+	return this.code;
     }
 
     @Override
     public List<Header> headers() {
-	return headers;
+	return this.headers;
     }
 
     @Override
@@ -56,7 +56,7 @@ public final class ContentResponse implements Response {
 
     @Override
     public byte[] body() {
-	return body;
+	return this.body;
     }
 
 }

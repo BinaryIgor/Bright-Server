@@ -14,22 +14,22 @@ public abstract class ResponseEnvelope implements Response {
 
     @Override
     public final int code() {
-	return base.code();
+	return this.base.code();
     }
 
     @Override
     public final List<Header> headers() {
-	return base.headers();
+	return this.base.headers();
     }
 
     @Override
     public final boolean hasBody() {
-	return base.hasBody();
+	return this.base.hasBody();
     }
 
     @Override
     public final byte[] body() {
-	return base.body();
+	return this.base.body();
     }
 
 }

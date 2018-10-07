@@ -13,11 +13,11 @@ import com.iprogrammerr.bright.server.binary.type.TypedFile;
 public class TypedFileTest {
 
     @Test
-    public void read() throws Exception {
-	File sourceFile = new File(TypedFileTest.class.getResource("/test.html").getFile());
-	TypedBinary binaryFile = new TypedFile(sourceFile);
-	assertTrue(binaryFile.type().equals("html"));
-	byte[] content = binaryFile.content();
-	assertEquals(content.length, sourceFile.length());
+    public void canRead() throws Exception {
+	File file = new File(TypedFileTest.class.getResource("/test.html").getFile());
+	TypedBinary tb = new TypedFile(file);
+	assertTrue(tb.type().equals("html"));
+	byte[] content = tb.content();
+	assertEquals(content.length, file.length());
     }
 }

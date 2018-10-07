@@ -4,15 +4,15 @@ import com.iprogrammerr.bright.server.method.RequestMethod;
 
 public final class SingleRequestMethodRule implements RequestMethodRule {
 
-    private final RequestMethod requestMethod;
+    private final RequestMethod method;
 
-    public SingleRequestMethodRule(RequestMethod requestMethod) {
-	this.requestMethod = requestMethod;
+    public SingleRequestMethodRule(RequestMethod method) {
+	this.method = method;
     }
 
     @Override
-    public boolean isCompliant(String requestMethod) {
-	return this.requestMethod.is(requestMethod);
+    public boolean isCompliant(String method) {
+	return this.method.is(method);
     }
 
 }

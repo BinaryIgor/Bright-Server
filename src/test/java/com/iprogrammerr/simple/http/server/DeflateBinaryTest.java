@@ -17,14 +17,14 @@ import com.iprogrammerr.bright.server.binary.type.TypedFile;
 public class DeflateBinaryTest {
 
     @Test
-    public void compressDecompress() throws Exception {
+    public void canCompressDecompress() throws Exception {
 	File indexHtml = new File(getClass().getResource("/test.html").getFile());
-	TypedBinary binaryFile = new TypedFile(indexHtml);
-	byte[] source = binaryFile.content();
-	CompressedBinary compressedBinary = new DeflateCompressedBinary(source);
-	byte[] compressed = compressedBinary.content();
-	DecompressedBinary decompressedBinary = new DeflateDecompressedBinary(compressed, source.length);
-	byte[] decompressed = decompressedBinary.content();
+	TypedBinary tb = new TypedFile(indexHtml);
+	byte[] source = tb.content();
+	CompressedBinary cb = new DeflateCompressedBinary(source);
+	byte[] compressed = cb.content();
+	DecompressedBinary db = new DeflateDecompressedBinary(compressed, source.length);
+	byte[] decompressed = db.content();
 	assertTrue(Arrays.equals(source, decompressed));
     }
 }

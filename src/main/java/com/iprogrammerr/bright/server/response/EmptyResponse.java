@@ -10,6 +10,7 @@ public final class EmptyResponse implements Response {
 
     private final int code;
     private final List<Header> headers;
+    private final byte[] body;
 
     public EmptyResponse(int code) {
 	this(code, new ArrayList<>());
@@ -22,16 +23,17 @@ public final class EmptyResponse implements Response {
     public EmptyResponse(int code, List<Header> headers) {
 	this.code = code;
 	this.headers = headers;
+	this.body = new byte[0];
     }
 
     @Override
     public int code() {
-	return code;
+	return this.code;
     }
 
     @Override
     public List<Header> headers() {
-	return headers;
+	return this.headers;
     }
 
     @Override
@@ -41,6 +43,6 @@ public final class EmptyResponse implements Response {
 
     @Override
     public byte[] body() {
-	return new byte[0];
+	return this.body;
     }
 }

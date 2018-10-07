@@ -1,12 +1,11 @@
 package com.iprogrammerr.bright.server.application;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.iprogrammerr.bright.server.cors.Cors;
-import com.iprogrammerr.bright.server.exception.NotFoundException;
 import com.iprogrammerr.bright.server.filter.ConditionalFilter;
 import com.iprogrammerr.bright.server.filter.ConditionalFilters;
+import com.iprogrammerr.bright.server.filter.Filters;
 import com.iprogrammerr.bright.server.method.OptionsMethod;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
@@ -23,31 +22,31 @@ public final class HttpApplication implements Application {
     private static final OptionsMethod OPTIONS_METHOD = new OptionsMethod();
     private final String context;
     private final Cors cors;
-    private final List<ConditionalRespondent> respondents;
-    private final ConditionalFilters filters;
+    private final Iterable<ConditionalRespondent> respondents;
+    private final Filters filters;
 
-    public HttpApplication(String context, Cors cors, List<ConditionalRespondent> respondents,
-	    ConditionalFilters filters) {
+    public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents, Filters filters) {
 	this.context = context;
 	this.cors = cors;
 	this.respondents = respondents;
 	this.filters = filters;
     }
 
-    public HttpApplication(String contextPath, Cors cors, List<ConditionalRespondent> respondents,
-	    List<ConditionalFilter> filters) {
+    public HttpApplication(String contextPath, Cors cors, Iterable<ConditionalRespondent> respondents,
+	    Iterable<ConditionalFilter> filters) {
 	this(contextPath, cors, respondents, new ConditionalFilters(filters));
     }
 
-    public HttpApplication(Cors cors, List<ConditionalRespondent> respondents, List<ConditionalFilter> filters) {
+    public HttpApplication(Cors cors, Iterable<ConditionalRespondent> respondents,
+	    Iterable<ConditionalFilter> filters) {
 	this("", cors, respondents, new ConditionalFilters(filters));
     }
 
-    public HttpApplication(String contextPath, Cors cors, List<ConditionalRespondent> respondents) {
+    public HttpApplication(String contextPath, Cors cors, Iterable<ConditionalRespondent> respondents) {
 	this(contextPath, cors, respondents, new ConditionalFilters());
     }
 
-    public HttpApplication(Cors cors, List<ConditionalRespondent> respondents) {
+    public HttpApplication(Cors cors, Iterable<ConditionalRespondent> respondents) {
 	this("", cors, respondents, new ConditionalFilters());
     }
 
@@ -59,24 +58,26 @@ public final class HttpApplication implements Application {
 	} else if (OPTIONS_METHOD.is(request.method())) {
 	    response = Optional.of(optionsResponse(request));
 	} else {
-	    response = Optional.of(validRequestResponse(request));
+	    try {
+		request.removeContext(this.context);
+		ConditionalRespondent cr = respondent(request);
+		response = Optional.of(validRequestResponse(request, cr));
+	    } catch (Exception e) {
+		e.printStackTrace();
+		response = Optional.of(new NotFoundResponse());
+	    }
 	}
 	return response;
     }
 
-    private Response validRequestResponse(Request request) {
+    private Response validRequestResponse(Request request, ConditionalRespondent respondent) {
 	Response response;
 	try {
-	    request.removeContext(this.context);
-	    ConditionalRespondent cr = respondent(request);
 	    response = this.filters.response(request);
 	    if (hasProperCode(response.code())) {
-		response = this.cors.toAddHeaders().isEmpty() ? cr.response(request)
-			: new WithAdditionalHeadersResponse(cr.response(request), this.cors.toAddHeaders());
+		response = this.cors.toAddHeaders().isEmpty() ? respondent.response(request)
+			: new WithAdditionalHeadersResponse(respondent.response(request), this.cors.toAddHeaders());
 	    }
-	} catch (NotFoundException e) {
-	    e.printStackTrace();
-	    response = new NotFoundResponse();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    response = new InternalServerErrorResponse();
@@ -90,7 +91,7 @@ public final class HttpApplication implements Application {
 		return cr;
 	    }
 	}
-	throw new NotFoundException(
+	throw new Exception(
 		String.format("There is no respondent for %s method and url: %s", request.method(), request.url()));
     }
 

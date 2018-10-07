@@ -1,4 +1,5 @@
 package com.iprogrammerr.bright.server.rule;
 
-public interface RequestMethodRule extends Rule<String> {
+public interface RequestMethodRule {
+    boolean isCompliant(String method);
 }

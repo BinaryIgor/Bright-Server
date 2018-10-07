@@ -28,4 +28,8 @@ public final class CreatedResponse extends ResponseEnvelope {
 	super(new ContentResponse(CODE, body, headers));
     }
 
+    public CreatedResponse(ResponseBody body, Header... headers) {
+	super(new ContentResponse(CODE, body, headers));
+    }
+
 }

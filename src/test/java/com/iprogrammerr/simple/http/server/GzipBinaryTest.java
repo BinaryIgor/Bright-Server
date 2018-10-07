@@ -17,16 +17,16 @@ import com.iprogrammerr.bright.server.binary.processed.GzipDecompressedBinary;
 public class GzipBinaryTest {
 
     @Test
-    public void compressDecompress() throws Exception {
-	File indexHtml = new File(getClass().getResource("/test.html").getFile());
-	InputStream origin = new FileInputStream(indexHtml);
-	Binary binary = new PacketsBinary(origin, indexHtml.length());
+    public void canCompressDecompress() throws Exception {
+	File file = new File(getClass().getResource("/test.html").getFile());
+	InputStream source = new FileInputStream(file);
+	Binary binary = new PacketsBinary(source, file.length());
 	byte[] original = binary.content();
-	origin.close();
-	GzipCompressedBinary compressedBinary = new GzipCompressedBinary(original);
-	byte[] compressed = compressedBinary.content();
-	GzipDecompressedBinary decompressedBinary = new GzipDecompressedBinary(compressed, original.length);
-	byte[] decompressed = decompressedBinary.content();
+	source.close();
+	GzipCompressedBinary gcb = new GzipCompressedBinary(original);
+	byte[] compressed = gcb.content();
+	GzipDecompressedBinary gdb = new GzipDecompressedBinary(compressed, original.length);
+	byte[] decompressed = gdb.content();
 	assertTrue(Arrays.equals(original, decompressed));
     }
 }

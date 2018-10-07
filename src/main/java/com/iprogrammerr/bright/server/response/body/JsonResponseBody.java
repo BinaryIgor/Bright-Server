@@ -1,11 +1,15 @@
 package com.iprogrammerr.bright.server.response.body;
 
-public class JsonResponseBody implements ResponseBody {
+public final class JsonResponseBody implements ResponseBody {
 
     private final byte[] content;
 
+    public JsonResponseBody(byte[] content) {
+	this.content = content;
+    }
+
     public JsonResponseBody(String content) {
-	this.content = content.getBytes();
+	this(content.getBytes());
     }
 
     @Override
@@ -15,7 +19,7 @@ public class JsonResponseBody implements ResponseBody {
 
     @Override
     public byte[] content() {
-	return content;
+	return this.content;
     }
 
 }
