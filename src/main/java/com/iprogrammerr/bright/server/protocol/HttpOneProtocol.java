@@ -20,10 +20,10 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String CLOSE = "close";
     private static final String NEW_LINE = "\n";
     private static final String KEY_VALUE_SEPARATOR = ": ";
-    private static final String HEADERS_BODY_PARSED_SEPARATOR = "\r";
     private static final int MIN_VALID_FIRST_LINE_LENGTH = 10;
     private static final int MIN_REQUEST_METHOD_LENGTH = 3;
-    private static final String CRLF_CRLF = "\r\n\r\n";
+    private static final String CRLF = "\r\n";
+    private static final String CRLF_CRLF = CRLF + CRLF;
     private static final String SEGMENTS_SEPARATOR = "/";
     private static final String HTTP = "HTTP";
     private static final String RESPONSE_CODE_PREFIX = "HTTP/1.1 ";
@@ -32,19 +32,19 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     @Override
     public Request request(InputStream inputStream) throws Exception {
 	Binary binary = new OnePacketBinary(inputStream);
-	String[] requestLines = new String(binary.content()).split(NEW_LINE);
-	if (requestLines.length < 1 || requestLines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
+	String[] lines = new String(binary.content()).split(CRLF);
+	if (lines.length < 1 || lines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
 	    throw new Exception("Request is empty");
 	}
-	String method = method(requestLines[0]);
-	String path = path(requestLines[0]);
-	List<Header> headers = headers(requestLines);
+	String method = method(lines[0]);
+	String path = path(lines[0]);
+	List<Header> headers = headers(lines);
 	int bodyBytes = bodyBytes(headers);
 	Request request;
 	if (bodyBytes == 0) {
 	    request = new ParsedRequest(method, path, headers);
 	} else {
-	    byte[] bodyPart = requestLines[requestLines.length - 1].getBytes();
+	    byte[] bodyPart = bodyPart(lines, headers.size());
 	    request = bodyPart.length >= bodyBytes ? new ParsedRequest(method, path, headers, bodyPart)
 		    : new ParsedRequest(method, path, headers,
 			    new PacketsBinary(binary, bodyPart, bodyBytes).content());
@@ -56,7 +56,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	List<Header> headers = new ArrayList<>();
 	for (int i = 1; i < lines.length; i++) {
 	    String line = lines[i];
-	    if (line.equals(HEADERS_BODY_PARSED_SEPARATOR)) {
+	    if (line.isEmpty()) {
 		break;
 	    }
 	    headers.add(header(line));
@@ -105,6 +105,21 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	    throw new Exception(keyValue[0] + " is not a proper header");
 	}
 	return new HttpHeader(keyValue[0].trim(), keyValue[1].trim());
+    }
+
+    private byte[] bodyPart(String[] lines, int headers) {
+	byte[] bodyPart;
+	int bodyLine = headers + 2;
+	if ((bodyLine) == (lines.length - 1)) {
+	    bodyPart = lines[lines.length - 1].getBytes();
+	} else {
+	    StringBuilder builder = new StringBuilder();
+	    for (int i = bodyLine; i < lines.length; i++) {
+		builder.append(lines[i]).append(CRLF);
+	    }
+	    bodyPart = builder.toString().getBytes();
+	}
+	return bodyPart;
     }
 
     @Override

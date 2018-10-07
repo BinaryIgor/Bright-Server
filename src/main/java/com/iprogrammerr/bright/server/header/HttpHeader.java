@@ -30,4 +30,9 @@ public final class HttpHeader implements Header {
 	return this.key + ": " + this.value;
     }
 
+    @Override
+    public String toString() {
+	return writable();
+    }
+
 }
