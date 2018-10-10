@@ -33,7 +33,7 @@ public abstract class RequestEnvelope implements Request {
     }
 
     @Override
-    public final String header(String key) throws Exception {
+    public final String header(String key) {
 	return this.base.header(key);
     }
 

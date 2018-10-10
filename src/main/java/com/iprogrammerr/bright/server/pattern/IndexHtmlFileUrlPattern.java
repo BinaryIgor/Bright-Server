@@ -19,7 +19,7 @@ public final class IndexHtmlFileUrlPattern implements FileUrlPattern {
 	    matched = false;
 	} else {
 	    String[] segments = url.split(SEGMENTS_SEPARATOR);
-	    matched = segments.length == 0 || segments[0].isEmpty() ? true
+	    matched = (segments.length == 0 || segments[0].isEmpty()) ? true
 		    : new File(this.rootDirectory + File.separator + withoutParameters(url)).exists();
 	}
 	return matched;

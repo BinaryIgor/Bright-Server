@@ -10,7 +10,7 @@ import com.iprogrammerr.bright.server.response.body.TypedResponseBody;
 import com.iprogrammerr.bright.server.response.template.NotFoundResponse;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 
-public class ExampleFileRespondent implements FileRespondent {
+public final class ExampleFileRespondent implements FileRespondent {
 
     private final static String TO_COMPRESS_TYPE = "pdf";
     private final HttpTypes staticTypes;

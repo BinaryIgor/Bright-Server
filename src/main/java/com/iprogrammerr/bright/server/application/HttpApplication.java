@@ -32,9 +32,9 @@ public final class HttpApplication implements Application {
 	this.filters = filters;
     }
 
-    public HttpApplication(String contextPath, Cors cors, Iterable<ConditionalRespondent> respondents,
+    public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents,
 	    Iterable<ConditionalFilter> filters) {
-	this(contextPath, cors, respondents, new ConditionalFilters(filters));
+	this(context, cors, respondents, new ConditionalFilters(filters));
     }
 
     public HttpApplication(Cors cors, Iterable<ConditionalRespondent> respondents,
@@ -42,8 +42,8 @@ public final class HttpApplication implements Application {
 	this("", cors, respondents, new ConditionalFilters(filters));
     }
 
-    public HttpApplication(String contextPath, Cors cors, Iterable<ConditionalRespondent> respondents) {
-	this(contextPath, cors, respondents, new ConditionalFilters());
+    public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents) {
+	this(context, cors, respondents, new ConditionalFilters());
     }
 
     public HttpApplication(Cors cors, Iterable<ConditionalRespondent> respondents) {
@@ -74,7 +74,7 @@ public final class HttpApplication implements Application {
 	Response response;
 	try {
 	    response = this.filters.response(request);
-	    if (hasProperCode(response.code())) {
+	    if (isProperCode(response.code())) {
 		response = this.cors.toAddHeaders().isEmpty() ? respondent.response(request)
 			: new WithAdditionalHeadersResponse(respondent.response(request), this.cors.toAddHeaders());
 	    }
@@ -105,7 +105,7 @@ public final class HttpApplication implements Application {
 	return response;
     }
 
-    private boolean hasProperCode(int responseCode) {
+    private boolean isProperCode(int responseCode) {
 	return responseCode >= 200 && responseCode < 300;
     }
 

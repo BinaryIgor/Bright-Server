@@ -16,50 +16,48 @@ public final class SimpleApplication {
         filters.add(authorizationFilter);
 
         Application application = new HttpApplication(new AllowAllCors(), respondents, filters);
-        Connector connector = new RequestResponseConnector(new HttpOneProtocol(), application);
-        Server server = new Server(8080, 5000, connector);
+        Connector connection = new RequestResponseConnection(new HttpOneProtocol(), application);
+        Server server = new Server(8080, 5000, connection);
         server.start();
     }
 }
 ```
 That's all. Now you have fully working http server which handles get request nad authorize it as follows:
 ```java
-public class AuthorizationFilter implements RequestFilter {
+public final class AuthorizationFilter implements RequestFilter {
 
     private static final String SECRET_TOKEN = "token";
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    @Override
-    public Response filter(Request request) {
-	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
-	    return new ForbiddenResponse();
-	}
-	try {
-	    String token = request.header(AUTHORIZATION_HEADER);
-	    boolean valid = token.equals(SECRET_TOKEN);
-	    if (!valid) {
-		return new ForbiddenResponse();
-	    }
-	    return new OkResponse();
-	} catch (Exception exception) {
-	    return new ForbiddenResponse();
-	}
+   @Override
+   public Response response(Request request) {
+    	Response response;
+    	if (request.hasHeader(AUTHORIZATION_HEADER)) {
+    	    String token = request.header(AUTHORIZATION_HEADER);
+    	    boolean valid = token.equals(SECRET_TOKEN);
+    	    response = valid ? new OkResponse() : new ForbiddenResponse();
+    	} else {
+    	    response = new ForbiddenResponse();
+    	}
+    	return response;
     }
-
+    
 }
 ```
 ```java
-public class HelloRespondent implements Respondent {
+public final class HelloRespondent implements Respondent {
 
     @Override
-    public Response respond(MatchedRequest request) {
-	try {
-	    int id = request.pathVariable("id", Integer.class);
-	    String message = "Hello number " + id;
-	    return new OkResponse(message);
-	} catch (Exception exception) {
-	    return new BadRequestResponse(exception.getMessage());
-	}
+    public Response response(MatchedRequest request) {
+	    Response response;
+	    try {
+	        int id = request.pathVariable("id", Integer.class);
+	        String message = "Hello number " + id;
+	        response = new OkResponse(message);
+	   } catch (Exception e) {
+	       response = new BadRequestResponse(e.getMessage());
+	   }
+	   return response;
     }
 }
 ```
@@ -67,18 +65,17 @@ For more, refer to [one page docs](https://github.com/Iprogrammerr/Bright-Server
 Be sure to check out [examples](https://github.com/Iprogrammerr/Bright-Server/tree/master/src/main/java/com/iprogrammerr/bright/server/example), which are always the best documentation.
 Project is under active development, so any feedback or opened issue is very welcome and appreciated.
 Because of that, they might become outdated from time to time.
-
 ## Maven
 ```xml
 <dependency>
   <groupId>com.iprogrammerr</groupId>
   <artifactId>bright-server</artifactId>
-  <version>1.0-beta-1</version>
+  <version>1.0-beta-2</version>
 </dependency>
 ```
-  
+## Gradle
+```
+compile 'com.iprogrammerr:bright-server:1.0-beta-2'
+ ```
 ## Example
   In development: (https://github.com/Iprogrammerr/Riddle/)
-
- 
- 

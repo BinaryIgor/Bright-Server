@@ -37,18 +37,10 @@ public final class PotentialRespondent implements ConditionalRespondent {
 	if (!areConditionsMet(request)) {
 	    throw new Exception("Given request does not meet respondent condtions");
 	}
-	KeysValues parameters;
-	if (this.urlPattern.hasParameters()) {
-	    parameters = this.urlPattern.parameters(request.url());
-	} else {
-	    parameters = new StringsObjects(new ArrayList<>());
-	}
-	KeysValues pathVariables;
-	if (this.urlPattern.hasPathVariables()) {
-	    pathVariables = this.urlPattern.pathVariables(request.url());
-	} else {
-	    pathVariables = new StringsObjects(new ArrayList<>());
-	}
+	KeysValues parameters = this.urlPattern.hasParameters() ? this.urlPattern.parameters(request.url())
+		: new StringsObjects(new ArrayList<>());
+	KeysValues pathVariables = this.urlPattern.hasPathVariables() ? this.urlPattern.pathVariables(request.url())
+		: new StringsObjects(new ArrayList<>());
 	return this.respondent.response(new ResolvedRequest(request, parameters, pathVariables));
     }
 

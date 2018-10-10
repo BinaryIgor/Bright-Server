@@ -15,10 +15,7 @@ public final class ServerConfiguration {
 	} else {
 	    try {
 		String value = value("port");
-		if (value.isEmpty()) {
-		    port = 8080;
-		}
-		port = Integer.parseInt(value.trim());
+		port = value.isEmpty() ? 8080 : Integer.parseInt(value.trim());
 	    } catch (Exception e) {
 		port = 8080;
 	    }
@@ -33,10 +30,7 @@ public final class ServerConfiguration {
 	} else {
 	    try {
 		String value = value("timeout");
-		if (value.isEmpty()) {
-		    timeout = 5000;
-		}
-		timeout = Integer.parseInt(value.trim());
+		timeout = value.isEmpty() ? 5000 : Integer.parseInt(value.trim());
 	    } catch (Exception e) {
 		timeout = 5000;
 	    }

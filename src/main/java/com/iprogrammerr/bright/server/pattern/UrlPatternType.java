@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server.pattern;
 
-public class UrlPatternType implements Type {
+public final class UrlPatternType implements Type {
 
     private static final String BOOLEAN = "boolean";
     private static final String INT = "int";

@@ -17,18 +17,23 @@ public class TypedUrlPatternTest {
 	String url = "riddle/user/1/search/10";
 	TypedUrlPattern tup = new TypedUrlPattern("riddle/user/{id}/search/{results}");
 	assertTrue(tup.isMatched(url));
-	tup = new TypedUrlPattern("riddle/user/{id}/search/{results}/dada");
-	assertFalse(tup.isMatched(url));
-	tup = new TypedUrlPattern("riddle/user/{id}/search");
-	assertFalse(tup.isMatched(url));
 	url = "riddle/user/1";
 	tup = new TypedUrlPattern("riddle/user/{id:int}");
 	assertTrue(tup.isMatched(url));
-	url = "ridde/simple/user/1";
-	assertFalse(tup.isMatched(url));
 	url = "complex/1/search?message=secret&scale=5.5";
 	tup = new TypedUrlPattern("complex/{id:long}/search?message=string&scale=float");
 	assertTrue(tup.isMatched(url));
+    }
+
+    @Test
+    public void canRefuseMatches() {
+	String url = "riddle/user/1/search/10";
+	TypedUrlPattern tup = new TypedUrlPattern("riddle/user/{id}/search/{results}/dada");
+	assertFalse(tup.isMatched(url));
+	tup = new TypedUrlPattern("riddle/user/{id}/search");
+	assertFalse(tup.isMatched(url));
+	url = "ridde/simple/user/1";
+	assertFalse(tup.isMatched(url));
     }
 
     @Test

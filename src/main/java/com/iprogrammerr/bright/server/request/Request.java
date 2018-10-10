@@ -14,7 +14,7 @@ public interface Request {
 
     boolean hasHeader(String key);
 
-    String header(String key) throws Exception;
+    String header(String key);
 
     byte[] body();
 

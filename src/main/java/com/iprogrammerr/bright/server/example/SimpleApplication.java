@@ -36,8 +36,8 @@ public final class SimpleApplication {
 	List<ConditionalFilter> filters = new ArrayList<>();
 	ConditionalFilter authorizationFilter = new PotentialFilter("*", new AnyRequestMethodRule(),
 		new AuthorizationFilter());
-	ConditionalFilter authorizationSecondFilter = new PotentialFilter("hello/*",
-		new ListOfRequestMethodRule(get, post), new AuthorizationSecondFreePassFilter());
+	ConditionalFilter authorizationSecondFilter = new PotentialFilter(new ListOfRequestMethodRule(get, post),
+		new AuthorizationSecondFreePassFilter(), "complex/", "hello/*");
 	filters.add(authorizationFilter);
 	filters.add(authorizationSecondFilter);
 

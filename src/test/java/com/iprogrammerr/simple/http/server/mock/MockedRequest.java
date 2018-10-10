@@ -37,8 +37,8 @@ public final class MockedRequest implements Request {
     }
 
     @Override
-    public String header(String key) throws Exception {
-	throw new Exception();
+    public String header(String key) {
+	return "";
     }
 
     @Override

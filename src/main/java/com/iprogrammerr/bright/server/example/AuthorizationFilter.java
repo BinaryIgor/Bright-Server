@@ -13,19 +13,12 @@ public final class AuthorizationFilter implements Filter {
 
     @Override
     public Response response(Request request) {
-	if (!request.hasHeader(AUTHORIZATION_HEADER)) {
-	    return new ForbiddenResponse();
-	}
 	Response response;
-	try {
+	if (request.hasHeader(AUTHORIZATION_HEADER)) {
 	    String token = request.header(AUTHORIZATION_HEADER);
 	    boolean valid = token.equals(SECRET_TOKEN);
-	    if (!valid) {
-		response = new ForbiddenResponse();
-	    } else {
-		response = new OkResponse();
-	    }
-	} catch (Exception e) {
+	    response = valid ? new OkResponse() : new ForbiddenResponse();
+	} else {
 	    response = new ForbiddenResponse();
 	}
 	return response;

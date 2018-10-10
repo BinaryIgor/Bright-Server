@@ -1,6 +1,5 @@
 package com.iprogrammerr.bright.server.request;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.header.Header;
@@ -54,13 +53,15 @@ public final class ParsedRequest implements Request {
     }
 
     @Override
-    public String header(String key) throws Exception {
-	for (Header header : this.headers) {
-	    if (header.is(key)) {
-		return header.value();
+    public String header(String key) {
+	String header = "";
+	for (Header h : this.headers) {
+	    if (h.is(key)) {
+		header = h.value();
+		break;
 	    }
 	}
-	throw new Exception();
+	return header;
     }
 
     @Override
@@ -69,12 +70,6 @@ public final class ParsedRequest implements Request {
 	    url = url.replace(context + "/", "");
 	}
 
-    }
-
-    @Override
-    public String toString() {
-	return "ParsedRequest [method=" + method + ", url=" + url + ", headers=" + headers + ", body="
-		+ Arrays.toString(body) + "]";
     }
 
 }
