@@ -49,15 +49,15 @@ public final class HelloRespondent implements Respondent {
 
     @Override
     public Response response(MatchedRequest request) {
-	    Response response;
-	    try {
-	        int id = request.pathVariable("id", Integer.class);
-	        String message = "Hello number " + id;
-	        response = new OkResponse(message);
-	   } catch (Exception e) {
-	       response = new BadRequestResponse(e.getMessage());
-	   }
-	   return response;
+        Response response;
+	try {
+	    int id = request.pathVariable("id", Integer.class);
+	    String message = "Hello number " + id;
+	    response = new OkResponse(message);
+	} catch (Exception e) {
+	    response = new BadRequestResponse(e.getMessage());
+	}
+	return response;
     }
 }
 ```
