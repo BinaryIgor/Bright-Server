@@ -1,4 +1,4 @@
-package com.iprogrammerr.simple.http.server;
+package com.iprogrammerr.simple.http.server.binary;
 
 import static org.junit.Assert.assertTrue;
 

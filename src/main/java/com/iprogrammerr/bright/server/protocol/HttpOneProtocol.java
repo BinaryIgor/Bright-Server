@@ -1,14 +1,16 @@
 package com.iprogrammerr.bright.server.protocol;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.binary.Binary;
 import com.iprogrammerr.bright.server.binary.OnePacketBinary;
 import com.iprogrammerr.bright.server.binary.PacketsBinary;
+import com.iprogrammerr.bright.server.binary.Pattern;
+import com.iprogrammerr.bright.server.binary.StringPattern;
 import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.header.HttpHeader;
 import com.iprogrammerr.bright.server.request.ParsedRequest;
@@ -28,12 +30,23 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String HTTP = "HTTP";
     private static final String RESPONSE_CODE_PREFIX = "HTTP/1.1 ";
     private static final String CONTENT_LENGTH = "Content-Length";
+    private final Pattern headBody;
+
+    public HttpOneProtocol(Pattern headBody) {
+	this.headBody = headBody;
+    }
+
+    public HttpOneProtocol() {
+	this(new StringPattern(CRLF_CRLF));
+    }
 
     @Override
     public Request request(InputStream inputStream) throws Exception {
 	Binary binary = new OnePacketBinary(inputStream);
-	String[] headBody = new String(binary.content()).split(CRLF_CRLF);
-	String[] lines = headBody[0].split(CRLF);
+	byte[] content = binary.content();
+	int headBody = this.headBody.index(content);
+	String[] lines = headBody == -1 ? new String(content).split(CRLF)
+		: new String(Arrays.copyOf(content, headBody)).split(CRLF);
 	if (lines.length < 1 || lines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
 	    throw new Exception("Request is empty");
 	}
@@ -45,7 +58,8 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	if (bodySize == 0) {
 	    request = new ParsedRequest(method, path, headers);
 	} else {
-	    byte[] bodyPart = bodyPart(headBody);
+	    byte[] bodyPart = headBody == -1 ? new byte[0]
+		    : Arrays.copyOfRange(content, headBody + this.headBody.value().length, content.length);
 	    request = bodyPart.length >= bodySize ? new ParsedRequest(method, path, headers, bodyPart)
 		    : new ParsedRequest(method, path, headers, new PacketsBinary(binary, bodyPart, bodySize).content());
 	}
@@ -101,27 +115,6 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	    throw new Exception(keyValue[0] + " is not a proper header");
 	}
 	return new HttpHeader(keyValue[0].trim(), keyValue[1].trim());
-    }
-
-    private byte[] bodyPart(String[] headBody) throws Exception {
-	byte[] bodyPart;
-	if (headBody.length > 2) {
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    int i = 1;
-	    baos.write(headBody[i].isEmpty() ? CRLF_CRLF.getBytes() : headBody[i].getBytes());
-	    ++i;
-	    while (i < headBody.length) {
-		baos.write(CRLF_CRLF.getBytes());
-		baos.write(headBody[i].isEmpty() ? CRLF_CRLF.getBytes() : headBody[i].getBytes());
-		++i;
-	    }
-	    bodyPart = baos.toByteArray();
-	} else if (headBody.length == 2) {
-	    bodyPart = headBody[1].getBytes();
-	} else {
-	    bodyPart = new byte[0];
-	}
-	return bodyPart;
     }
 
     @Override
