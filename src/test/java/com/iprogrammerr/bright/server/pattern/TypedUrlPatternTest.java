@@ -1,4 +1,4 @@
-package com.iprogrammerr.simple.http.server.pattern;
+package com.iprogrammerr.bright.server.pattern;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

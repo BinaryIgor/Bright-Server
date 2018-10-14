@@ -1,4 +1,4 @@
-package com.iprogrammerr.simple.http.server.mock;
+package com.iprogrammerr.bright.server.mock;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.iprogrammerr.simple.http.server.exception;
+package com.iprogrammerr.bright.server.exception;
 
 public interface UnreliableFunction {
     Object apply() throws Exception;

@@ -1,18 +1,18 @@
-package com.iprogrammerr.simple.http.server;
+package com.iprogrammerr.bright.server;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.iprogrammerr.bright.server.exception.ToCatchException;
 import com.iprogrammerr.bright.server.method.GetMethod;
+import com.iprogrammerr.bright.server.mock.MockedRequest;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 import com.iprogrammerr.bright.server.respondent.PotentialRespondent;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
-import com.iprogrammerr.simple.http.server.exception.ToCatchException;
-import com.iprogrammerr.simple.http.server.mock.MockedRequest;
 
 public class PotentialRespondentTest {
 

@@ -1,4 +1,4 @@
-package com.iprogrammerr.simple.http.server;
+package com.iprogrammerr.bright.server;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,12 +10,12 @@ import com.iprogrammerr.bright.server.filter.PotentialFilter;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
+import com.iprogrammerr.bright.server.mock.MockedRequest;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 import com.iprogrammerr.bright.server.rule.filter.ToFilterRequestRule;
 import com.iprogrammerr.bright.server.rule.method.ListOfRequestMethodRule;
 import com.iprogrammerr.bright.server.rule.method.SingleRequestMethodRule;
-import com.iprogrammerr.simple.http.server.mock.MockedRequest;
 
 public class PotentialFilterTest {
 

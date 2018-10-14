@@ -1,4 +1,4 @@
-package com.iprogrammerr.simple.http.server.binary;
+package com.iprogrammerr.bright.server.binary;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
