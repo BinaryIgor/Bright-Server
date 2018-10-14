@@ -1,11 +1,11 @@
-package com.iprogrammerr.bright.server.binary;
+package com.iprogrammerr.bright.server.binary.pattern;
 
-public final class StringPattern implements Pattern {
+public final class ConfigurablePattern implements BinaryPattern {
 
     private final byte[] pattern;
 
-    public StringPattern(String pattern) {
-	this.pattern = pattern.getBytes();
+    public ConfigurablePattern(byte[] pattern) {
+	this.pattern = pattern;
     }
 
     @Override

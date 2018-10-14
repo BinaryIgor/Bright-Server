@@ -9,8 +9,7 @@ import java.util.List;
 import com.iprogrammerr.bright.server.binary.Binary;
 import com.iprogrammerr.bright.server.binary.OnePacketBinary;
 import com.iprogrammerr.bright.server.binary.PacketsBinary;
-import com.iprogrammerr.bright.server.binary.Pattern;
-import com.iprogrammerr.bright.server.binary.StringPattern;
+import com.iprogrammerr.bright.server.binary.pattern.HeadBodyPattern;
 import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.header.HttpHeader;
 import com.iprogrammerr.bright.server.request.ParsedRequest;
@@ -30,21 +29,21 @@ public class HttpOneProtocol implements RequestResponseProtocol {
     private static final String HTTP = "HTTP";
     private static final String RESPONSE_CODE_PREFIX = "HTTP/1.1 ";
     private static final String CONTENT_LENGTH = "Content-Length";
-    private final Pattern headBody;
+    private final HeadBodyPattern pattern;
 
-    public HttpOneProtocol(Pattern headBody) {
-	this.headBody = headBody;
+    private HttpOneProtocol(HeadBodyPattern pattern) {
+	this.pattern = pattern;
     }
 
     public HttpOneProtocol() {
-	this(new StringPattern(CRLF_CRLF));
+	this(new HeadBodyPattern());
     }
 
     @Override
     public Request request(InputStream inputStream) throws Exception {
 	Binary binary = new OnePacketBinary(inputStream);
 	byte[] content = binary.content();
-	int headBody = this.headBody.index(content);
+	int headBody = this.pattern.index(content);
 	String[] lines = headBody == -1 ? new String(content).split(CRLF)
 		: new String(Arrays.copyOf(content, headBody)).split(CRLF);
 	if (lines.length < 1 || lines[0].length() < MIN_VALID_FIRST_LINE_LENGTH) {
@@ -59,7 +58,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	    request = new ParsedRequest(method, path, headers);
 	} else {
 	    byte[] bodyPart = headBody == -1 ? new byte[0]
-		    : Arrays.copyOfRange(content, headBody + this.headBody.value().length, content.length);
+		    : Arrays.copyOfRange(content, headBody + this.pattern.value().length, content.length);
 	    request = bodyPart.length >= bodySize ? new ParsedRequest(method, path, headers, bodyPart)
 		    : new ParsedRequest(method, path, headers, new PacketsBinary(binary, bodyPart, bodySize).content());
 	}
