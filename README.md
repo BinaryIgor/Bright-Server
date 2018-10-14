@@ -70,12 +70,12 @@ Because of that, they might become outdated from time to time.
 <dependency>
   <groupId>com.iprogrammerr</groupId>
   <artifactId>bright-server</artifactId>
-  <version>1.0-beta-2</version>
+  <version>1.0-beta-3</version>
 </dependency>
 ```
 ## Gradle
 ```
-compile 'com.iprogrammerr:bright-server:1.0-beta-2'
+compile 'com.iprogrammerr:bright-server:1.0-beta-3'
  ```
 ## Example
   In development: (https://github.com/Iprogrammerr/Riddle/)
