@@ -22,8 +22,10 @@ public interface TypedMap {
 
     byte[] binaryValue(String key) throws Exception;
 
-    List<StringObject> keyValues();
+    List<KeyValue> keyValues();
 
     boolean isEmpty();
+
+    int size();
 
 }

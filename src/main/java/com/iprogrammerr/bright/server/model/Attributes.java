@@ -15,18 +15,22 @@ public final class Attributes implements TypedMap {
 	this(new ArrayList<>(10));
     }
 
+    public Attributes(int initialSize) {
+	this(new ArrayList<>(initialSize));
+    }
+
     @Override
     public TypedMap put(String key, Object value) {
-	int index = keyIndex(key);
+	int index = index(key);
 	if (index >= 0) {
-	    this.values.set(index, new StringObject(key, value));
+	    this.values.set(index, this.values.get(index)).revalue(value);
 	} else {
 	    this.values.add(new StringObject(key, value));
 	}
 	return this;
     }
 
-    private int keyIndex(String key) {
+    private int index(String key) {
 	int index = -1;
 	for (int i = 0; i < this.values.size(); i++) {
 	    if (this.values.get(i).key().equals(key)) {
@@ -73,8 +77,8 @@ public final class Attributes implements TypedMap {
     }
 
     @Override
-    public List<StringObject> keyValues() {
-	return this.values;
+    public List<KeyValue> keyValues() {
+	return new ArrayList<>(this.values);
     }
 
     private <T> T value(String key, Class<T> clazz) throws Exception {
@@ -93,11 +97,16 @@ public final class Attributes implements TypedMap {
 
     @Override
     public <T> boolean has(String key, Class<T> clazz) {
-	int keyIndex = keyIndex(key);
-	if (keyIndex >= 0) {
-	    return this.values.get(keyIndex).value().getClass().isAssignableFrom(clazz);
+	int index = index(key);
+	if (index >= 0) {
+	    return this.values.get(index).value().getClass().isAssignableFrom(clazz);
 	}
 	return false;
+    }
+
+    @Override
+    public int size() {
+	return this.values.size();
     }
 
 }
