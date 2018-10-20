@@ -5,17 +5,17 @@ import java.net.Socket;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import com.iprogrammerr.bright.server.initialization.UnreliableInitialization;
 import com.iprogrammerr.bright.server.initialization.UnreliableStickyInitialization;
 
 public final class Server {
 
     private final int timeout;
-    private final UnreliableInitialization<ServerSocket> serverSocket;
+    private final UnreliableStickyInitialization<ServerSocket> serverSocket;
     private final Executor executor;
     private final Connection connection;
+    private boolean running;
 
-    public Server(UnreliableInitialization<ServerSocket> serverSocket, int port, int timeout, Executor executor,
+    private Server(UnreliableStickyInitialization<ServerSocket> serverSocket, int port, int timeout, Executor executor,
 	    Connection connection) {
 	this.serverSocket = serverSocket;
 	this.timeout = timeout;
@@ -42,8 +42,13 @@ public final class Server {
     }
 
     public void start() throws Exception {
-	System.out.println("Bright Server is shining!");
+	if (this.running) {
+	    throw new Exception("Bright Server is running already!");
+	}
+	this.serverSocket.unstick();
 	ServerSocket serverSocket = this.serverSocket.value();
+	System.out.println("Bright Server is shining!");
+	this.running = true;
 	while (!serverSocket.isClosed()) {
 	    try {
 		Socket socket = serverSocket.accept();
@@ -53,6 +58,11 @@ public final class Server {
 		e.printStackTrace();
 	    }
 	}
+	this.running = false;
+    }
+
+    public boolean isRunning() {
+	return this.running;
     }
 
     public void stop() {

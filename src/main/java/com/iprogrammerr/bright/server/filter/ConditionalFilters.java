@@ -15,7 +15,7 @@ public final class ConditionalFilters implements Filters {
 
     private final Initialization<Iterable<ConditionalFilter>> filters;
 
-    public ConditionalFilters(Initialization<Iterable<ConditionalFilter>> filters) {
+    private ConditionalFilters(Initialization<Iterable<ConditionalFilter>> filters) {
 	this.filters = filters;
     }
 

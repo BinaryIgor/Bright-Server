@@ -22,17 +22,22 @@ public final class ConfigurableCors implements Cors {
     private final String allowMethods;
     private final Initialization<List<Header>> headers;
 
-    public ConfigurableCors(String allowOrigin, String allowHeaders, String allowMethods) {
+    private ConfigurableCors(String allowOrigin, String allowHeaders, String allowMethods,
+	    Initialization<List<Header>> headers) {
 	this.allowOrigin = allowOrigin;
 	this.allowHeaders = allowHeaders;
 	this.allowMethods = allowMethods;
-	this.headers = new StickyInitialization<>(() -> {
+	this.headers = headers;
+    }
+
+    public ConfigurableCors(String allowOrigin, String allowHeaders, String allowMethods) {
+	this(allowOrigin, allowHeaders, allowMethods, new StickyInitialization<>(() -> {
 	    List<Header> headers = new ArrayList<>();
-	    headers.add(new AccessControlAllowHeadersHeader(this.allowHeaders));
-	    headers.add(new AccessControlAllowMethodsHeader(this.allowMethods));
-	    headers.add(new AccessControlAllowOriginHeader(this.allowOrigin));
+	    headers.add(new AccessControlAllowHeadersHeader(allowHeaders));
+	    headers.add(new AccessControlAllowMethodsHeader(allowMethods));
+	    headers.add(new AccessControlAllowOriginHeader(allowOrigin));
 	    return headers;
-	});
+	}));
     }
 
     @Override

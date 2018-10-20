@@ -1,5 +1,7 @@
 package com.iprogrammerr.bright.server.request;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.iprogrammerr.bright.server.header.Header;
@@ -70,6 +72,31 @@ public final class ParsedRequest implements Request {
 	    url = url.replace(context + "/", "");
 	}
 
+    }
+
+    @Override
+    public boolean equals(Object object) {
+	boolean equal;
+	if (object == null || !getClass().equals(object.getClass())) {
+	    equal = false;
+	} else if (object == this) {
+	    equal = true;
+	} else {
+	    ParsedRequest other = (ParsedRequest) object;
+	    equal = this.url.equals(other.url) && this.method.equalsIgnoreCase(other.method)
+		    && Arrays.equals(this.body, other.body);
+	    if (equal && this.headers.size() == other.headers.size()) {
+		Collections.sort(this.headers, (f, s) -> f.key().compareTo(s.key()));
+		Collections.sort(other.headers, (f, s) -> f.key().compareTo(s.key()));
+		for (int i = 0; i < this.headers.size(); ++i) {
+		    if (!this.headers.get(i).equals(other.headers.get(i))) {
+			equal = false;
+			break;
+		    }
+		}
+	    }
+	}
+	return equal;
     }
 
 }

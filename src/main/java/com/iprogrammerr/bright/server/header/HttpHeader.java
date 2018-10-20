@@ -35,4 +35,18 @@ public final class HttpHeader implements Header {
 	return writable();
     }
 
+    @Override
+    public boolean equals(Object object) {
+	boolean equal;
+	if (object == null || !getClass().equals(object.getClass())) {
+	    equal = false;
+	} else if (object == this) {
+	    equal = true;
+	} else {
+	    HttpHeader other = (HttpHeader) object;
+	    equal = this.key.equalsIgnoreCase(other.key) || this.value.equalsIgnoreCase(other.value);
+	}
+	return equal;
+    }
+
 }

@@ -41,7 +41,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 
     @Override
     public Request request(InputStream inputStream) throws Exception {
-	Binary binary = new OnePacketBinary(inputStream);
+	Binary binary = new OnePacketBinary(inputStream, 1024);
 	byte[] content = binary.content();
 	int headBody = this.pattern.index(content);
 	String[] lines = headBody == -1 ? new String(content).split(CRLF)
@@ -102,7 +102,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	    throw new Exception("First request line is invalid");
 	}
 	int http = line.indexOf(HTTP);
-	if (http <= 2 * MIN_REQUEST_METHOD_LENGTH) {
+	if (http <= 2 * MIN_REQUEST_METHOD_LENGTH || (separator >= http)) {
 	    throw new Exception("First request line is invalid");
 	}
 	return line.substring(separator + 1, http).trim();

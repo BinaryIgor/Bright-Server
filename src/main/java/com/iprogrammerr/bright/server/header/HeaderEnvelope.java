@@ -28,4 +28,9 @@ public abstract class HeaderEnvelope implements Header {
 	return this.base.writable();
     }
 
+    @Override
+    public boolean equals(Object object) {
+	return this.base.equals(object);
+    }
+
 }

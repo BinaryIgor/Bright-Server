@@ -17,7 +17,7 @@ import com.iprogrammerr.bright.server.rule.filter.ToFilterRequestRule;
 import com.iprogrammerr.bright.server.rule.method.ListOfRequestMethodRule;
 import com.iprogrammerr.bright.server.rule.method.SingleRequestMethodRule;
 
-public class PotentialFilterTest {
+public final class PotentialFilterTest {
 
     @Test
     public void canMatchSingle() {
