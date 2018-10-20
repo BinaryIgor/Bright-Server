@@ -1,41 +1,31 @@
 package com.iprogrammerr.bright.server.request;
 
-import com.iprogrammerr.bright.server.model.KeysValues;
-import com.iprogrammerr.bright.server.model.StringsObjects;
+import com.iprogrammerr.bright.server.model.Attributes;
+import com.iprogrammerr.bright.server.model.TypedMap;
 
 public final class ResolvedRequest extends RequestEnvelope implements MatchedRequest {
 
-    private final KeysValues parameters;
-    private final KeysValues pathVariables;
+    private final TypedMap parameters;
+    private final TypedMap pathVariables;
 
-    public ResolvedRequest(Request request, KeysValues parameters, KeysValues pathVariables) {
+    public ResolvedRequest(Request request, TypedMap parameters, TypedMap pathVariables) {
 	super(request);
 	this.parameters = parameters;
 	this.pathVariables = pathVariables;
     }
 
     public ResolvedRequest(Request request) {
-	this(request, new StringsObjects(), new StringsObjects());
+	this(request, new Attributes(), new Attributes());
     }
 
     @Override
-    public <T> T parameter(String key, Class<T> clazz) throws Exception {
-	return this.parameters.value(key, clazz);
+    public TypedMap parameters() {
+	return this.parameters;
     }
 
     @Override
-    public <T> T pathVariable(String key, Class<T> clazz) throws Exception {
-	return this.pathVariables.value(key, clazz);
-    }
-
-    @Override
-    public <T> boolean hasParameter(String key, Class<T> clazz) {
-	return this.parameters.has(key, clazz);
-    }
-
-    @Override
-    public <T> boolean hasPathVariable(String key, Class<T> clazz) {
-	return this.pathVariables.has(key, clazz);
+    public TypedMap pathVariables() {
+	return this.pathVariables;
     }
 
 }

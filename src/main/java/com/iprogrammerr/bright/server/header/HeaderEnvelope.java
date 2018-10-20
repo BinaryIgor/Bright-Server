@@ -29,7 +29,7 @@ public abstract class HeaderEnvelope implements Header {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public final boolean equals(Object object) {
 	return this.base.equals(object);
     }
 

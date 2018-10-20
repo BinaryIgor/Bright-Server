@@ -20,4 +20,9 @@ public final class StringObject implements KeyValue {
 	return this.value;
     }
 
+    @Override
+    public String toString() {
+	return "StringObject [key=" + key + ", value=" + value + "]";
+    }
+
 }

@@ -1,14 +1,14 @@
 package com.iprogrammerr.bright.server.pattern;
 
-import com.iprogrammerr.bright.server.model.KeysValues;
+import com.iprogrammerr.bright.server.model.TypedMap;
 
 public interface UrlPattern {
 
     boolean isMatched(String url);
 
-    KeysValues pathVariables(String url);
+    TypedMap pathVariables(String url);
 
-    KeysValues parameters(String url);
+    TypedMap parameters(String url);
 
     boolean hasParameters();
 

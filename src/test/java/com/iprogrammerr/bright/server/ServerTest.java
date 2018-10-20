@@ -61,6 +61,9 @@ public final class ServerTest {
 	Executor executor = Executors.newSingleThreadExecutor();
 	executor.execute(() -> {
 	    sleepRandomly(5);
+	    if (!server.isRunning()) {
+		sleepRandomly(5);
+	    }
 	    assertTrue(server.isRunning());
 	    new ToCatchException().hasCatched(server::start);
 	    server.stop();
@@ -74,7 +77,10 @@ public final class ServerTest {
 	Executor executor = Executors.newSingleThreadExecutor();
 	executor.execute(() -> {
 	    try {
-		sleepRandomly(10);
+		sleepRandomly(5);
+		if (!server.isRunning()) {
+		    sleepRandomly(5);
+		}
 		assertTrue(server.isRunning());
 		server.stop();
 		sleepRandomly(10);

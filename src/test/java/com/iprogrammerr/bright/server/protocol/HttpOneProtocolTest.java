@@ -43,8 +43,7 @@ public final class HttpOneProtocolTest {
 	headers.add(new ContentTypeHeader("image/jpeg"));
 	headers.add(new ContentLengthHeader(body.length));
 	request = new ParsedRequest("POST", PATH, headers, body);
-	byte[] binary = new RequestBinary(request).content();
-	read = protocol.request(new ByteArrayInputStream(binary));
+	read = protocol.request(new ByteArrayInputStream(new RequestBinary(request).content()));
 	assertTrue(request.equals(read));
     }
 
@@ -81,9 +80,9 @@ public final class HttpOneProtocolTest {
 	Request request = new ParsedRequest("put", PATH, headers);
 	HttpOneProtocol protocol = new HttpOneProtocol();
 	assertFalse(protocol.shouldClose(request));
-	headers.set(headers.size() - 1, new HttpHeader("Connection", "close"));
+	headers.set(0, new HttpHeader("Connection", "close"));
 	assertTrue(protocol.shouldClose(request));
-	headers.remove(headers.size() - 1);
+	headers.clear();
 	assertTrue(protocol.shouldClose(request));
     }
 

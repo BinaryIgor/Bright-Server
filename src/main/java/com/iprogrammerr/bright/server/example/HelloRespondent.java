@@ -12,7 +12,7 @@ public final class HelloRespondent implements Respondent {
     public Response response(MatchedRequest request) {
 	Response response;
 	try {
-	    int id = request.pathVariable("id", Integer.class);
+	    int id = request.pathVariables().intValue("id");
 	    String message = "Hello number " + id;
 	    response = new OkResponse(message);
 	} catch (Exception e) {

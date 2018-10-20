@@ -1,16 +1,12 @@
 package com.iprogrammerr.bright.server.pattern;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.iprogrammerr.bright.server.initialization.Initialization;
 import com.iprogrammerr.bright.server.initialization.StickyInitialization;
-import com.iprogrammerr.bright.server.model.KeyValue;
-import com.iprogrammerr.bright.server.model.KeysValues;
-import com.iprogrammerr.bright.server.model.StringObject;
-import com.iprogrammerr.bright.server.model.StringsObjects;
+import com.iprogrammerr.bright.server.model.Attributes;
+import com.iprogrammerr.bright.server.model.TypedMap;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public final class TypedUrlPattern implements UrlPattern {
@@ -55,7 +51,7 @@ public final class TypedUrlPattern implements UrlPattern {
 	return matched;
     }
 
-    private boolean areVariablesValid(Map<String, Class> requiredVariables, KeysValues variables) {
+    private boolean areVariablesValid(Map<String, Class> requiredVariables, TypedMap variables) {
 	for (Map.Entry<String, Class> rv : requiredVariables.entrySet()) {
 	    if (!variables.has(rv.getKey(), rv.getValue())) {
 		return false;
@@ -116,35 +112,31 @@ public final class TypedUrlPattern implements UrlPattern {
     }
 
     @Override
-    public KeysValues pathVariables(String url) {
-	List<KeyValue> pathVariables = new ArrayList<>();
+    public TypedMap pathVariables(String url) {
+	TypedMap pathVariables = new Attributes();
 	String[] urlSegments = url.split(SEGMENTS_SEPARATOR);
 	String[] urlPatternSegments = this.urlPattern.split(SEGMENTS_SEPARATOR);
 	if (urlSegments.length >= urlPatternSegments.length) {
 	    try {
 		for (int i = 0; i < urlPatternSegments.length; i++) {
 		    if (isPathVariable(urlPatternSegments[i])) {
-			pathVariables.add(pathVariable(urlSegments[i], urlPatternSegments[i]));
+			String rawPathVariable = rawPathVariable(urlPatternSegments[i]);
+			if (rawPathVariable.isEmpty()) {
+			    break;
+			}
+			String[] keyType = rawPathVariable.split(PATH_VARIABLE_KEY_TYPE_SEPARATOR);
+			if (keyType.length < 2) {
+			    break;
+			}
+			pathVariables.put(keyType[0],
+				this.type.value(this.pathVariables.value().get(keyType[0]), urlSegments[i]));
 		    }
 		}
 	    } catch (Exception e) {
 		e.printStackTrace();
-		pathVariables.clear();
 	    }
 	}
-	return new StringsObjects(pathVariables);
-    }
-
-    private KeyValue pathVariable(String urlSegment, String urlPatternSegment) throws Exception {
-	String rawPathVariable = rawPathVariable(urlPatternSegment);
-	if (rawPathVariable.isEmpty()) {
-	    throw new Exception("Path variable is empty");
-	}
-	String[] keyType = rawPathVariable.split(PATH_VARIABLE_KEY_TYPE_SEPARATOR);
-	if (keyType.length < 2) {
-	    throw new Exception("Path variable is empty");
-	}
-	return new StringObject(keyType[0], this.type.value(this.pathVariables.value().get(keyType[0]), urlSegment));
+	return pathVariables;
     }
 
     private boolean isPathVariable(String urlPatternSegment) {
@@ -196,22 +188,21 @@ public final class TypedUrlPattern implements UrlPattern {
     }
 
     @Override
-    public KeysValues parameters(String url) {
-	List<KeyValue> typedParameters = new ArrayList<>();
+    public TypedMap parameters(String url) {
+	TypedMap parameters = new Attributes();
 	Map<String, String> urlParameters = rawParameters(url);
 	if (urlParameters.size() >= this.parameters.value().size()) {
 	    try {
 		for (Map.Entry<String, Class> pe : this.parameters.value().entrySet()) {
 		    String toParseValue = urlParameters.getOrDefault(pe.getKey(), "");
 		    Object value = this.type.value(pe.getValue(), toParseValue);
-		    typedParameters.add(new StringObject(pe.getKey(), value));
+		    parameters.put(pe.getKey(), value);
 		}
 	    } catch (Exception e) {
 		e.printStackTrace();
-		typedParameters.clear();
 	    }
 	}
-	return new StringsObjects(typedParameters);
+	return parameters;
     }
 
     @Override

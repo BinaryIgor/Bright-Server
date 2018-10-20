@@ -5,8 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.iprogrammerr.bright.server.model.KeysValues;
-import com.iprogrammerr.bright.server.pattern.TypedUrlPattern;
+import com.iprogrammerr.bright.server.model.TypedMap;
 
 public class TypedUrlPatternTest {
 
@@ -40,12 +39,12 @@ public class TypedUrlPatternTest {
     public void canReadPathVariables() throws Exception {
 	String url = "riddle/user/1/search/9.4";
 	TypedUrlPattern tup = new TypedUrlPattern("riddle/user/{id:int}/search/{scale:double}");
-	KeysValues pathVariables = tup.pathVariables(url);
+	TypedMap pathVariables = tup.pathVariables(url);
 	assertTrue(pathVariables.has("id", Integer.class));
-	int id = pathVariables.value("id", Integer.class);
+	int id = pathVariables.intValue("id");
 	assertTrue(id == 1);
 	assertTrue(pathVariables.has("scale", Double.class));
-	double scale = pathVariables.value("scale", Double.class);
+	double scale = pathVariables.doubleValue("scale");
 	assertTrue(scale == 9.4);
     }
 
@@ -53,15 +52,15 @@ public class TypedUrlPatternTest {
     public void canReadParameters() throws Exception {
 	String url = "riddle/user?id=1&search=10.33&fast=true&super=dada";
 	TypedUrlPattern tup = new TypedUrlPattern("riddle/user?id=long&search=float&fast=boolean");
-	KeysValues parameters = tup.parameters(url);
+	TypedMap parameters = tup.parameters(url);
 	assertTrue(parameters.has("id", Long.class));
-	long id = parameters.value("id", Long.class);
+	long id = parameters.longValue("id");
 	assertTrue(id == 1);
 	assertTrue(parameters.has("search", Float.class));
-	float search = parameters.value("search", Float.class);
+	float search = parameters.floatValue("search");
 	assertTrue(Math.abs(10.33 - search) < DELTA);
 	assertTrue(parameters.has("fast", Boolean.class));
-	boolean fast = parameters.value("fast", Boolean.class);
+	boolean fast = parameters.booleanValue("fast");
 	assertTrue(fast);
     }
 }
