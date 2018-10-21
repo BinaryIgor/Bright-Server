@@ -48,4 +48,79 @@ public final class UrlPatternType implements Type {
 	return parsedValue;
     }
 
+    @Override
+    public Object probedValue(String value) {
+	Object probed;
+	try {
+	    if (isInteger(value)) {
+		long longValue = Long.parseLong(value);
+		if (longValue > Integer.MAX_VALUE) {
+		    probed = longValue;
+		} else {
+		    probed = (int) longValue;
+		}
+	    } else if (isDouble(value)) {
+		probed = Double.parseDouble(value);
+	    } else if (isBoolean(value)) {
+		probed = Boolean.parseBoolean(value);
+	    } else {
+		probed = value;
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    probed = value;
+	}
+	return probed;
+    }
+
+    private boolean isInteger(String value) {
+	char[] values = value.toCharArray();
+	boolean is = false;
+	if (values.length == 0) {
+	    is = false;
+	} else if (values.length == 1 && Character.isDigit(values[0])) {
+	    is = true;
+	} else if (Character.isDigit(values[0]) || values[0] == '-' || values[0] == '+') {
+	    is = true;
+	    for (int i = 1; i < values.length; ++i) {
+		if (!Character.isDigit(values[i])) {
+		    is = false;
+		    break;
+		}
+	    }
+	}
+	return is;
+    }
+
+    private boolean isDouble(String value) {
+	char[] values = value.toCharArray();
+	boolean is = values.length > 0 && Character.isDigit(values[0])
+		|| ((values[0] == '-' || values[0] == '+') && values.length > 1);
+	if (is) {
+	    int i;
+	    for (i = 1; i < values.length; ++i) {
+		if (!Character.isDigit(values[i])) {
+		    is = false;
+		    break;
+		}
+	    }
+	    boolean checkRemainder = !is && i < values.length && values[i] == '.';
+	    ++i;
+	    if (checkRemainder) {
+		is = true;
+		while (i < values.length) {
+		    if (!Character.isDigit(values[i++])) {
+			is = false;
+			break;
+		    }
+		}
+	    }
+	}
+	return is;
+    }
+
+    private boolean isBoolean(String value) {
+	return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false");
+    }
+
 }

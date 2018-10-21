@@ -19,7 +19,7 @@ public final class TypedUrlPattern implements UrlPattern {
     private static final String PATH_VARIABLE_END = "}";
     private static final String PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
     private final String urlPattern;
-    private final Type type;
+    private final UrlPatternType type;
     private final Initialization<Map<String, Class>> pathVariables;
     private final Initialization<Map<String, Class>> parameters;
 
@@ -27,7 +27,7 @@ public final class TypedUrlPattern implements UrlPattern {
 	this(urlPattern, new UrlPatternType());
     }
 
-    public TypedUrlPattern(String urlPattern, Type type) {
+    private TypedUrlPattern(String urlPattern, UrlPatternType type) {
 	this.urlPattern = urlPattern;
 	this.type = type;
 	this.pathVariables = new StickyInitialization<>(() -> pathVariables());
@@ -200,6 +200,12 @@ public final class TypedUrlPattern implements UrlPattern {
 		}
 	    } catch (Exception e) {
 		e.printStackTrace();
+	    }
+	}
+	for (Map.Entry<String, String> entry : urlParameters.entrySet()) {
+	    if (!this.parameters.value().containsKey(entry.getKey())) {
+		String toParseValue = urlParameters.getOrDefault(entry.getKey(), "");
+		parameters.put(entry.getKey(), this.type.probedValue(toParseValue));
 	    }
 	}
 	return parameters;

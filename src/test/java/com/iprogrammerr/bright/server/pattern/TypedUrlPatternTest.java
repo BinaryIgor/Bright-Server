@@ -63,4 +63,24 @@ public class TypedUrlPatternTest {
 	boolean fast = parameters.booleanValue("fast");
 	assertTrue(fast);
     }
+
+    @Test
+    public void canReadNotRegisteredParameters() throws Exception {
+	String url = "riddle/user?id=1&search=10.33&fast=true&super_search=4.56&comment=amazing";
+	TypedUrlPattern tup = new TypedUrlPattern("riddle/user?id=long&search=double");
+	TypedMap parameters = tup.parameters(url);
+	assertTrue(parameters.has("id", Long.class));
+	long id = parameters.longValue("id");
+	assertTrue(id == 1);
+	assertTrue(parameters.has("search", Double.class));
+	assertTrue(parameters.doubleValue("search") == 10.33);
+	assertTrue(parameters.has("fast", Boolean.class));
+	boolean fast = parameters.booleanValue("fast");
+	assertTrue(fast);
+	assertTrue(parameters.has("super_search", Double.class));
+	assertTrue(parameters.doubleValue("super_search") == 4.56);
+	assertTrue(parameters.has("comment", String.class));
+	assertTrue(parameters.stringValue("comment").equals("amazing"));
+    }
+
 }
