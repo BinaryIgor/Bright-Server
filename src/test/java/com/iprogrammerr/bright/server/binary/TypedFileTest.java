@@ -1,6 +1,5 @@
 package com.iprogrammerr.bright.server.binary;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -18,6 +17,6 @@ public class TypedFileTest {
 	TypedBinary tb = new TypedFile(file);
 	assertTrue(tb.type().equals("html"));
 	byte[] content = tb.content();
-	assertEquals(content.length, file.length());
+	assertTrue(content.length == file.length());
     }
 }

@@ -16,7 +16,7 @@ public final class SimpleApplication {
         filters.add(authorizationFilter);
 
         Application application = new HttpApplication(new AllowAllCors(), respondents, filters);
-        Connector connection = new RequestResponseConnection(new HttpOneProtocol(), application);
+        Connection connection = new RequestResponseConnection(new HttpOneProtocol(), application);
         Server server = new Server(8080, 5000, connection);
         server.start();
     }
@@ -51,7 +51,7 @@ public final class HelloRespondent implements Respondent {
     public Response response(MatchedRequest request) {
         Response response;
 	try {
-	    int id = request.pathVariable("id", Integer.class);
+	    int id = request.pathVariables().intValue("id");
 	    String message = "Hello number " + id;
 	    response = new OkResponse(message);
 	} catch (Exception e) {
@@ -70,12 +70,12 @@ Because of that, they might become outdated from time to time.
 <dependency>
   <groupId>com.iprogrammerr</groupId>
   <artifactId>bright-server</artifactId>
-  <version>1.0-beta-3</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 ## Gradle
 ```
-compile 'com.iprogrammerr:bright-server:1.0-beta-3'
+compile 'com.iprogrammerr:bright-server:1.0.0'
  ```
 ## Example
   In development: (https://github.com/Iprogrammerr/Riddle/)

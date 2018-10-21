@@ -14,12 +14,11 @@ public final class SolidInitializationTest {
     @Test
     public void shouldBeThreadSafe() throws Exception {
 	CountDownLatch latch = new CountDownLatch(1);
-	String value = "value";
 	AtomicInteger stickyCalls = new AtomicInteger();
 	AtomicInteger threadCalls = new AtomicInteger();
 	Initialization<String> initialization = new SolidInitialization<>(() -> {
 	    stickyCalls.incrementAndGet();
-	    return value;
+	    return "value";
 	});
 	int probes = 100;
 	Executor executor = Executors.newFixedThreadPool(probes);
@@ -27,7 +26,7 @@ public final class SolidInitializationTest {
 	    executor.execute(() -> {
 		try {
 		    latch.await();
-		    Thread.sleep((long) (Math.random() * 5));
+		    Thread.sleep((long) (Math.random() * 10));
 		    initialization.value();
 		    threadCalls.incrementAndGet();
 		} catch (Exception e) {
@@ -36,10 +35,9 @@ public final class SolidInitializationTest {
 	    });
 	}
 	latch.countDown();
-	Thread.sleep(5);
-	while (threadCalls.get() != probes) {
-	    Thread.sleep(5);
-	}
+	do {
+	    Thread.sleep(10);
+	} while (threadCalls.get() != probes);
 	assertTrue(stickyCalls.get() == 1);
     }
 

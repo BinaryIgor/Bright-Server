@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class AsteriskFilterUrlPatternTest {
+public final class AsteriskFilterUrlPatternTest {
 
     @Test
     public void canMatch() {

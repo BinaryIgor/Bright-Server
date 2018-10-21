@@ -16,6 +16,7 @@ public final class UnreliableStickyInitializationTest {
 	assertTrue(first == initialization.value());
 	initialization.unstick();
 	assertFalse(first == initialization.value());
+	assertTrue(initialization.value() == initialization.value());
     }
 
 }

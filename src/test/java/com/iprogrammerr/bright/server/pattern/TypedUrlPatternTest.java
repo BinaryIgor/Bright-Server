@@ -7,9 +7,7 @@ import org.junit.Test;
 
 import com.iprogrammerr.bright.server.model.TypedMap;
 
-public class TypedUrlPatternTest {
-
-    private static final double DELTA = 10e-6;
+public final class TypedUrlPatternTest {
 
     @Test
     public void canMatch() {
@@ -58,7 +56,7 @@ public class TypedUrlPatternTest {
 	assertTrue(id == 1);
 	assertTrue(parameters.has("search", Float.class));
 	float search = parameters.floatValue("search");
-	assertTrue(Math.abs(10.33 - search) < DELTA);
+	assertTrue(10.33f == search);
 	assertTrue(parameters.has("fast", Boolean.class));
 	boolean fast = parameters.booleanValue("fast");
 	assertTrue(fast);
@@ -70,13 +68,11 @@ public class TypedUrlPatternTest {
 	TypedUrlPattern tup = new TypedUrlPattern("riddle/user?id=long&search=double");
 	TypedMap parameters = tup.parameters(url);
 	assertTrue(parameters.has("id", Long.class));
-	long id = parameters.longValue("id");
-	assertTrue(id == 1);
+	assertTrue(parameters.longValue("id") == 1L);
 	assertTrue(parameters.has("search", Double.class));
 	assertTrue(parameters.doubleValue("search") == 10.33);
 	assertTrue(parameters.has("fast", Boolean.class));
-	boolean fast = parameters.booleanValue("fast");
-	assertTrue(fast);
+	assertTrue(parameters.booleanValue("fast"));
 	assertTrue(parameters.has("super_search", Double.class));
 	assertTrue(parameters.doubleValue("super_search") == 4.56);
 	assertTrue(parameters.has("comment", String.class));

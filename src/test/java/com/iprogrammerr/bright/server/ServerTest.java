@@ -27,7 +27,7 @@ public final class ServerTest {
     @Test
     public void canStartMultiple() throws Exception {
 	CountDownLatch latch = new CountDownLatch(1);
-	int instances = 5;
+	int instances = 2 + ((int) (Math.random() * 10));
 	Executor executor = Executors.newFixedThreadPool(instances);
 	AtomicInteger count = new AtomicInteger();
 	List<Server> servers = new ArrayList<>();
@@ -40,14 +40,14 @@ public final class ServerTest {
 		    count.incrementAndGet();
 		    server.start();
 		} catch (Exception e) {
-		    e.printStackTrace();
+
 		}
 	    });
 	}
 	latch.countDown();
-	sleepRandomly(10);
+	sleepRandomly();
 	if (count.get() != instances) {
-	    sleepRandomly(10);
+	    sleepRandomly();
 	}
 	assertTrue(count.get() == instances);
 	for (Server s : servers) {
@@ -60,12 +60,12 @@ public final class ServerTest {
 	Server server = new Server(0, CONNECTION_MOCK);
 	Executor executor = Executors.newSingleThreadExecutor();
 	executor.execute(() -> {
-	    sleepRandomly(5);
+	    sleepRandomly();
 	    if (!server.isRunning()) {
-		sleepRandomly(5);
+		sleepRandomly();
 	    }
 	    assertTrue(server.isRunning());
-	    new ToCatchException().hasCatched(server::start);
+	    assertTrue(new ToCatchException().hasCatched(server::start));
 	    server.stop();
 	});
 	server.start();
@@ -77,13 +77,16 @@ public final class ServerTest {
 	Executor executor = Executors.newSingleThreadExecutor();
 	executor.execute(() -> {
 	    try {
-		sleepRandomly(5);
+		sleepRandomly();
 		if (!server.isRunning()) {
-		    sleepRandomly(5);
+		    sleepRandomly();
 		}
 		assertTrue(server.isRunning());
 		server.stop();
-		sleepRandomly(10);
+		sleepRandomly();
+		if (!server.isRunning()) {
+		    sleepRandomly();
+		}
 		server.stop();
 	    } catch (Exception e) {
 
@@ -95,9 +98,9 @@ public final class ServerTest {
 	assertFalse(server.isRunning());
     }
 
-    private void sleepRandomly(int min) {
+    private void sleepRandomly() {
 	try {
-	    Thread.sleep(min + ((long) Math.random() * 3 * min));
+	    Thread.sleep(10 + ((long) Math.random() * 10));
 	} catch (Exception e) {
 
 	}

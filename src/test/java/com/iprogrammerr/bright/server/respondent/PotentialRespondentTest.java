@@ -13,7 +13,7 @@ import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 
-public class PotentialRespondentTest {
+public final class PotentialRespondentTest {
 
     @Test
     public void canRespond() throws Exception {
