@@ -16,7 +16,7 @@ import com.iprogrammerr.bright.server.exception.ToCatchException;
 
 public final class ServerTest {
 
-    private static final Connection MOCK = s -> {
+    private static final Connection CONNECTION_MOCK = s -> {
 	try {
 	    s.close();
 	} catch (Exception e) {
@@ -32,7 +32,7 @@ public final class ServerTest {
 	AtomicInteger count = new AtomicInteger();
 	List<Server> servers = new ArrayList<>();
 	for (int i = 0; i < instances; ++i) {
-	    Server server = new Server(0, MOCK);
+	    Server server = new Server(0, CONNECTION_MOCK);
 	    servers.add(server);
 	    executor.execute(() -> {
 		try {
@@ -57,7 +57,7 @@ public final class ServerTest {
 
     @Test
     public void canRefuseStartingTwice() throws Exception {
-	Server server = new Server(0, MOCK);
+	Server server = new Server(0, CONNECTION_MOCK);
 	Executor executor = Executors.newSingleThreadExecutor();
 	executor.execute(() -> {
 	    sleepRandomly(5);
@@ -73,7 +73,7 @@ public final class ServerTest {
 
     @Test
     public void canStartAndStop() throws Exception {
-	Server server = new Server(0, MOCK);
+	Server server = new Server(0, CONNECTION_MOCK);
 	Executor executor = Executors.newSingleThreadExecutor();
 	executor.execute(() -> {
 	    try {

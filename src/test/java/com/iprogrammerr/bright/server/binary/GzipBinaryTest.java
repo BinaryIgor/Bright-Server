@@ -1,3 +1,4 @@
+
 package com.iprogrammerr.bright.server.binary;
 
 import static org.junit.Assert.assertTrue;
@@ -9,8 +10,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.iprogrammerr.bright.server.binary.Binary;
-import com.iprogrammerr.bright.server.binary.PacketsBinary;
 import com.iprogrammerr.bright.server.binary.processed.GzipCompressedBinary;
 import com.iprogrammerr.bright.server.binary.processed.GzipDecompressedBinary;
 

@@ -34,7 +34,7 @@ public final class UrlPatternTypeTest {
 	Double toProbeDouble = 3.33;
 	Object probed = type.probedValue(toProbeDouble.toString());
 	assertTrue(probed.getClass().isAssignableFrom(Double.class) && probed.equals(toProbeDouble));
-	Integer toProbeInteger = 3;
+	Integer toProbeInteger = -3;
 	probed = type.probedValue(toProbeInteger.toString());
 	assertTrue(probed.getClass().isAssignableFrom(Integer.class) && probed.equals(toProbeInteger));
 	Long toProbeLong = ((long) (Integer.MAX_VALUE)) + 1L;

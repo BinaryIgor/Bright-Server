@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.iprogrammerr.bright.server.initialization.Initialization;
 import com.iprogrammerr.bright.server.initialization.MappedInitialization;
-import com.iprogrammerr.bright.server.initialization.StickyInitialization;
+import com.iprogrammerr.bright.server.initialization.SolidInitialization;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.template.ForbiddenResponse;
@@ -20,7 +20,7 @@ public final class ConditionalFilters implements Filters {
     }
 
     public ConditionalFilters(Iterable<ConditionalFilter> filters) {
-	this(new StickyInitialization<>(
+	this(new SolidInitialization<>(
 		new MappedInitialization<Iterable<ConditionalFilter>, Iterable<ConditionalFilter>>(filters, cfs -> {
 		    List<ConditionalFilter> sorted = new ArrayList<>();
 		    for (ConditionalFilter cf : cfs) {
@@ -38,7 +38,7 @@ public final class ConditionalFilters implements Filters {
     }
 
     public ConditionalFilters() {
-	this(new StickyInitialization<>(() -> new ArrayList<>()));
+	this(new SolidInitialization<>(() -> new ArrayList<>()));
     }
 
     @Override

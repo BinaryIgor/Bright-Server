@@ -41,7 +41,6 @@ public final class FileServerApplication implements Application {
 	    try {
 		response = Optional.of(this.fileRespondent.response(request));
 	    } catch (Exception e) {
-		e.printStackTrace();
 		response = Optional.of(new InternalServerErrorResponse());
 	    }
 	} else {

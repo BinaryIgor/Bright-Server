@@ -18,6 +18,7 @@ import com.iprogrammerr.bright.server.response.Response;
 
 public class HttpOneProtocol implements RequestResponseProtocol {
 
+    private static final int DEFAULT_PACKET_SIZE = 1024;
     private static final String CONNECTION = "Connection";
     private static final String CLOSE = "close";
     private static final String KEY_VALUE_SEPARATOR = ": ";
@@ -41,7 +42,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 
     @Override
     public Request request(InputStream inputStream) throws Exception {
-	Binary binary = new OnePacketBinary(inputStream, 1024);
+	Binary binary = new OnePacketBinary(inputStream, DEFAULT_PACKET_SIZE);
 	byte[] content = binary.content();
 	int headBody = this.pattern.index(content);
 	String[] lines = headBody == -1 ? new String(content).split(CRLF)

@@ -177,19 +177,21 @@ public final class TypedUrlPattern implements UrlPattern {
 	Map<String, String> urlParameters = rawParameters(url);
 	if (urlParameters.size() >= this.parameters.value().size()) {
 	    try {
-		for (Map.Entry<String, Class> pe : this.parameters.value().entrySet()) {
-		    String toParseValue = urlParameters.getOrDefault(pe.getKey(), "");
-		    Object value = this.type.value(pe.getValue(), toParseValue);
-		    parameters.put(pe.getKey(), value);
+		for (Map.Entry<String, Class> entry : this.parameters.value().entrySet()) {
+		    String toParseValue = urlParameters.getOrDefault(entry.getKey(), "");
+		    Object value = this.type.value(entry.getValue(), toParseValue);
+		    parameters.put(entry.getKey(), value);
 		}
 	    } catch (Exception e) {
 		e.printStackTrace();
 	    }
 	}
-	for (Map.Entry<String, String> entry : urlParameters.entrySet()) {
-	    if (!this.parameters.value().containsKey(entry.getKey())) {
-		String toParseValue = urlParameters.getOrDefault(entry.getKey(), "");
-		parameters.put(entry.getKey(), this.type.probedValue(toParseValue));
+	if (urlParameters.size() > this.parameters.value().size()) {
+	    for (Map.Entry<String, String> entry : urlParameters.entrySet()) {
+		if (!this.parameters.value().containsKey(entry.getKey())) {
+		    String toParseValue = urlParameters.getOrDefault(entry.getKey(), "");
+		    parameters.put(entry.getKey(), this.type.probedValue(toParseValue));
+		}
 	    }
 	}
 	return parameters;

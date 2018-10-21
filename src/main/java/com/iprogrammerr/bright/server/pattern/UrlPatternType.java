@@ -81,15 +81,20 @@ public final class UrlPatternType implements Type {
 	} else if (values.length == 1 && Character.isDigit(values[0])) {
 	    is = true;
 	} else if (Character.isDigit(values[0]) || values[0] == '-' || values[0] == '+') {
-	    is = true;
-	    for (int i = 1; i < values.length; ++i) {
-		if (!Character.isDigit(values[i])) {
-		    is = false;
-		    break;
-		}
-	    }
+	    is = notDigitIndex(1, values) >= 0 ? false : true;
 	}
 	return is;
+    }
+
+    private int notDigitIndex(int from, char[] values) {
+	int index = -1;
+	for (int i = from; i < values.length; ++i) {
+	    if (!Character.isDigit(values[i])) {
+		index = i;
+		break;
+	    }
+	}
+	return index;
     }
 
     private boolean isDouble(String value) {
@@ -97,23 +102,11 @@ public final class UrlPatternType implements Type {
 	boolean is = values.length > 0 && Character.isDigit(values[0])
 		|| ((values[0] == '-' || values[0] == '+') && values.length > 1);
 	if (is) {
-	    int i;
-	    for (i = 1; i < values.length; ++i) {
-		if (!Character.isDigit(values[i])) {
-		    is = false;
-		    break;
-		}
-	    }
-	    boolean checkRemainder = !is && i < values.length && values[i] == '.';
-	    ++i;
-	    if (checkRemainder) {
+	    int index = notDigitIndex(1, values);
+	    if (index > 0 && values[index] == '.') {
+		is = notDigitIndex(index + 1, values) >= 0 ? false : true;
+	    } else {
 		is = true;
-		while (i < values.length) {
-		    if (!Character.isDigit(values[i++])) {
-			is = false;
-			break;
-		    }
-		}
 	    }
 	}
 	return is;

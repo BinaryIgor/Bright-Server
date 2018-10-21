@@ -34,7 +34,6 @@ public final class ExampleFileRespondent implements FileRespondent {
 			new ContentEncodingHeader(gcb.algorithm()));
 	    }
 	} catch (Exception e) {
-	    e.printStackTrace();
 	    response = new NotFoundResponse();
 	}
 	return response;
