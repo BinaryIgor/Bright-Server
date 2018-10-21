@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.iprogrammerr.bright.server.initialization.Initialization;
-import com.iprogrammerr.bright.server.initialization.StickyInitialization;
+import com.iprogrammerr.bright.server.initialization.SolidInitialization;
 import com.iprogrammerr.bright.server.model.Attributes;
 import com.iprogrammerr.bright.server.model.TypedMap;
 
@@ -19,19 +19,54 @@ public final class TypedUrlPattern implements UrlPattern {
     private static final String PATH_VARIABLE_END = "}";
     private static final String PATH_VARIABLE_KEY_TYPE_SEPARATOR = ":";
     private final String urlPattern;
-    private final UrlPatternType type;
+    private final Type type;
     private final Initialization<Map<String, Class>> pathVariables;
     private final Initialization<Map<String, Class>> parameters;
 
-    public TypedUrlPattern(String urlPattern) {
-	this(urlPattern, new UrlPatternType());
-    }
-
-    private TypedUrlPattern(String urlPattern, UrlPatternType type) {
+    private TypedUrlPattern(String urlPattern, Type type, Initialization<Map<String, Class>> pathVariables,
+	    Initialization<Map<String, Class>> parameters) {
 	this.urlPattern = urlPattern;
 	this.type = type;
-	this.pathVariables = new StickyInitialization<>(() -> pathVariables());
-	this.parameters = new StickyInitialization<>(() -> parameters());
+	this.pathVariables = pathVariables;
+	this.parameters = parameters;
+    }
+
+    private TypedUrlPattern(String urlPattern, Type type) {
+	this(urlPattern, type, new SolidInitialization<>(() -> {
+	    Map<String, Class> pathVariables = new HashMap<>();
+	    String[] urlPatternSegments = urlPattern.split(SEGMENTS_SEPARATOR);
+	    for (int i = 0; i < urlPatternSegments.length; i++) {
+		boolean pathVariable = urlPatternSegments[i].startsWith(PATH_VARIABLE_START)
+			&& urlPatternSegments[i].endsWith(PATH_VARIABLE_END);
+		if (!pathVariable) {
+		    continue;
+		}
+		String raw = urlPatternSegments[i].substring(1, urlPatternSegments[i].length() - 1);
+		String[] keyType = raw.split(PATH_VARIABLE_KEY_TYPE_SEPARATOR);
+		if (keyType.length >= 2) {
+		    pathVariables.put(keyType[0], type.type(keyType[1]));
+		}
+	    }
+	    return pathVariables;
+	}), new SolidInitialization<>(() -> {
+	    Map<String, Class> parameters = new HashMap<>();
+	    int parametersBegining = urlPattern.indexOf(PARAMETERS_BEGINING);
+	    String toSplit = urlPattern.substring(parametersBegining + 1, urlPattern.length());
+	    String[] parametersKeysValues = toSplit.split(PARAMETERS_SEPARATOR);
+	    if (parametersKeysValues.length > 0) {
+		for (String pkv : parametersKeysValues) {
+		    String[] kv = pkv.split(PARAMETERS_KEY_VALUE_SEPARATOR);
+		    if (kv.length >= 2) {
+			parameters.put(kv[0], type.type(kv[1]));
+		    }
+		}
+	    }
+	    return parameters;
+	}));
+    }
+
+    public TypedUrlPattern(String urlPattern) {
+	this(urlPattern, new UrlPatternType());
     }
 
     @Override
@@ -84,33 +119,6 @@ public final class TypedUrlPattern implements UrlPattern {
 	return url;
     }
 
-    private Map<String, Class> pathVariables() {
-	Map<String, String> keyTypeVariables = keyTypeVariables();
-	Map<String, Class> pathVariables;
-	if (keyTypeVariables.isEmpty()) {
-	    pathVariables = new HashMap<>();
-	} else {
-	    pathVariables = typed(keyTypeVariables);
-	}
-	return pathVariables;
-    }
-
-    private Map<String, String> keyTypeVariables() {
-	Map<String, String> keyTypeVariables = new HashMap<>();
-	String[] urlPatternSegments = this.urlPattern.split(SEGMENTS_SEPARATOR);
-	for (int i = 0; i < urlPatternSegments.length; i++) {
-	    if (!isPathVariable(urlPatternSegments[i])) {
-		continue;
-	    }
-	    String pathVariable = rawPathVariable(urlPatternSegments[i]);
-	    String[] keyType = pathVariable.split(PATH_VARIABLE_KEY_TYPE_SEPARATOR);
-	    if (keyType.length >= 2) {
-		keyTypeVariables.put(keyType[0], keyType[1]);
-	    }
-	}
-	return keyTypeVariables;
-    }
-
     @Override
     public TypedMap pathVariables(String url) {
 	TypedMap pathVariables = new Attributes();
@@ -145,30 +153,6 @@ public final class TypedUrlPattern implements UrlPattern {
 
     private String rawPathVariable(String urlPatternSegment) {
 	return urlPatternSegment.substring(1, urlPatternSegment.length() - 1);
-    }
-
-    private Map<String, Class> parameters() {
-	Map<String, String> rawParameters = rawParameters(this.urlPattern);
-	Map<String, Class> parameters;
-	if (rawParameters.isEmpty()) {
-	    parameters = new HashMap<>();
-	} else {
-	    parameters = typed(rawParameters);
-	}
-	return parameters;
-    }
-
-    private Map<String, Class> typed(Map<String, String> raw) {
-	Map<String, Class> typed = new HashMap<>();
-	try {
-	    for (Map.Entry<String, String> entry : raw.entrySet()) {
-		typed.put(entry.getKey(), this.type.type(entry.getValue()));
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    typed.clear();
-	}
-	return typed;
     }
 
     private Map<String, String> rawParameters(String url) {
