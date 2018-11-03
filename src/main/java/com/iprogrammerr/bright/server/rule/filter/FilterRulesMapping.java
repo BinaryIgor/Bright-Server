@@ -8,19 +8,18 @@ import com.iprogrammerr.bright.server.rule.method.RequestMethodRule;
 
 public final class FilterRulesMapping implements Mapping<String[], Iterable<FilterRule>> {
 
-    private final RequestMethodRule methodRule;
+	private final RequestMethodRule methodRule;
 
-    public FilterRulesMapping(RequestMethodRule methodRule) {
-	this.methodRule = methodRule;
-    }
-
-    @Override
-    public Iterable<FilterRule> value(String[] from) {
-	List<FilterRule> rules = new ArrayList<>();
-	for (String f : from) {
-	    rules.add(new ToFilterRequestRule(this.methodRule, f));
+	public FilterRulesMapping(RequestMethodRule methodRule) {
+		this.methodRule = methodRule;
 	}
-	return rules;
-    }
 
+	@Override
+	public Iterable<FilterRule> value(String[] from) {
+		List<FilterRule> rules = new ArrayList<>();
+		for (String f : from) {
+			rules.add(new ToFilterRequestRule(this.methodRule, f));
+		}
+		return rules;
+	}
 }

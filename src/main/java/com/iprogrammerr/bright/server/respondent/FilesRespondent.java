@@ -56,5 +56,4 @@ public final class FilesRespondent implements ConditionalRespondent {
 		}
 		return response;
 	}
-
 }

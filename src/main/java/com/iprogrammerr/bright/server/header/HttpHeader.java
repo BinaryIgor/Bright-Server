@@ -38,7 +38,7 @@ public final class HttpHeader implements Header {
 	@Override
 	public boolean equals(Object object) {
 		boolean equal;
-		if (object == null || !object.getClass().isAssignableFrom(Header.class)) {
+		if (object == null || !Header.class.isAssignableFrom(object.getClass())) {
 			equal = false;
 		} else if (object == this) {
 			equal = true;

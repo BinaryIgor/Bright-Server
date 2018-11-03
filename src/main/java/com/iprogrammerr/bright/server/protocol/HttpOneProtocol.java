@@ -9,6 +9,7 @@ import java.util.List;
 import com.iprogrammerr.bright.server.binary.Binary;
 import com.iprogrammerr.bright.server.binary.OnePacketBinary;
 import com.iprogrammerr.bright.server.binary.PacketsBinary;
+import com.iprogrammerr.bright.server.binary.pattern.BinaryPattern;
 import com.iprogrammerr.bright.server.binary.pattern.HeadBodyPattern;
 import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.header.HttpHeader;
@@ -30,9 +31,9 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	private static final String HTTP = "HTTP";
 	private static final String RESPONSE_CODE_PREFIX = "HTTP/1.1 ";
 	private static final String CONTENT_LENGTH = "Content-Length";
-	private final HeadBodyPattern pattern;
+	private final BinaryPattern pattern;
 
-	private HttpOneProtocol(HeadBodyPattern pattern) {
+	private HttpOneProtocol(BinaryPattern pattern) {
 		this.pattern = pattern;
 	}
 
@@ -149,5 +150,4 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 		}
 		return close;
 	}
-
 }

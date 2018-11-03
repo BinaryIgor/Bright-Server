@@ -10,26 +10,25 @@ import com.iprogrammerr.bright.server.response.body.ResponseBody;
 
 public final class CreatedResponse extends ResponseEnvelope {
 
-    private static final int CODE = 201;
+	private static final int CODE = 201;
 
-    public CreatedResponse() {
-	super(new EmptyResponse(CODE));
-    }
+	public CreatedResponse() {
+		super(new EmptyResponse(CODE));
+	}
 
-    public CreatedResponse(ResponseBody body) {
-	super(new ContentResponse(CODE, body));
-    }
+	public CreatedResponse(String message, Header... headers) {
+		super(new ContentResponse(CODE, message, headers));
+	}
 
-    public CreatedResponse(String message) {
-	super(new ContentResponse(CODE, message));
-    }
+	public CreatedResponse(String message, List<Header> headers) {
+		super(new ContentResponse(CODE, message, headers));
+	}
 
-    public CreatedResponse(ResponseBody body, List<Header> headers) {
-	super(new ContentResponse(CODE, body, headers));
-    }
+	public CreatedResponse(ResponseBody body, Header... headers) {
+		super(new ContentResponse(CODE, body, headers));
+	}
 
-    public CreatedResponse(ResponseBody body, Header... headers) {
-	super(new ContentResponse(CODE, body, headers));
-    }
-
+	public CreatedResponse(ResponseBody body, List<Header> headers) {
+		super(new ContentResponse(CODE, body, headers));
+	}
 }

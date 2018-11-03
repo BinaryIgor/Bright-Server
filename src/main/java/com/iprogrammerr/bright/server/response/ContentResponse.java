@@ -15,6 +15,14 @@ public final class ContentResponse implements Response {
 	private final byte[] body;
 	private final List<Header> headers;
 
+	public ContentResponse(int code, String contentType, byte[] body, List<Header> headers) {
+		this.code = code;
+		this.body = body;
+		this.headers = headers;
+		this.headers.add(new ContentTypeHeader(contentType));
+		this.headers.add(new ContentLengthHeader(body.length));
+	}
+
 	public ContentResponse(int code, ResponseBody body) {
 		this(code, body.type(), body.content(), new ArrayList<>());
 	}
@@ -27,16 +35,12 @@ public final class ContentResponse implements Response {
 		this(code, body.type(), body.content(), headers);
 	}
 
-	public ContentResponse(int code, String textBody) {
-		this(code, "text/plain", textBody.getBytes(), new ArrayList<>());
+	public ContentResponse(int code, String textBody, List<Header> headers) {
+		this(code, "text/plain", textBody.getBytes(), headers);
 	}
 
-	public ContentResponse(int code, String contentType, byte[] body, List<Header> headers) {
-		this.code = code;
-		this.body = body;
-		this.headers = headers;
-		this.headers.add(new ContentTypeHeader(contentType));
-		this.headers.add(new ContentLengthHeader(body.length));
+	public ContentResponse(int code, String textBody, Header... headers) {
+		this(code, textBody, new ArrayList<>(Arrays.asList(headers)));
 	}
 
 	@Override
