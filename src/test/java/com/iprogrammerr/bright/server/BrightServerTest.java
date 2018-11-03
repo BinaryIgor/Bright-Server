@@ -16,17 +16,20 @@ public final class BrightServerTest {
 
 	@Test
 	public void canStartMultiple() throws Exception {
+		System.out.println("BrightServerTest.canStartMultiple()");
 		assertThat(new BrightServer(0, MOCKED_CONNECTION),
 				new ServerThatCanHaveMultipleInstances());
 	}
 
 	@Test
 	public void canRefuseStartingTwice() throws Exception {
+		System.out.println("BrightServerTest.canRefuseStartingTwice()");
 		assertThat(new BrightServer(0, MOCKED_CONNECTION), new ServerThatRefuseToStartTwice());
 	}
 
 	@Test
 	public void canStartAndStop() throws Exception {
+		System.out.println("BrightServerTest.canStartAndStop()");
 		assertThat(new BrightServer(0, MOCKED_CONNECTION), new ServerThatCanBeRestarted());
 	}
 }

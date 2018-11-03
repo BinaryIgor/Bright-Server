@@ -1,31 +1,32 @@
 package com.iprogrammerr.bright.server.model;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
-
-import com.iprogrammerr.bright.server.exception.ToCatchException;
 
 public final class AttributesTest {
 
 	@Test
 	public void shouldBeTypeSafe() throws Exception {
+		Map<String, Class> types = new HashMap<>();
+		Map<String, Object> values = new HashMap<>();
 		int id = 3;
-		String name = "name";
+		types.put("id", Integer.class);
+		values.put("id", 3);
+		String name = "abc";
+		types.put("name", String.class);
+		values.put("name", name);
 		byte[] binary = new byte[] { -3, 4, 55, 100, 22 };
-		TypedMap attributes = new Attributes().put("id", id).put("name", name).put("binary",
-				binary);
-		assertTrue(id == attributes.intValue("id"));
-		assertTrue(name.equals(attributes.stringValue("name")));
-		assertTrue(Arrays.equals(binary, attributes.binaryValue("binary")));
-		ToCatchException toCatch = new ToCatchException();
-		assertTrue(toCatch.hasCatched(() -> attributes.longValue("id")));
-		assertTrue(toCatch.hasCatched(() -> attributes.intValue("name")));
-		assertTrue(toCatch.hasCatched(() -> attributes.floatValue("binary")));
+		types.put("binary", byte[].class);
+		values.put("binary", binary);
+		assertThat(new Attributes().put("id", id).put("name", name).put("binary", binary),
+				new TypedMapThatHaveProperValues(types, values));
 	}
 
 	@Test

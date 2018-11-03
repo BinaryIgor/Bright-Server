@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.iprogrammerr.bright.server.initialization.Initialization;
 import com.iprogrammerr.bright.server.initialization.MappedInitialization;
-import com.iprogrammerr.bright.server.initialization.SolidInitialization;
 import com.iprogrammerr.bright.server.initialization.StickyInitialization;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.BlockedResponse;
@@ -41,7 +40,7 @@ public final class ConditionalFilters implements Filters {
 	}
 
 	public ConditionalFilters() {
-		this(new SolidInitialization<>(() -> new ArrayList<>()));
+		this(new StickyInitialization<>(() -> new ArrayList<>()));
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package com.iprogrammerr.bright.server;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.hamcrest.Description;
@@ -17,8 +17,8 @@ public final class ServerThatCanBeRestarted extends TypeSafeMatcher<Server> {
 	protected boolean matchesSafely(Server item) {
 		boolean matched;
 		try {
-			Executor executor = Executors.newSingleThreadExecutor();
-			executor.execute(() -> {
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			executor.submit(() -> {
 				try {
 					if (!item.isRunning()) {
 						Thread.sleep(10);
@@ -34,10 +34,10 @@ public final class ServerThatCanBeRestarted extends TypeSafeMatcher<Server> {
 					if (!item.isRunning()) {
 						throw new RuntimeException("Server was supposed to run");
 					}
+				} finally {
 					item.stop();
-				} catch (Exception e) {
-
 				}
+				return true;
 			});
 			item.start();
 			matched = !item.isRunning();

@@ -50,5 +50,4 @@ public final class MockedRequest implements Request {
 	public void removeContext(String context) {
 
 	}
-
 }
