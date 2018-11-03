@@ -1,31 +1,24 @@
 
 package com.iprogrammerr.bright.server.binary;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
 
 import org.junit.Test;
 
 import com.iprogrammerr.bright.server.binary.processed.GzipCompressedBinary;
 import com.iprogrammerr.bright.server.binary.processed.GzipDecompressedBinary;
+import com.iprogrammerr.bright.server.binary.type.TypedBinary;
+import com.iprogrammerr.bright.server.binary.type.TypedFile;
 
-public class GzipBinaryTest {
+public final class GzipBinaryTest {
 
-    @Test
-    public void canCompressDecompress() throws Exception {
-	File file = new File(getClass().getResource("/test.html").getFile());
-	InputStream source = new FileInputStream(file);
-	Binary binary = new PacketsBinary(source, file.length());
-	byte[] original = binary.content();
-	source.close();
-	GzipCompressedBinary gcb = new GzipCompressedBinary(original);
-	byte[] compressed = gcb.content();
-	GzipDecompressedBinary gdb = new GzipDecompressedBinary(compressed, original.length);
-	byte[] decompressed = gdb.content();
-	assertTrue(Arrays.equals(original, decompressed));
-    }
+	@Test
+	public void canCompressAndDecompress() throws Exception {
+		TypedBinary tb = new TypedFile(new File(getClass().getResource("/test.html").getFile()));
+		byte[] source = tb.content();
+		assertThat(new GzipCompressedBinary(source),
+				new BinaryThatCanCompressAndDecompress(source, GzipDecompressedBinary.class));
+	}
 }
