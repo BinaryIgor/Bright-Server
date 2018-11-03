@@ -19,24 +19,21 @@ public final class ServerThatCanBeRestarted extends TypeSafeMatcher<Server> {
 		try {
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			executor.submit(() -> {
-				try {
-					if (!item.isRunning()) {
-						Thread.sleep(10);
-					}
-					if (!item.isRunning()) {
-						throw new RuntimeException("Server was supposed to run");
-					}
-					item.stop();
+				if (!item.isRunning()) {
 					Thread.sleep(10);
-					if (!item.isRunning()) {
-						Thread.sleep(10);
-					}
-					if (!item.isRunning()) {
-						throw new RuntimeException("Server was supposed to run");
-					}
-				} finally {
-					item.stop();
 				}
+				if (!item.isRunning()) {
+					throw new RuntimeException("Server was supposed to run");
+				}
+				item.stop();
+				Thread.sleep(10);
+				if (!item.isRunning()) {
+					Thread.sleep(10);
+				}
+				if (!item.isRunning()) {
+					throw new RuntimeException("Server was supposed to run");
+				}
+				item.stop();
 				return true;
 			});
 			item.start();
@@ -47,6 +44,9 @@ public final class ServerThatCanBeRestarted extends TypeSafeMatcher<Server> {
 			}
 		} catch (Exception e) {
 			matched = false;
+			if (item.isRunning()) {
+				item.stop();
+			}
 		}
 		return matched;
 	}
