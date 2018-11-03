@@ -19,7 +19,7 @@ public final class ServerThatCanBeRestarted extends TypeSafeMatcher<Server> {
 		try {
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			executor.submit(() -> {
-				if (!item.isRunning()) {
+				while (!item.isRunning()) {
 					Thread.sleep(10);
 				}
 				if (!item.isRunning()) {
@@ -27,7 +27,7 @@ public final class ServerThatCanBeRestarted extends TypeSafeMatcher<Server> {
 				}
 				item.stop();
 				Thread.sleep(10);
-				if (!item.isRunning()) {
+				while (!item.isRunning()) {
 					Thread.sleep(10);
 				}
 				if (!item.isRunning()) {
