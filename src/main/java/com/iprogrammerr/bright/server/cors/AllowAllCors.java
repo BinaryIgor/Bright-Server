@@ -7,19 +7,28 @@ import com.iprogrammerr.bright.server.request.Request;
 
 public final class AllowAllCors implements Cors {
 
-    private final Cors base;
+	private final Cors base;
 
-    public AllowAllCors() {
-	this.base = new ConfigurableCors("*", "*", "*");
-    }
+	private AllowAllCors(Cors base) {
+		this.base = base;
+	}
 
-    @Override
-    public boolean isValid(Request request) {
-	return this.base.isValid(request);
-    }
+	public AllowAllCors() {
+		this(new ConfigurableCors("*", "*", "*"));
+	}
 
-    @Override
-    public List<Header> toAddHeaders() {
-	return this.base.toAddHeaders();
-    }
+	@Override
+	public boolean isValid(Request request) {
+		return this.base.isValid(request);
+	}
+
+	@Override
+	public List<Header> toAddHeaders() {
+		return this.base.toAddHeaders();
+	}
+
+	@Override
+	public boolean is(Request request) {
+		return this.base.is(request);
+	}
 }

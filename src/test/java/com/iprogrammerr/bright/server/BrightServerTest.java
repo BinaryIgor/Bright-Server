@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import com.iprogrammerr.bright.server.exception.ToCatchException;
 
-public final class ServerTest {
+public final class BrightServerTest {
 
     private static final Connection CONNECTION_MOCK = s -> {
 	try {
@@ -30,9 +30,9 @@ public final class ServerTest {
 	int instances = 2 + ((int) (Math.random() * 10));
 	Executor executor = Executors.newFixedThreadPool(instances);
 	AtomicInteger count = new AtomicInteger();
-	List<Server> servers = new ArrayList<>();
+	List<BrightServer> servers = new ArrayList<>();
 	for (int i = 0; i < instances; ++i) {
-	    Server server = new Server(0, CONNECTION_MOCK);
+	    BrightServer server = new BrightServer(0, CONNECTION_MOCK);
 	    servers.add(server);
 	    executor.execute(() -> {
 		try {
@@ -50,14 +50,14 @@ public final class ServerTest {
 	    sleepRandomly();
 	}
 	assertTrue(count.get() == instances);
-	for (Server s : servers) {
+	for (BrightServer s : servers) {
 	    s.stop();
 	}
     }
 
     @Test
     public void canRefuseStartingTwice() throws Exception {
-	Server server = new Server(0, CONNECTION_MOCK);
+	BrightServer server = new BrightServer(0, CONNECTION_MOCK);
 	Executor executor = Executors.newSingleThreadExecutor();
 	executor.execute(() -> {
 	    sleepRandomly();
@@ -73,7 +73,7 @@ public final class ServerTest {
 
     @Test
     public void canStartAndStop() throws Exception {
-	Server server = new Server(0, CONNECTION_MOCK);
+	BrightServer server = new BrightServer(0, CONNECTION_MOCK);
 	Executor executor = Executors.newSingleThreadExecutor();
 	executor.execute(() -> {
 	    try {

@@ -6,11 +6,9 @@ import com.iprogrammerr.bright.server.header.Header;
 
 public interface Response {
 
-    int code();
+	int code();
 
-    List<Header> headers();
+	List<Header> headers();
 
-    boolean hasBody();
-
-    byte[] body();
+	byte[] body();
 }

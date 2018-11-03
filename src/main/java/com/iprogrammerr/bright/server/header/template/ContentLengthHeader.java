@@ -5,8 +5,7 @@ import com.iprogrammerr.bright.server.header.HttpHeader;
 
 public final class ContentLengthHeader extends HeaderEnvelope {
 
-    public ContentLengthHeader(int contentLength) {
-	super(new HttpHeader("Content-Length", String.valueOf(contentLength)));
-    }
-
+	public ContentLengthHeader(int contentLength) {
+		super(new HttpHeader("Content-Length", String.valueOf(contentLength)));
+	}
 }

@@ -5,8 +5,7 @@ import com.iprogrammerr.bright.server.header.HttpHeader;
 
 public final class ContentTypeHeader extends HeaderEnvelope {
 
-    public ContentTypeHeader(String contentType) {
-	super(new HttpHeader("Content-Type", contentType));
-    }
-
+	public ContentTypeHeader(String contentType) {
+		super(new HttpHeader("Content-Type", contentType));
+	}
 }

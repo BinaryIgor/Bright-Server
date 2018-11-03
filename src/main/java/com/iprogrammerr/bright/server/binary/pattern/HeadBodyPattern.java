@@ -2,24 +2,24 @@ package com.iprogrammerr.bright.server.binary.pattern;
 
 public final class HeadBodyPattern implements BinaryPattern {
 
-    private final BinaryPattern base;
+	private static final String HEAD_BODY_SEPARATOR = "\r\n\r\n";
+	private final BinaryPattern base;
 
-    private HeadBodyPattern(BinaryPattern base) {
-	this.base = base;
-    }
+	private HeadBodyPattern(BinaryPattern base) {
+		this.base = base;
+	}
 
-    public HeadBodyPattern() {
-	this(new ConfigurablePattern("\r\n\r\n".getBytes()));
-    }
+	public HeadBodyPattern() {
+		this(new ConfigurablePattern(HEAD_BODY_SEPARATOR.getBytes()));
+	}
 
-    @Override
-    public byte[] value() {
-	return this.base.value();
-    }
+	@Override
+	public byte[] value() {
+		return this.base.value();
+	}
 
-    @Override
-    public int index(byte[] content) {
-	return this.base.index(content);
-    }
-
+	@Override
+	public int index(byte[] content) {
+		return this.base.index(content);
+	}
 }

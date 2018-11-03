@@ -6,31 +6,25 @@ import com.iprogrammerr.bright.server.header.Header;
 
 public final class WithAdditionalHeadersResponse implements Response {
 
-    private final Response base;
+	private final Response base;
 
-    public WithAdditionalHeadersResponse(Response base, List<Header> additionalHeaders) {
-	this.base = base;
-	this.base.headers().addAll(additionalHeaders);
-    }
+	public WithAdditionalHeadersResponse(Response base, List<Header> additionalHeaders) {
+		this.base = base;
+		this.base.headers().addAll(additionalHeaders);
+	}
 
-    @Override
-    public int code() {
-	return this.base.code();
-    }
+	@Override
+	public int code() {
+		return this.base.code();
+	}
 
-    @Override
-    public List<Header> headers() {
-	return this.base.headers();
-    }
+	@Override
+	public List<Header> headers() {
+		return this.base.headers();
+	}
 
-    @Override
-    public boolean hasBody() {
-	return this.base.hasBody();
-    }
-
-    @Override
-    public byte[] body() {
-	return this.base.body();
-    }
-
+	@Override
+	public byte[] body() {
+		return this.base.body();
+	}
 }

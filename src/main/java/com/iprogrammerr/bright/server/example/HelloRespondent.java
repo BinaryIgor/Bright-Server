@@ -8,17 +8,16 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 
 public final class HelloRespondent implements Respondent {
 
-    @Override
-    public Response response(MatchedRequest request) {
-	Response response;
-	try {
-	    int id = request.pathVariables().intValue("id");
-	    String message = "Hello number " + id;
-	    response = new OkResponse(message);
-	} catch (Exception e) {
-	    response = new BadRequestResponse(e.getMessage());
+	@Override
+	public Response response(MatchedRequest request) {
+		Response response;
+		try {
+			int id = request.pathVariables().intValue("id");
+			String message = "Hello number " + id;
+			response = new OkResponse(message);
+		} catch (Exception e) {
+			response = new BadRequestResponse(e.getMessage());
+		}
+		return response;
 	}
-	return response;
-    }
-
 }

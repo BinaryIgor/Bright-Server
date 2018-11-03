@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/Iprogrammerr/Bright-Server.svg?branch=master)](https://travis-ci.com/Iprogrammerr/Bright-Server)
+[![Test Coverage](https://img.shields.io/codecov/c/github/iprogrammerr/bright-server/master.svg)](https://codecov.io/gh/Iprogrammerr/Bright-Server/branch/master)
 # Bright Server
  Bright Server is easy to use, robust, reliable and flexible standalone java http server and lightweight web framework.
  ```java

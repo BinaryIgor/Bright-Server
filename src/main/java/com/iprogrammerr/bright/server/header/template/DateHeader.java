@@ -5,8 +5,7 @@ import com.iprogrammerr.bright.server.header.HttpHeader;
 
 public final class DateHeader extends HeaderEnvelope {
 
-    public DateHeader(String date) {
-	super(new HttpHeader("Date", date));
-    }
-
+	public DateHeader(String date) {
+		super(new HttpHeader("Date", date));
+	}
 }
