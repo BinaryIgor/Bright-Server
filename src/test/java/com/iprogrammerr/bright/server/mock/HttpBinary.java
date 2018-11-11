@@ -23,8 +23,8 @@ public final class HttpBinary implements Binary {
 	public byte[] content() throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		baos.write(this.firstLine.getBytes());
-		baos.write(CRLF);
 		if (!this.headers.isEmpty()) {
+			baos.write(CRLF);
 			baos.write(this.headers.get(0).writable().getBytes());
 			for (int i = 1; i < this.headers.size(); ++i) {
 				baos.write(CRLF);

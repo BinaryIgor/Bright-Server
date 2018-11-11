@@ -1,49 +1,36 @@
 package com.iprogrammerr.bright.server.respondent;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
-import com.iprogrammerr.bright.server.exception.ToCatchException;
-import com.iprogrammerr.bright.server.method.DeleteMethod;
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.mock.MockedRequest;
-import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.response.template.ForbiddenResponse;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 
 public final class PotentialRespondentTest {
 
-    @Test
-    public void canRespond() throws Exception {
-	String pattern = "user/{id:long}/game?minPoints=int";
-	Response response = new OkResponse();
-	ConditionalRespondent respondent = new PotentialRespondent(pattern, new GetMethod(), req -> response);
-	Request request = new MockedRequest("user/1/game?minPoints=11", "get");
-	assertTrue(respondent.areConditionsMet(request));
-	assertTrue(respondent.response(request).equals(response));
-	pattern = "user/search/{threshold:double}";
-	respondent = new PotentialRespondent(pattern, new DeleteMethod(), req -> response);
-	request = new MockedRequest("user/search/11.6", "delete");
-	assertTrue(respondent.areConditionsMet(request));
-	assertTrue(respondent.response(request).equals(response));
-    }
+	@Test
+	public void canRespond() throws Exception {
+		Response response = new OkResponse();
+		assertThat(new PotentialRespondent("user/{id:long}/game?minPoints=int", new GetMethod(), req -> response),
+				new ConditionalRespondentThatCanRespond(
+						Arrays.asList(new MockedRequest("user/1/game?minPoints=11", "get"),
+								new MockedRequest("user/3/game?minPoints=44", "get"),
+								new MockedRequest("user/99/game?minPoints=44&unnecessary=u", "get")),
+						response));
+	}
 
-    @Test
-    public void canRejectResponse() {
-	ToCatchException toCatch = new ToCatchException();
-	String pattern = "user/{id:long}/game?minPoints=int";
-	ConditionalRespondent respondent = new PotentialRespondent(pattern, new GetMethod(), req -> new OkResponse());
-	Request fr = new MockedRequest("user/1/game", "get");
-	assertFalse(respondent.areConditionsMet(fr));
-	assertTrue(toCatch.hasCatched(() -> respondent.response(fr)));
-	Request sr = new MockedRequest("user/1/game?minPoints=33", "post");
-	assertFalse(respondent.areConditionsMet(sr));
-	assertTrue(toCatch.hasCatched(() -> respondent.response(sr)));
-	Request tr = new MockedRequest("user/scale/game?minPoints=33", "get");
-	assertFalse(respondent.areConditionsMet(tr));
-	assertTrue(toCatch.hasCatched(() -> respondent.response(tr)));
-    }
+	@Test
+	public void canRejectResponding() {
+		assertThat(new PotentialRespondent("user/{id:long}", new GetMethod(), req -> new ForbiddenResponse()),
+				new ConditionalRespondentThatCanRejectResponding(
+						Arrays.asList(new MockedRequest("user/1", "put"), new MockedRequest("user/3", "delete"),
+								new MockedRequest("user/99/game", "get"), new MockedRequest("game?id=4", "post"))));
+	}
 
 }
