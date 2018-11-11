@@ -4,18 +4,18 @@ import com.iprogrammerr.bright.server.method.RequestMethod;
 import com.iprogrammerr.bright.server.model.Attributes;
 import com.iprogrammerr.bright.server.model.TypedMap;
 import com.iprogrammerr.bright.server.pattern.TypedUrlPattern;
-import com.iprogrammerr.bright.server.pattern.UrlPattern;
+import com.iprogrammerr.bright.server.pattern.ParameterizableUrlPattern;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.request.ResolvedRequest;
 import com.iprogrammerr.bright.server.response.Response;
 
 public final class PotentialRespondent implements ConditionalRespondent {
 
-	private final UrlPattern urlPattern;
+	private final ParameterizableUrlPattern urlPattern;
 	private final RequestMethod requestMethod;
 	private final Respondent respondent;
 
-	public PotentialRespondent(UrlPattern urlPattern, RequestMethod requestMethod,
+	public PotentialRespondent(ParameterizableUrlPattern urlPattern, RequestMethod requestMethod,
 			Respondent respondent) {
 		this.urlPattern = urlPattern;
 		this.requestMethod = requestMethod;

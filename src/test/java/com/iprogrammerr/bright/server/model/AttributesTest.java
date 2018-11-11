@@ -1,14 +1,16 @@
 package com.iprogrammerr.bright.server.model;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import com.iprogrammerr.bright.server.mock.MockedBinary;
 
 public final class AttributesTest {
 
@@ -34,24 +36,19 @@ public final class AttributesTest {
 		TypedMap attributes = new Attributes().put("id", 2L).put("name", "name").put("binary",
 				new byte[] { -3, 4, 55, 100, 22 });
 		List<KeyValue> keyValues = attributes.keyValues();
-		assertTrue(keyValues.size() == 3);
-		keyValues.add(new StringObject("name2", "name2"));
-		keyValues.add(new StringObject("id2", 3L));
-		assertFalse(attributes.has("name2", String.class));
-		assertFalse(attributes.has("id2", Long.class));
-		assertTrue(attributes.keyValues().size() == 3);
+		KeyValue item1 = new StringObject("name2", "name2");
+		KeyValue item2 = new StringObject("id2", 3L);
+		keyValues.add(item1);
+		keyValues.add(item2);
+		assertThat(attributes.keyValues(), Matchers.not(Matchers.containsInAnyOrder(item1, item2)));
+
 	}
 
 	@Test
 	public void canOverrideValueAndType() throws Exception {
-		TypedMap attributes = new Attributes().put("id", 1);
-		assertTrue(attributes.intValue("id") == 1);
-		attributes.put("id", 33L);
-		assertTrue(attributes.size() == 1);
-		assertTrue(attributes.longValue("id") == 33);
-		attributes.put("id", 0.33f);
-		assertTrue(attributes.size() == 1);
-		assertTrue(attributes.floatValue("id") == 0.33f);
+		List<String> keys = Arrays.asList("id", "name", "scale", "binary");
+		TypedMap attributes = new Attributes().put(keys.get(0), 1).put(keys.get(1), "abc")
+				.put("scale", 4.5).put("binary", new MockedBinary().content());
+		assertThat(attributes, new TypedMapThatCanOverrideValuesAndTypes(keys));
 	}
-
 }

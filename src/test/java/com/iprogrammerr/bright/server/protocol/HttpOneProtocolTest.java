@@ -28,62 +28,64 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 
 public final class HttpOneProtocolTest {
 
-    private static final String HOST = "www.iprogrammerr.com:8080";
-    private static final String PATH = "bright";
+	private static final String HOST = "www.iprogrammerr.com:8080";
+	private static final String PATH = "bright";
 
-    @Test
-    public void canReadSimple() throws Exception {
-	List<Header> headers = new ArrayList<>();
-	headers.add(new HttpHeader("host", HOST));
-	Request request = new ParsedRequest("get", PATH, headers);
-	HttpOneProtocol protocol = new HttpOneProtocol();
-	Request read = protocol.request(new ByteArrayInputStream(new RequestBinary(request).content()));
-	assertTrue(request.equals(read));
-	byte[] body = new MockedBinary().content();
-	headers.add(new ContentTypeHeader("image/jpeg"));
-	headers.add(new ContentLengthHeader(body.length));
-	request = new ParsedRequest("POST", PATH, headers, body);
-	read = protocol.request(new ByteArrayInputStream(new RequestBinary(request).content()));
-	assertTrue(request.equals(read));
-    }
+	@Test
+	public void canReadSimple() throws Exception {
+		List<Header> headers = new ArrayList<>();
+		headers.add(new HttpHeader("host", HOST));
+		Request request = new ParsedRequest("get", PATH, headers);
+		HttpOneProtocol protocol = new HttpOneProtocol();
+		Request read = protocol
+				.request(new ByteArrayInputStream(new RequestBinary(request).content()));
+		assertTrue(request.equals(read));
+		byte[] body = new MockedBinary().content();
+		headers.add(new ContentTypeHeader("image/jpeg"));
+		headers.add(new ContentLengthHeader(body.length));
+		request = new ParsedRequest("POST", PATH, headers, body);
+		read = protocol.request(new ByteArrayInputStream(new RequestBinary(request).content()));
+		assertTrue(request.equals(read));
+	}
 
-    @Test
-    public void canReadComplex() throws Exception {
-	List<Header> headers = new ArrayList<>();
-	headers.add(new HttpHeader("host", HOST));
-	byte[] body = new MockedMultipartBinary().content();
-	headers.add(new ContentTypeHeader("multipart/mock-data"));
-	headers.add(new ContentLengthHeader(body.length));
-	Request request = new ParsedRequest("post", PATH, headers, body);
-	byte[] raw = new RequestBinary(request).content();
-	Request read = new HttpOneProtocol().request(new ByteArrayInputStream(raw));
-	assertTrue(request.equals(read));
-    }
+	@Test
+	public void canReadComplex() throws Exception {
+		List<Header> headers = new ArrayList<>();
+		headers.add(new HttpHeader("host", HOST));
+		byte[] body = new MockedMultipartBinary().content();
+		headers.add(new ContentTypeHeader("multipart/mock-data"));
+		headers.add(new ContentLengthHeader(body.length));
+		Request request = new ParsedRequest("post", PATH, headers, body);
+		byte[] raw = new RequestBinary(request).content();
+		Request read = new HttpOneProtocol().request(new ByteArrayInputStream(raw));
+		assertTrue(request.equals(read));
+	}
 
-    @Test
-    public void canWrite() throws Exception {
-	HttpOneProtocol protocol = new HttpOneProtocol();
-	Response response = new CreatedResponse("super");
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	protocol.write(baos, response);
-	assertTrue(Arrays.equals(new ResponseBinary(response).content(), baos.toByteArray()));
-	response = new OkResponse(new TypedResponseBody("image/jpeg", new MockedBinary().content()));
-	baos = new ByteArrayOutputStream();
-	protocol.write(baos, response);
-	assertTrue(Arrays.equals(new ResponseBinary(response).content(), baos.toByteArray()));
-    }
+	@Test
+	public void canWrite() throws Exception {
+		HttpOneProtocol protocol = new HttpOneProtocol();
+		Response response = new CreatedResponse("super");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		protocol.write(baos, response);
+		assertTrue(Arrays.equals(new ResponseBinary(response).content(), baos.toByteArray()));
+		response = new OkResponse(
+				new TypedResponseBody("image/jpeg", new MockedBinary().content()));
+		baos = new ByteArrayOutputStream();
+		protocol.write(baos, response);
+		assertTrue(Arrays.equals(new ResponseBinary(response).content(), baos.toByteArray()));
+	}
 
-    @Test
-    public void canDetermineIfClose() {
-	List<Header> headers = new ArrayList<>();
-	headers.add(new HttpHeader("Connection", "Keep-alive"));
-	Request request = new ParsedRequest("put", PATH, headers);
-	HttpOneProtocol protocol = new HttpOneProtocol();
-	assertFalse(protocol.shouldClose(request));
-	headers.set(0, new HttpHeader("Connection", "close"));
-	assertTrue(protocol.shouldClose(request));
-	headers.clear();
-	assertTrue(protocol.shouldClose(request));
-    }
+	@Test
+	public void canDetermineIfClose() {
+		List<Header> headers = new ArrayList<>();
+		headers.add(new HttpHeader("Connection", "Keep-alive"));
+		Request request = new ParsedRequest("put", PATH, headers);
+		HttpOneProtocol protocol = new HttpOneProtocol();
+		assertFalse(protocol.shouldClose(request));
+		headers.set(0, new HttpHeader("Connection", "close"));
+		assertTrue(protocol.shouldClose(request));
+		headers.clear();
+		assertTrue(protocol.shouldClose(request));
+	}
 
 }

@@ -1,30 +1,45 @@
 package com.iprogrammerr.bright.server.pattern;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
 public final class AsteriskFilterUrlPatternTest {
 
-    @Test
-    public void canMatch() {
-	AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("user/");
-	String url = "user/search/1/name";
-	assertTrue(urlPattern.isMatched(url));
-	urlPattern = new AsteriskFilterUrlPattern("*");
-	assertTrue(urlPattern.isMatched(url));
-	urlPattern = new AsteriskFilterUrlPattern("user/search/*/*");
-	assertTrue(urlPattern.isMatched(url));
-    }
+	@Test
+	public void canMatchPrimary() {
+		AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("*");
+		assertThat(urlPattern, new UrlPatternThatCanMatchOrRefuse(
+				Arrays.asList("user/*, user/search/1, user/search/*", "query/secret?factor=1"),
+				true));
+	}
 
-    @Test
-    public void canRefuseMatches() {
-	AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("search/");
-	String url = "user/search/1/name";
-	assertFalse(urlPattern.isMatched(url));
-	urlPattern = new AsteriskFilterUrlPattern("user/*");
-	assertFalse(urlPattern.isMatched(url));
+	@Test
+	public void canMatchStartingFrom() {
+		AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("user/");
+		assertThat(urlPattern, new UrlPatternThatCanMatchOrRefuse(
+				Arrays.asList("user/profile/*, user/search/1, user/search/*"), true));
+	}
 
-    }
+	@Test
+	public void canMatchConcrete() {
+		AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("concrete");
+		assertThat(urlPattern, new UrlPatternThatCanMatchOrRefuse("concrete", true));
+	}
+
+	@Test
+	public void canMatchMixed() {
+		AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("domain/*/*");
+		assertThat(urlPattern, new UrlPatternThatCanMatchOrRefuse(
+				Arrays.asList("domain/a/1", "domain/b/4", "domain/c/number"), true));
+	}
+
+	@Test
+	public void canRefuseMatches() {
+		AsteriskFilterUrlPattern urlPattern = new AsteriskFilterUrlPattern("search/*");
+		assertThat(urlPattern, new UrlPatternThatCanMatchOrRefuse(
+				Arrays.asList("domain1/a", "domain2/b", "domain4"), false));
+	}
 }

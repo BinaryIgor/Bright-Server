@@ -21,6 +21,11 @@ public final class TypedMapThatHaveProperValues extends TypeSafeMatcher<TypedMap
 	}
 
 	@Override
+	protected void describeMismatchSafely(TypedMap item, Description description) {
+		description.appendText(item.keyValues().toString());
+	}
+
+	@Override
 	protected boolean matchesSafely(TypedMap item) {
 		boolean matched = true;
 		try {

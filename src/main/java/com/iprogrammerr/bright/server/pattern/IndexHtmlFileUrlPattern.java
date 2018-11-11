@@ -44,5 +44,4 @@ public final class IndexHtmlFileUrlPattern implements FileUrlPattern {
 		int indexOfQuestionMark = url.indexOf("?");
 		return indexOfQuestionMark > 0 ? url.substring(0, indexOfQuestionMark) : url;
 	}
-
 }

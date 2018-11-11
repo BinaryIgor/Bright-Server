@@ -29,21 +29,21 @@ public final class UrlPatternType implements Type {
 	}
 
 	@Override
-	public <T> Object value(Class<T> type, String value) throws Exception {
+	public <T> T value(Class<T> type, String value) throws Exception {
 		value = value.trim();
-		Object parsedValue;
+		T parsedValue;
 		if (Boolean.class.isAssignableFrom(type)) {
-			parsedValue = Boolean.parseBoolean(value);
+			parsedValue = type.cast(Boolean.parseBoolean(value));
 		} else if (Integer.class.isAssignableFrom(type)) {
-			parsedValue = Integer.parseInt(value);
+			parsedValue = type.cast(Integer.parseInt(value));
 		} else if (Long.class.isAssignableFrom(type)) {
-			parsedValue = Long.parseLong(value);
+			parsedValue = type.cast(Long.parseLong(value));
 		} else if (Float.class.isAssignableFrom(type)) {
-			parsedValue = Float.parseFloat(value);
+			parsedValue = type.cast(Float.parseFloat(value));
 		} else if (Double.class.isAssignableFrom(type)) {
-			parsedValue = Double.parseDouble(value);
+			parsedValue = type.cast(Double.parseDouble(value));
 		} else {
-			parsedValue = value;
+			parsedValue = type.cast(value);
 		}
 		return parsedValue;
 	}
@@ -115,5 +115,4 @@ public final class UrlPatternType implements Type {
 	private boolean isBoolean(String value) {
 		return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false");
 	}
-
 }

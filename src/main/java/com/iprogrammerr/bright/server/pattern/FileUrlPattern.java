@@ -1,8 +1,5 @@
 package com.iprogrammerr.bright.server.pattern;
 
-public interface FileUrlPattern {
-
-    boolean isMatched(String url);
-
-    String filePath(String url);
+public interface FileUrlPattern extends UrlPattern {
+	String filePath(String url);
 }

@@ -9,7 +9,7 @@ import com.iprogrammerr.bright.server.model.Attributes;
 import com.iprogrammerr.bright.server.model.TypedMap;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public final class TypedUrlPattern implements UrlPattern {
+public final class TypedUrlPattern implements ParameterizableUrlPattern {
 
 	private static final String SEGMENTS_SEPARATOR = "/";
 	private static final String PARAMETERS_BEGINING = "?";
@@ -36,6 +36,7 @@ public final class TypedUrlPattern implements UrlPattern {
 		this(urlPattern, type, new StickyInitialization<>(() -> {
 			Map<String, Class> pathVariables = new HashMap<>();
 			String[] urlPatternSegments = urlPattern.split(SEGMENTS_SEPARATOR);
+
 			for (int i = 0; i < urlPatternSegments.length; i++) {
 				boolean pathVariable = urlPatternSegments[i].startsWith(PATH_VARIABLE_START)
 						&& urlPatternSegments[i].endsWith(PATH_VARIABLE_END);

@@ -108,4 +108,30 @@ public final class Attributes implements TypedMap {
 	public int size() {
 		return this.values.size();
 	}
+
+	@Override
+	public boolean equals(Object object) {
+		boolean equal;
+		if (object == null || !TypedMap.class.isAssignableFrom(object.getClass())) {
+			equal = false;
+		} else if (object == this) {
+			equal = true;
+		} else {
+			TypedMap other = (TypedMap) object;
+			equal = true;
+			List<KeyValue> keyValues = other.keyValues();
+			for (KeyValue kv : this.values) {
+				if (!keyValues.contains(kv)) {
+					equal = false;
+					break;
+				}
+			}
+		}
+		return equal;
+	}
+
+	@Override
+	public String toString() {
+		return "Attributes [values=" + values + "]";
+	}
 }
