@@ -1,5 +1,7 @@
 package com.iprogrammerr.bright.server.model;
 
+import com.iprogrammerr.bright.server.test.DynamicMapping;
+
 public final class TypedMapValuesMapping implements DynamicMapping<TypedMap> {
 
 	private final String key;

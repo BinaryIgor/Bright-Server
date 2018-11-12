@@ -7,17 +7,17 @@ import org.hamcrest.TypeSafeMatcher;
 
 import com.iprogrammerr.bright.server.request.Request;
 
-public final class PotentialFilterThatCanMatchAndRefuse extends TypeSafeMatcher<PotentialFilter> {
+public final class ConditionalFilterThatCanMatchAndRefuse extends TypeSafeMatcher<ConditionalFilter> {
 
 	private final List<Request> requests;
 	private final boolean refuse;
 
-	public PotentialFilterThatCanMatchAndRefuse(List<Request> requests, boolean refuse) {
+	public ConditionalFilterThatCanMatchAndRefuse(List<Request> requests, boolean refuse) {
 		this.requests = requests;
 		this.refuse = refuse;
 	}
 
-	public PotentialFilterThatCanMatchAndRefuse(List<Request> requests) {
+	public ConditionalFilterThatCanMatchAndRefuse(List<Request> requests) {
 		this(requests, false);
 	}
 
@@ -27,7 +27,7 @@ public final class PotentialFilterThatCanMatchAndRefuse extends TypeSafeMatcher<
 	}
 
 	@Override
-	protected boolean matchesSafely(PotentialFilter item) {
+	protected boolean matchesSafely(ConditionalFilter item) {
 		boolean matched = true;
 		try {
 			for (Request r : this.requests) {
@@ -42,8 +42,7 @@ public final class PotentialFilterThatCanMatchAndRefuse extends TypeSafeMatcher<
 		return matched;
 	}
 
-	private boolean shouldStopMatching(PotentialFilter filter, Request request) {
-		return (this.refuse && filter.areConditionsMet(request))
-				|| (!this.refuse && !filter.areConditionsMet(request));
+	private boolean shouldStopMatching(ConditionalFilter filter, Request request) {
+		return (this.refuse && filter.areConditionsMet(request)) || (!this.refuse && !filter.areConditionsMet(request));
 	}
 }

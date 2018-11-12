@@ -5,16 +5,16 @@ import java.util.List;
 import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.request.Request;
 
-public final class AllowAllCors implements Cors {
+public final class AllowAllPreflightCors implements PreflightCors {
 
-	private final Cors base;
+	private final PreflightCors base;
 
-	private AllowAllCors(Cors base) {
+	private AllowAllPreflightCors(PreflightCors base) {
 		this.base = base;
 	}
 
-	public AllowAllCors() {
-		this(new ConfigurableCors("*", "*", "*"));
+	public AllowAllPreflightCors() {
+		this(new ConfigurablePreflightCors("*", "*", "*"));
 	}
 
 	@Override

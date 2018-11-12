@@ -44,8 +44,7 @@ public final class HttpHeader implements Header {
 			equal = true;
 		} else {
 			Header other = (Header) object;
-			equal = this.key.equalsIgnoreCase(other.key())
-					|| this.value.equalsIgnoreCase(other.value());
+			equal = this.key.equalsIgnoreCase(other.key()) && this.value.equalsIgnoreCase(other.value());
 		}
 		return equal;
 	}

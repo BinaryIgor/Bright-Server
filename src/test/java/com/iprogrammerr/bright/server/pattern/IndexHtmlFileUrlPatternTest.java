@@ -12,14 +12,12 @@ import org.junit.Test;
 public final class IndexHtmlFileUrlPatternTest {
 
 	private static final String CURRENT_PATH = new File(
-			String.format("src%stest%sresources", File.separator, File.separator))
-					.getAbsolutePath();
+			String.format("src%stest%sresources", File.separator, File.separator)).getAbsolutePath();
 
 	@Test
 	public void canMatch() {
 		IndexHtmlFileUrlPattern pattern = new IndexHtmlFileUrlPattern(CURRENT_PATH);
-		assertThat(pattern,
-				new UrlPatternThatCanMatchOrRefuse(Arrays.asList("test.html", "index.html"), true));
+		assertThat(pattern, new UrlPatternThatCanMatchOrRefuse(Arrays.asList("test.html", "index.html"), true));
 	}
 
 	@Test

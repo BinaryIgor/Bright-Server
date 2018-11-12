@@ -7,10 +7,10 @@ import java.util.Arrays;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import com.iprogrammerr.bright.server.mock.RequestBinary;
-import com.iprogrammerr.bright.server.mock.ResponseBinary;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.Response;
+import com.iprogrammerr.bright.server.test.RequestBinary;
+import com.iprogrammerr.bright.server.test.ResponseBinary;
 
 public final class RequestResponseProtocolThatCanReadRequestAndWriteResponses extends TypeSafeMatcher<RequestResponseProtocol> {
 

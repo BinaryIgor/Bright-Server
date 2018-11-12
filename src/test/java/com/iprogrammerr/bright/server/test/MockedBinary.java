@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server.mock;
+package com.iprogrammerr.bright.server.test;
 
 import com.iprogrammerr.bright.server.binary.Binary;
 

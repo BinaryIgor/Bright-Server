@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.iprogrammerr.bright.server.method.GetMethod;
 import com.iprogrammerr.bright.server.method.PostMethod;
-import com.iprogrammerr.bright.server.mock.MockedRequest;
+import com.iprogrammerr.bright.server.request.ParsedRequest;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.response.ToForwardResponse;
 import com.iprogrammerr.bright.server.rule.filter.ToFilterRequestRule;
@@ -23,49 +23,43 @@ public final class PotentialFilterTest {
 	@Test
 	public void canMatchSingleRule() {
 		List<Request> requests = new ArrayList<>();
-		requests.add(new MockedRequest("user/1/search?scale=9.5", "get"));
-		requests.add(new MockedRequest("user/23/search", "GET"));
-		assertThat(new PotentialFilter(new SingleRequestMethodRule(new GetMethod()), MOCKED_FILTER,
-				"user/*/search"), new PotentialFilterThatCanMatchAndRefuse(requests));
+		requests.add(new ParsedRequest("user/1/search?scale=9.5", "get"));
+		requests.add(new ParsedRequest("user/23/search", "GET"));
+		assertThat(new PotentialFilter(new SingleRequestMethodRule(new GetMethod()), MOCKED_FILTER, "user/*/search"),
+				new ConditionalFilterThatCanMatchAndRefuse(requests));
 	}
 
 	@Test
 	public void canMatchOneRuleToManyPatterns() {
 		List<Request> requests = new ArrayList<>();
-		requests.add(new MockedRequest("user/1", "get"));
-		requests.add(new MockedRequest("user/1", "post"));
-		requests.add(new MockedRequest("game/444/search", "post"));
-		requests.add(new MockedRequest("game/48/search", "get"));
-		assertThat(
-				new PotentialFilter(new ListOfRequestMethodRule(new GetMethod(), new PostMethod()),
-						MOCKED_FILTER, "user/*", "game/*/search"),
-				new PotentialFilterThatCanMatchAndRefuse(requests));
+		requests.add(new ParsedRequest("user/1", "get"));
+		requests.add(new ParsedRequest("user/1", "post"));
+		requests.add(new ParsedRequest("game/444/search", "post"));
+		requests.add(new ParsedRequest("game/48/search", "get"));
+		assertThat(new PotentialFilter(new ListOfRequestMethodRule(new GetMethod(), new PostMethod()), MOCKED_FILTER,
+				"user/*", "game/*/search"), new ConditionalFilterThatCanMatchAndRefuse(requests));
 	}
 
 	@Test
 	public void canMatchManyRulesToManyPatterns() {
 		List<Request> requests = new ArrayList<>();
-		requests.add(new MockedRequest("user/1", "get"));
-		requests.add(new MockedRequest("game/444/search", "post"));
+		requests.add(new ParsedRequest("user/1", "get"));
+		requests.add(new ParsedRequest("game/444/search", "post"));
 		assertThat(
 				new PotentialFilter(MOCKED_FILTER,
-						new ToFilterRequestRule(new SingleRequestMethodRule(new GetMethod()),
-								"user/*"),
-						new ToFilterRequestRule(new SingleRequestMethodRule(new PostMethod()),
-								"game/*/search")),
-				new PotentialFilterThatCanMatchAndRefuse(requests));
+						new ToFilterRequestRule(new SingleRequestMethodRule(new GetMethod()), "user/*"),
+						new ToFilterRequestRule(new SingleRequestMethodRule(new PostMethod()), "game/*/search")),
+				new ConditionalFilterThatCanMatchAndRefuse(requests));
 	}
 
 	@Test
 	public void canRefuseMatches() {
 		List<Request> requests = new ArrayList<>();
-		requests.add(new MockedRequest("game/1", "post"));
-		requests.add(new MockedRequest("game/1", "get"));
-		requests.add(new MockedRequest("user/1/abc", "get"));
-		requests.add(new MockedRequest("user/3", "delete"));
-		assertThat(
-				new PotentialFilter(new ListOfRequestMethodRule(new GetMethod(), new PostMethod()),
-						MOCKED_FILTER, "user/*", "game/*/search"),
-				new PotentialFilterThatCanMatchAndRefuse(requests, true));
+		requests.add(new ParsedRequest("game/1", "post"));
+		requests.add(new ParsedRequest("game/1", "get"));
+		requests.add(new ParsedRequest("user/1/abc", "get"));
+		requests.add(new ParsedRequest("user/3", "delete"));
+		assertThat(new PotentialFilter(new ListOfRequestMethodRule(new GetMethod(), new PostMethod()), MOCKED_FILTER,
+				"user/*", "game/*/search"), new ConditionalFilterThatCanMatchAndRefuse(requests, true));
 	}
 }

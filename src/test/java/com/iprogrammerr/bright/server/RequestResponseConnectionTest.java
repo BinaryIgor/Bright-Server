@@ -12,12 +12,12 @@ import org.junit.Test;
 import com.iprogrammerr.bright.server.application.HttpApplication;
 import com.iprogrammerr.bright.server.method.PostMethod;
 import com.iprogrammerr.bright.server.method.RequestMethod;
-import com.iprogrammerr.bright.server.mock.RequestBinary;
 import com.iprogrammerr.bright.server.request.ParsedRequest;
 import com.iprogrammerr.bright.server.request.Request;
 import com.iprogrammerr.bright.server.respondent.PotentialRespondent;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
+import com.iprogrammerr.bright.server.test.RequestBinary;
 
 public final class RequestResponseConnectionTest {
 

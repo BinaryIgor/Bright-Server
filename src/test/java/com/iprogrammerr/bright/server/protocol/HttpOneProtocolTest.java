@@ -13,11 +13,11 @@ import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.header.HttpHeader;
 import com.iprogrammerr.bright.server.header.template.ContentLengthHeader;
 import com.iprogrammerr.bright.server.header.template.ContentTypeHeader;
-import com.iprogrammerr.bright.server.mock.MockedBinary;
-import com.iprogrammerr.bright.server.mock.MockedMultipartBinary;
 import com.iprogrammerr.bright.server.request.ParsedRequest;
 import com.iprogrammerr.bright.server.response.body.JsonResponseBody;
 import com.iprogrammerr.bright.server.response.template.CreatedResponse;
+import com.iprogrammerr.bright.server.test.MockedBinary;
+import com.iprogrammerr.bright.server.test.MockedMultipartBinary;
 
 public final class HttpOneProtocolTest {
 

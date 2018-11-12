@@ -1,4 +1,4 @@
-package com.iprogrammerr.bright.server.mock;
+package com.iprogrammerr.bright.server.test;
 
 import java.io.ByteArrayOutputStream;
 

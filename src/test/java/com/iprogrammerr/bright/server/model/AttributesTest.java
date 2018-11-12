@@ -10,7 +10,7 @@ import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import com.iprogrammerr.bright.server.mock.MockedBinary;
+import com.iprogrammerr.bright.server.test.MockedBinary;
 
 public final class AttributesTest {
 

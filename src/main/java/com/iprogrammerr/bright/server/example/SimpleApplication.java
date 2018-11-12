@@ -7,7 +7,7 @@ import com.iprogrammerr.bright.server.BrightServer;
 import com.iprogrammerr.bright.server.Connection;
 import com.iprogrammerr.bright.server.RequestResponseConnection;
 import com.iprogrammerr.bright.server.application.HttpApplication;
-import com.iprogrammerr.bright.server.cors.AllowAllCors;
+import com.iprogrammerr.bright.server.cors.AllowAllPreflightCors;
 import com.iprogrammerr.bright.server.filter.ConditionalFilter;
 import com.iprogrammerr.bright.server.filter.PotentialFilter;
 import com.iprogrammerr.bright.server.method.GetMethod;
@@ -40,7 +40,7 @@ public final class SimpleApplication {
 		filters.add(authorizationSecondFilter);
 
 		Connection connection = new RequestResponseConnection(
-				new HttpApplication(new AllowAllCors(), respondents, filters));
+				new HttpApplication(new AllowAllPreflightCors(), respondents, filters));
 		BrightServer server = new BrightServer(8080, 5000, connection);
 		server.start();
 	}

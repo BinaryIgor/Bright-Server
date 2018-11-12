@@ -12,7 +12,7 @@ import com.iprogrammerr.bright.server.initialization.StickyInitialization;
 import com.iprogrammerr.bright.server.method.OptionsMethod;
 import com.iprogrammerr.bright.server.request.Request;
 
-public final class ConfigurableCors implements Cors {
+public final class ConfigurablePreflightCors implements PreflightCors {
 
 	private static final OptionsMethod OPTIONS = new OptionsMethod();
 	private static final String ALLOW_ALL = "*";
@@ -24,7 +24,7 @@ public final class ConfigurableCors implements Cors {
 	private final String allowMethods;
 	private final Initialization<List<Header>> headers;
 
-	private ConfigurableCors(String allowOrigin, String allowHeaders, String allowMethods,
+	private ConfigurablePreflightCors(String allowOrigin, String allowHeaders, String allowMethods,
 			Initialization<List<Header>> headers) {
 		this.allowOrigin = allowOrigin;
 		this.allowHeaders = allowHeaders;
@@ -32,8 +32,8 @@ public final class ConfigurableCors implements Cors {
 		this.headers = headers;
 	}
 
-	public ConfigurableCors(String allowOrigin, String allowHeaders, String allowMethods) {
-		this(allowOrigin, allowHeaders, allowMethods, new StickyInitialization<>(() -> {
+	public ConfigurablePreflightCors(String allowOrigin, String allowHeaders, String allowMethods) {
+		this(allowOrigin, allowHeaders.toLowerCase(), allowMethods.toLowerCase(), new StickyInitialization<>(() -> {
 			List<Header> headers = new ArrayList<>();
 			headers.add(new AccessControlAllowHeadersHeader(allowHeaders));
 			headers.add(new AccessControlAllowMethodsHeader(allowMethods));
@@ -50,9 +50,9 @@ public final class ConfigurableCors implements Cors {
 				valid = (this.allowOrigin.equals(ALLOW_ALL)
 						|| this.allowOrigin.equals(request.header(ACCESS_CONTROL_ORIGIN)))
 						&& (this.allowMethods.equals(ALLOW_ALL) || this.allowMethods
-								.contains(request.header(ACCESS_CONTROL_REQUEST_METHOD)))
+								.contains(request.header(ACCESS_CONTROL_REQUEST_METHOD).toLowerCase()))
 						&& (this.allowHeaders.equals(ALLOW_ALL) || this.allowHeaders
-								.contains(request.header(ACCESS_CONTROL_REQUEST_HEADERS)));
+								.contains(request.header(ACCESS_CONTROL_REQUEST_HEADERS).toLowerCase()));
 			} catch (Exception e) {
 				valid = false;
 			}

@@ -26,8 +26,7 @@ public final class PotentialFilter implements ConditionalFilter {
 		this(Arrays.asList(filterRules), filter);
 	}
 
-	public PotentialFilter(FilterUrlPattern urlPattern, RequestMethodRule methodRule,
-			Filter filter) {
+	public PotentialFilter(FilterUrlPattern urlPattern, RequestMethodRule methodRule, Filter filter) {
 		this(Collections.singletonList(new ToFilterRequestRule(methodRule, urlPattern)), filter);
 	}
 
@@ -66,5 +65,4 @@ public final class PotentialFilter implements ConditionalFilter {
 		}
 		return this.filter.response(request);
 	}
-
 }

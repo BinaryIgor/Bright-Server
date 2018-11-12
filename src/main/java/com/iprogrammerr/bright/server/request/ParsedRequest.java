@@ -82,7 +82,7 @@ public final class ParsedRequest implements Request {
 	@Override
 	public boolean equals(Object object) {
 		boolean equal;
-		if (object == null || !Request.class.isAssignableFrom(object.getClass())) {
+		if (!Request.class.isAssignableFrom(object.getClass())) {
 			equal = false;
 		} else if (object == this) {
 			equal = true;
@@ -102,5 +102,11 @@ public final class ParsedRequest implements Request {
 			}
 		}
 		return equal;
+	}
+
+	@Override
+	public String toString() {
+		return "ParsedRequest [url=" + url + ", method=" + method + ", headers=" + headers + ", body size="
+				+ body.length + "]";
 	}
 }

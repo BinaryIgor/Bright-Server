@@ -4,7 +4,6 @@ import com.iprogrammerr.bright.server.binary.type.HttpTypes;
 import com.iprogrammerr.bright.server.binary.type.TypedBinary;
 import com.iprogrammerr.bright.server.response.Response;
 import com.iprogrammerr.bright.server.response.body.TypedResponseBody;
-import com.iprogrammerr.bright.server.response.template.NotFoundResponse;
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 
 public final class RawFileRespondent implements FileRespondent {
@@ -16,16 +15,7 @@ public final class RawFileRespondent implements FileRespondent {
 	}
 
 	@Override
-	public Response response(TypedBinary file) {
-		Response response;
-		try {
-			response = new OkResponse(
-					new TypedResponseBody(this.types.type(file.type()), file.content()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			response = new NotFoundResponse();
-		}
-		return response;
+	public Response response(TypedBinary file) throws Exception {
+		return new OkResponse(new TypedResponseBody(this.types.type(file.type()), file.content()));
 	}
-
 }

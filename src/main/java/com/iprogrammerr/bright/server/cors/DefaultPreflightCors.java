@@ -6,21 +6,21 @@ import java.util.List;
 import com.iprogrammerr.bright.server.header.Header;
 import com.iprogrammerr.bright.server.request.Request;
 
-public final class DefaultCors implements Cors {
+public final class DefaultPreflightCors implements PreflightCors {
 
 	private final List<Header> headers;
 
-	private DefaultCors(List<Header> headers) {
+	private DefaultPreflightCors(List<Header> headers) {
 		this.headers = headers;
 	}
 
-	public DefaultCors() {
+	public DefaultPreflightCors() {
 		this(new ArrayList<>());
 	}
 
 	@Override
 	public boolean isValid(Request request) {
-		return true;
+		return false;
 	}
 
 	@Override

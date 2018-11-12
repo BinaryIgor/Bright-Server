@@ -2,8 +2,8 @@ package com.iprogrammerr.bright.server.application;
 
 import java.util.Optional;
 
-import com.iprogrammerr.bright.server.cors.AllowAllCors;
-import com.iprogrammerr.bright.server.cors.Cors;
+import com.iprogrammerr.bright.server.cors.PreflightCors;
+import com.iprogrammerr.bright.server.cors.DefaultPreflightCors;
 import com.iprogrammerr.bright.server.filter.ConditionalFilter;
 import com.iprogrammerr.bright.server.filter.ConditionalFilters;
 import com.iprogrammerr.bright.server.filter.Filters;
@@ -20,50 +20,50 @@ import com.iprogrammerr.bright.server.response.template.OkResponse;
 public final class HttpApplication implements Application {
 
 	private final String context;
-	private final Cors cors;
+	private final PreflightCors cors;
 	private final Iterable<ConditionalRespondent> respondents;
 	private final Filters filters;
 
-	public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents, Filters filters) {
+	public HttpApplication(String context, PreflightCors cors, Iterable<ConditionalRespondent> respondents, Filters filters) {
 		this.context = context;
 		this.cors = cors;
 		this.respondents = respondents;
 		this.filters = filters;
 	}
 
-	public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents,
+	public HttpApplication(String context, PreflightCors cors, Iterable<ConditionalRespondent> respondents,
 			Iterable<ConditionalFilter> filters) {
 		this(context, cors, respondents, new ConditionalFilters(filters));
 	}
 
 	public HttpApplication(String context, Iterable<ConditionalRespondent> respondents,
 			Iterable<ConditionalFilter> filters) {
-		this(context, new AllowAllCors(), respondents, filters);
+		this(context, new DefaultPreflightCors(), respondents, filters);
 	}
 
-	public HttpApplication(Cors cors, Iterable<ConditionalRespondent> respondents,
+	public HttpApplication(PreflightCors cors, Iterable<ConditionalRespondent> respondents,
 			Iterable<ConditionalFilter> filters) {
 		this("", cors, respondents, new ConditionalFilters(filters));
 	}
 
 	public HttpApplication(Iterable<ConditionalRespondent> respondents, Iterable<ConditionalFilter> filters) {
-		this("", new AllowAllCors(), respondents, filters);
+		this("", new DefaultPreflightCors(), respondents, filters);
 	}
 
-	public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents) {
+	public HttpApplication(String context, PreflightCors cors, Iterable<ConditionalRespondent> respondents) {
 		this(context, cors, respondents, new ConditionalFilters());
 	}
 
 	public HttpApplication(String context, Iterable<ConditionalRespondent> respondents) {
-		this(context, new AllowAllCors(), respondents);
+		this(context, new DefaultPreflightCors(), respondents);
 	}
 
-	public HttpApplication(Cors cors, Iterable<ConditionalRespondent> respondents) {
+	public HttpApplication(PreflightCors cors, Iterable<ConditionalRespondent> respondents) {
 		this("", cors, respondents, new ConditionalFilters());
 	}
 
 	public HttpApplication(Iterable<ConditionalRespondent> respondents) {
-		this("", new AllowAllCors(), respondents, new ConditionalFilters());
+		this("", new DefaultPreflightCors(), respondents, new ConditionalFilters());
 	}
 
 	@Override

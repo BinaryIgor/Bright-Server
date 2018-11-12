@@ -46,4 +46,14 @@ public abstract class RequestEnvelope implements Request {
 	public final void removeContext(String contextPath) {
 		this.base.removeContext(contextPath);
 	}
+
+	@Override
+	public final String toString() {
+		return this.base.toString();
+	}
+
+	@Override
+	public final boolean equals(Object object) {
+		return this.base.equals(object);
+	}
 }
