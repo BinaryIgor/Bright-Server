@@ -14,6 +14,6 @@ public final class SingleRequestMethodRuleTest {
 	@Test
 	public void canBeObserved() {
 		assertThat(new SingleRequestMethodRule(new GetMethod()),
-				new RuleThatCanBeObserved<>(Arrays.asList("get"), Arrays.asList("get", "head", "patch")));
+				new RuleThatCanBeObserved<>(Arrays.asList("get"), Arrays.asList("head", "patch")));
 	}
 }
