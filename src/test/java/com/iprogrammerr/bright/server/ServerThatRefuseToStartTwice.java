@@ -1,8 +1,5 @@
 package com.iprogrammerr.bright.server;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -29,23 +26,21 @@ public final class ServerThatRefuseToStartTwice extends TypeSafeMatcher<Server> 
 	protected boolean matchesSafely(Server item) {
 		boolean matched = true;
 		try {
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			executor.submit(() -> {
+			new Thread(() -> {
 				try {
 					Thread.sleep(10);
 					if (!item.isRunning()) {
 						Thread.sleep(10);
 					}
 					if (!item.isRunning() || !this.toCatch.hasCatched(item::start)) {
-						throw new RuntimeException(
-								"Server should be running and throwing exception on start try");
+						throw new Exception("Server should be running and throwing exception on start try");
 					}
-					item.stop();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
 				} finally {
 					item.stop();
 				}
-				return true;
-			});
+			}).start();
 			item.start();
 		} catch (Exception e) {
 			matched = false;

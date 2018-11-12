@@ -16,17 +16,11 @@ public final class BrightServerTest {
 
 	@Test
 	public void canStartMultiple() throws Exception {
-		assertThat(new BrightServer(0, MOCKED_CONNECTION),
-				new ServerThatCanHaveMultipleInstances());
+		assertThat(new BrightServer(0, MOCKED_CONNECTION), new ServerThatCanHaveMultipleInstances());
 	}
 
 	@Test
 	public void canRefuseStartingTwice() throws Exception {
 		assertThat(new BrightServer(0, MOCKED_CONNECTION), new ServerThatRefuseToStartTwice());
-	}
-
-	// TODO race condition on cobertura
-	public void canStartAndStop() throws Exception {
-		assertThat(new BrightServer(0, MOCKED_CONNECTION), new ServerThatCanBeRestarted());
 	}
 }

@@ -15,8 +15,7 @@ public final class BinaryThatCanCompressAndDecompress extends TypeSafeMatcher<Co
 	private final byte[] source;
 	private final Class<? extends DecompressedBinary> decompressed;
 
-	public BinaryThatCanCompressAndDecompress(byte[] source,
-			Class<? extends DecompressedBinary> decompressed) {
+	public BinaryThatCanCompressAndDecompress(byte[] source, Class<? extends DecompressedBinary> decompressed) {
 		this.source = source;
 		this.decompressed = decompressed;
 	}
