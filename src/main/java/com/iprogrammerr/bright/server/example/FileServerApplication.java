@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.iprogrammerr.bright.server.BrightServer;
 import com.iprogrammerr.bright.server.Connection;
 import com.iprogrammerr.bright.server.RequestResponseConnection;
+import com.iprogrammerr.bright.server.Server;
 import com.iprogrammerr.bright.server.application.Application;
 import com.iprogrammerr.bright.server.binary.type.AudioHttpTypes;
 import com.iprogrammerr.bright.server.binary.type.StaticHttpTypes;
@@ -30,7 +31,7 @@ public final class FileServerApplication implements Application {
 				new ExampleFileRespondent(new StaticHttpTypes(), new AudioHttpTypes()));
 		Connection connection = new RequestResponseConnection(new HttpOneProtocol(),
 				new FileServerApplication(fileRespondent));
-		BrightServer server = new BrightServer(configuration.port(), configuration.timeout(), connection);
+		Server server = new BrightServer(configuration.port(), configuration.timeout(), connection);
 		server.start();
 	}
 

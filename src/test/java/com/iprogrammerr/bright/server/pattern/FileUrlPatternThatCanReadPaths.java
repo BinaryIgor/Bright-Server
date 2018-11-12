@@ -15,8 +15,8 @@ public final class FileUrlPatternThatCanReadPaths extends TypeSafeMatcher<FileUr
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText(String.format("%s that should match on map %s",
-				getClass().getSimpleName(), this.urlsToFilePaths));
+		description.appendText(
+				String.format("%s that should match on map %s", getClass().getSimpleName(), this.urlsToFilePaths));
 	}
 
 	@Override

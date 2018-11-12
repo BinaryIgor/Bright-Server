@@ -19,8 +19,7 @@ public final class FilesRespondent implements ConditionalRespondent {
 	private final FileUrlPattern urlPattern;
 	private final FileRespondent respondent;
 
-	public FilesRespondent(RequestMethod requestMethod, FileUrlPattern urlPattern,
-			FileRespondent respondent) {
+	public FilesRespondent(RequestMethod requestMethod, FileUrlPattern urlPattern, FileRespondent respondent) {
 		this.requestMethod = requestMethod;
 		this.urlPattern = urlPattern;
 		this.respondent = respondent;
@@ -30,9 +29,12 @@ public final class FilesRespondent implements ConditionalRespondent {
 		this(new GetMethod(), new IndexHtmlFileUrlPattern(rootDirectory), respondent);
 	}
 
+	public FilesRespondent(FileUrlPattern urlPattern) {
+		this(new GetMethod(), urlPattern, new RawFileRespondent(new StaticHttpTypes()));
+	}
+
 	public FilesRespondent(String rootDirectory) {
-		this(new GetMethod(), new IndexHtmlFileUrlPattern(rootDirectory),
-				new RawFileRespondent(new StaticHttpTypes()));
+		this(new IndexHtmlFileUrlPattern(rootDirectory));
 	}
 
 	@Override
