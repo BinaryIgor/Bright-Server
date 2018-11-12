@@ -23,8 +23,7 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 	private final Initialization<Map<String, Class>> pathVariables;
 	private final Initialization<Map<String, Class>> parameters;
 
-	private TypedUrlPattern(String urlPattern, Type type,
-			Initialization<Map<String, Class>> pathVariables,
+	private TypedUrlPattern(String urlPattern, Type type, Initialization<Map<String, Class>> pathVariables,
 			Initialization<Map<String, Class>> parameters) {
 		this.urlPattern = urlPattern;
 		this.type = type;
@@ -104,8 +103,7 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 		boolean matched = urlPatternSegments.length == urlSegments.length;
 		if (matched) {
 			for (int i = 0; i < urlPatternSegments.length; i++) {
-				matched = isPathVariable(urlPatternSegments[i])
-						|| urlPatternSegments[i].equals(urlSegments[i]);
+				matched = isPathVariable(urlPatternSegments[i]) || urlPatternSegments[i].equals(urlSegments[i]);
 				if (!matched) {
 					break;
 				}
@@ -139,8 +137,8 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 						if (keyType.length < 2) {
 							break;
 						}
-						pathVariables.put(keyType[0], this.type
-								.value(this.pathVariables.value().get(keyType[0]), urlSegments[i]));
+						pathVariables.put(keyType[0],
+								this.type.value(this.pathVariables.value().get(keyType[0]), urlSegments[i]));
 					}
 				}
 			} catch (Exception e) {
@@ -151,8 +149,7 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 	}
 
 	private boolean isPathVariable(String urlPatternSegment) {
-		return urlPatternSegment.startsWith(PATH_VARIABLE_START)
-				&& urlPatternSegment.endsWith(PATH_VARIABLE_END);
+		return urlPatternSegment.startsWith(PATH_VARIABLE_START) && urlPatternSegment.endsWith(PATH_VARIABLE_END);
 	}
 
 	private String rawPathVariable(String urlPatternSegment) {
@@ -209,8 +206,7 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 
 	@Override
 	public boolean hasPathVariables() {
-		return this.urlPattern.contains(PATH_VARIABLE_START)
-				&& this.urlPattern.contains(PATH_VARIABLE_END);
+		return this.urlPattern.contains(PATH_VARIABLE_START) && this.urlPattern.contains(PATH_VARIABLE_END);
 	}
 
 }

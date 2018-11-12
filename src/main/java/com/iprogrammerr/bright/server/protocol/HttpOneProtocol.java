@@ -57,15 +57,12 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 		int bodySize = bodySize(headers);
 		Request request;
 		if (bodySize == 0) {
-			request = new ParsedRequest(method, path, headers);
+			request = new ParsedRequest(path, method, headers);
 		} else {
 			byte[] bodyPart = headBody == -1 ? new byte[0]
-					: Arrays.copyOfRange(content, headBody + this.pattern.value().length,
-							content.length);
-			request = bodyPart.length >= bodySize
-					? new ParsedRequest(method, path, headers, bodyPart)
-					: new ParsedRequest(method, path, headers,
-							new PacketsBinary(binary, bodyPart, bodySize).content());
+					: Arrays.copyOfRange(content, headBody + this.pattern.value().length, content.length);
+			request = bodyPart.length >= bodySize ? new ParsedRequest(path, method, headers, bodyPart)
+					: new ParsedRequest(path, method, headers, new PacketsBinary(binary, bodyPart, bodySize).content());
 		}
 		return request;
 	}
@@ -143,8 +140,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	public boolean shouldClose(Request request) {
 		boolean close;
 		try {
-			close = !request.hasHeader(CONNECTION)
-					|| request.header(CONNECTION).equalsIgnoreCase(CLOSE);
+			close = !request.hasHeader(CONNECTION) || request.header(CONNECTION).equalsIgnoreCase(CLOSE);
 		} catch (Exception e) {
 			close = true;
 		}

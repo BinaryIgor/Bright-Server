@@ -19,8 +19,7 @@ public final class RequestResponseConnection implements Connection {
 	private final RequestResponseProtocol protocol;
 	private final List<Application> applications;
 
-	public RequestResponseConnection(RequestResponseProtocol protocol,
-			List<Application> applications) {
+	public RequestResponseConnection(RequestResponseProtocol protocol, List<Application> applications) {
 		this.protocol = protocol;
 		this.applications = applications;
 	}

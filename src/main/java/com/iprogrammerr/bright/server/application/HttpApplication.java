@@ -2,6 +2,7 @@ package com.iprogrammerr.bright.server.application;
 
 import java.util.Optional;
 
+import com.iprogrammerr.bright.server.cors.AllowAllCors;
 import com.iprogrammerr.bright.server.cors.Cors;
 import com.iprogrammerr.bright.server.filter.ConditionalFilter;
 import com.iprogrammerr.bright.server.filter.ConditionalFilters;
@@ -23,8 +24,7 @@ public final class HttpApplication implements Application {
 	private final Iterable<ConditionalRespondent> respondents;
 	private final Filters filters;
 
-	public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents,
-			Filters filters) {
+	public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents, Filters filters) {
 		this.context = context;
 		this.cors = cors;
 		this.respondents = respondents;
@@ -36,17 +36,34 @@ public final class HttpApplication implements Application {
 		this(context, cors, respondents, new ConditionalFilters(filters));
 	}
 
+	public HttpApplication(String context, Iterable<ConditionalRespondent> respondents,
+			Iterable<ConditionalFilter> filters) {
+		this(context, new AllowAllCors(), respondents, filters);
+	}
+
 	public HttpApplication(Cors cors, Iterable<ConditionalRespondent> respondents,
 			Iterable<ConditionalFilter> filters) {
 		this("", cors, respondents, new ConditionalFilters(filters));
+	}
+
+	public HttpApplication(Iterable<ConditionalRespondent> respondents, Iterable<ConditionalFilter> filters) {
+		this("", new AllowAllCors(), respondents, filters);
 	}
 
 	public HttpApplication(String context, Cors cors, Iterable<ConditionalRespondent> respondents) {
 		this(context, cors, respondents, new ConditionalFilters());
 	}
 
+	public HttpApplication(String context, Iterable<ConditionalRespondent> respondents) {
+		this(context, new AllowAllCors(), respondents);
+	}
+
 	public HttpApplication(Cors cors, Iterable<ConditionalRespondent> respondents) {
 		this("", cors, respondents, new ConditionalFilters());
+	}
+
+	public HttpApplication(Iterable<ConditionalRespondent> respondents) {
+		this("", new AllowAllCors(), respondents, new ConditionalFilters());
 	}
 
 	@Override
@@ -74,8 +91,7 @@ public final class HttpApplication implements Application {
 			IntermediateResponse ir = this.filters.response(request);
 			if (ir.canForward()) {
 				response = this.cors.toAddHeaders().isEmpty() ? respondent.response(request)
-						: new WithAdditionalHeadersResponse(respondent.response(request),
-								this.cors.toAddHeaders());
+						: new WithAdditionalHeadersResponse(respondent.response(request), this.cors.toAddHeaders());
 			} else {
 				response = ir.error();
 			}
@@ -91,8 +107,8 @@ public final class HttpApplication implements Application {
 				return cr;
 			}
 		}
-		throw new Exception(String.format("There is no respondent for %s method and url: %s",
-				request.method(), request.url()));
+		throw new Exception(
+				String.format("There is no respondent for %s method and url: %s", request.method(), request.url()));
 	}
 
 	private Response corsResponse(Request request) {

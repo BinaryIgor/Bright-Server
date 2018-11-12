@@ -30,7 +30,7 @@ public final class HttpOneProtocolTest {
 		List<Header> headers = Arrays.asList(new HttpHeader("host", HOST), new ContentTypeHeader("image/jpeg"),
 				new ContentLengthHeader(body.length));
 		assertThat(new HttpOneProtocol(), new RequestResponseProtocolThatCanReadRequestAndWriteResponses(
-				new ParsedRequest("POST", PATH, headers, body), new CreatedResponse()));
+				new ParsedRequest(PATH, "POST", headers, body), new CreatedResponse()));
 	}
 
 	@Test
@@ -39,27 +39,27 @@ public final class HttpOneProtocolTest {
 		List<Header> headers = Arrays.asList(new HttpHeader("host", HOST), new ContentTypeHeader("multipart/mock-data"),
 				new ContentLengthHeader(body.length));
 		assertThat(new HttpOneProtocol(), new RequestResponseProtocolThatCanReadRequestAndWriteResponses(
-				new ParsedRequest("put", PATH, headers, body),
+				new ParsedRequest(PATH, "put", headers, body),
 				new CreatedResponse(new JsonResponseBody("{\"status\": \"ok\"}"), new HttpHeader("Secret", "Secret"))));
 	}
 
 	@Test
 	public void shouldClose() {
 		assertThat(new HttpOneProtocol(), new RequestResponseProtocolThatCanDetermineConnectionState(
-				new ParsedRequest("put", PATH, Collections.singletonList(new HttpHeader("Connection", "Close"))),
+				new ParsedRequest(PATH, "put", Collections.singletonList(new HttpHeader("Connection", "Close"))),
 				true));
 	}
 
 	@Test
 	public void shouldKeepAlive() {
 		assertThat(new HttpOneProtocol(), new RequestResponseProtocolThatCanDetermineConnectionState(
-				new ParsedRequest("put", PATH, Collections.singletonList(new HttpHeader("Connection", "Keep-alive"))),
+				new ParsedRequest(PATH, "put", Collections.singletonList(new HttpHeader("Connection", "Keep-alive"))),
 				false));
 	}
 
 	@Test
 	public void shouldCloseOnLackingHeader() {
 		assertThat(new HttpOneProtocol(), new RequestResponseProtocolThatCanDetermineConnectionState(
-				new ParsedRequest("put", PATH, new ArrayList<>()), true));
+				new ParsedRequest(PATH, "put", new ArrayList<>()), true));
 	}
 }

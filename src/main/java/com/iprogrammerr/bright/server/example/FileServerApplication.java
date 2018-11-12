@@ -2,9 +2,9 @@ package com.iprogrammerr.bright.server.example;
 
 import java.util.Optional;
 
+import com.iprogrammerr.bright.server.BrightServer;
 import com.iprogrammerr.bright.server.Connection;
 import com.iprogrammerr.bright.server.RequestResponseConnection;
-import com.iprogrammerr.bright.server.BrightServer;
 import com.iprogrammerr.bright.server.application.Application;
 import com.iprogrammerr.bright.server.binary.type.AudioHttpTypes;
 import com.iprogrammerr.bright.server.binary.type.StaticHttpTypes;

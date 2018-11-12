@@ -1,5 +1,6 @@
 package com.iprogrammerr.bright.server.request;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -8,20 +9,24 @@ import com.iprogrammerr.bright.server.header.Header;
 
 public final class ParsedRequest implements Request {
 
-	private final String method;
 	private String url;
+	private final String method;
 	private final List<Header> headers;
 	private final byte[] body;
 
-	public ParsedRequest(String method, String url, List<Header> headers, byte[] body) {
-		this.method = method;
+	public ParsedRequest(String url, String method, List<Header> headers, byte[] body) {
 		this.url = url;
+		this.method = method;
 		this.headers = headers;
 		this.body = body;
 	}
 
-	public ParsedRequest(String method, String url, List<Header> headers) {
-		this(method, url, headers, new byte[0]);
+	public ParsedRequest(String url, String method, List<Header> headers) {
+		this(url, method, headers, new byte[0]);
+	}
+
+	public ParsedRequest(String url, String method) {
+		this(url, method, new ArrayList<>());
 	}
 
 	@Override

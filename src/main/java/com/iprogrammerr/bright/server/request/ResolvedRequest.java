@@ -27,5 +27,4 @@ public final class ResolvedRequest extends RequestEnvelope implements MatchedReq
 	public TypedMap pathVariables() {
 		return this.pathVariables;
 	}
-
 }
