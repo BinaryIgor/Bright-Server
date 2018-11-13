@@ -23,4 +23,9 @@ public final class BrightServerTest {
 	public void canRefuseStartingTwice() throws Exception {
 		assertThat(new BrightServer(0, MOCKED_CONNECTION), new ServerThatRefuseToStartTwice());
 	}
+
+	@Test
+	public void canBeRestarted() throws Exception {
+		assertThat(new BrightServer(0, MOCKED_CONNECTION), new ServerThatCanBeRestarted());
+	}
 }

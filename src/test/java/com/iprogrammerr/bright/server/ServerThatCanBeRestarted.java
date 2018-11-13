@@ -5,7 +5,7 @@ import org.hamcrest.TypeSafeMatcher;
 
 import com.iprogrammerr.bright.server.test.ConditionalWait;
 
-public final class ServerThatRefuseToStartTwice extends TypeSafeMatcher<Server> {
+public final class ServerThatCanBeRestarted extends TypeSafeMatcher<Server> {
 
 	@Override
 	public void describeTo(Description description) {
@@ -14,26 +14,27 @@ public final class ServerThatRefuseToStartTwice extends TypeSafeMatcher<Server> 
 
 	@Override
 	protected void describeMismatchSafely(Server item, Description description) {
-		description.appendText(String.format("%s that is not refusing to start twice", getClass().getSimpleName()));
+		description.appendText(String.format("%s that can not be restarted", getClass().getSimpleName()));
 	}
 
 	@Override
 	protected boolean matchesSafely(Server item) {
-		boolean matched = true;
+		boolean matched;
 		try {
 			item.start();
-			new ConditionalWait(100).waitUntil(() -> item.isRunning());
-			try {
-				matched = item.isRunning();
-				if (matched) {
-					item.start();
-					matched = false;
-				}
-			} catch (Exception e) {
-				matched = true;
-			}
+			ConditionalWait wait = new ConditionalWait(100);
+			wait.waitUntil(() -> item.isRunning());
+			item.stop();
+			wait.waitUntil(() -> !item.isRunning());
+			item.start();
+			wait.waitUntil(() -> item.isRunning());
+			item.stop();
+			matched = true;
 		} catch (Exception e) {
 			matched = false;
+			if (item.isRunning()) {
+				item.stop();
+			}
 		}
 		return matched;
 	}

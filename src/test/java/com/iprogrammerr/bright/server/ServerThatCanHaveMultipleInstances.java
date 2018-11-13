@@ -3,13 +3,11 @@ package com.iprogrammerr.bright.server;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
+
+import com.iprogrammerr.bright.server.test.ConditionalWait;
 
 public final class ServerThatCanHaveMultipleInstances extends TypeSafeMatcher<BrightServer> {
 
@@ -39,34 +37,24 @@ public final class ServerThatCanHaveMultipleInstances extends TypeSafeMatcher<Br
 	protected boolean matchesSafely(BrightServer item) {
 		boolean matched;
 		try {
-			CountDownLatch latch = new CountDownLatch(1);
-			int instances = 2 + this.random.nextInt(10);
-			ExecutorService executor = Executors.newFixedThreadPool(instances);
-			AtomicInteger count = new AtomicInteger();
+			int instances = 3 + this.random.nextInt(10);
+			int count = 0;
 			List<Server> servers = new ArrayList<>();
 			servers.add(item);
+			ConditionalWait wait = new ConditionalWait(100);
 			for (int i = 0; i < instances; ++i) {
 				Server server = new BrightServer(0, MOCKED_CONNECTION);
 				servers.add(server);
-				executor.execute(() -> {
-					try {
-						latch.await();
-						count.incrementAndGet();
-						server.start();
-					} catch (Exception e) {
-
-					}
-				});
+				server.start();
+				wait.waitUntil(() -> server.isRunning());
 			}
-			latch.countDown();
-			Thread.sleep(10);
-			if (count.get() != instances) {
-				Thread.sleep(20);
-			}
-			matched = count.get() == instances;
 			for (Server s : servers) {
+				if (s.isRunning()) {
+					++count;
+				}
 				s.stop();
 			}
+			matched = count == instances;
 		} catch (Exception e) {
 			matched = false;
 		}

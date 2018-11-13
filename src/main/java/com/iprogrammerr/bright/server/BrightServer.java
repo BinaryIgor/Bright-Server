@@ -15,8 +15,8 @@ public final class BrightServer implements Server {
 	private final Connection connection;
 	private boolean running;
 
-	private BrightServer(UnreliableStickyInitialization<ServerSocket> serverSocket, int port,
-			int timeout, Executor executor, Connection connection) {
+	private BrightServer(UnreliableStickyInitialization<ServerSocket> serverSocket, int port, int timeout,
+			Executor executor, Connection connection) {
 		this.serverSocket = serverSocket;
 		this.timeout = timeout;
 		this.executor = executor;
@@ -48,18 +48,24 @@ public final class BrightServer implements Server {
 		}
 		this.serverSocket.unstick();
 		ServerSocket serverSocket = this.serverSocket.value();
-		System.out.println("Bright Server is shining!");
-		this.running = true;
-		while (!serverSocket.isClosed()) {
-			try {
-				Socket socket = serverSocket.accept();
-				socket.setSoTimeout(this.timeout);
-				this.executor.execute(() -> this.connection.connect(socket));
-			} catch (Exception e) {
-				e.printStackTrace();
+		new Thread(() -> {
+			System.out.println(String.format("Bright Server is shining on port %d!", serverSocket.getLocalPort()));
+			this.running = true;
+			while (!serverSocket.isClosed()) {
+				try {
+					Socket socket = serverSocket.accept();
+					if (this.running) {
+						socket.setSoTimeout(this.timeout);
+						this.executor.execute(() -> this.connection.connect(socket));
+					} else {
+						serverSocket.close();
+						break;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		}
-		this.running = false;
+		}).start();
 	}
 
 	@Override
@@ -70,7 +76,8 @@ public final class BrightServer implements Server {
 	@Override
 	public void stop() {
 		try {
-			this.serverSocket.value().close();
+			new Socket(this.serverSocket.value().getInetAddress(), this.serverSocket.value().getLocalPort()).close();
+			this.running = false;
 			System.out.println("Bright Server is fading away...");
 		} catch (Exception e) {
 			e.printStackTrace();
