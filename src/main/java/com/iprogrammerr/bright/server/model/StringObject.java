@@ -28,7 +28,7 @@ public final class StringObject implements MutableKeyValue {
 	@Override
 	public boolean equals(Object object) {
 		boolean equal;
-		if (object == null || !MutableKeyValue.class.isAssignableFrom(object.getClass())) {
+		if (!MutableKeyValue.class.isAssignableFrom(object.getClass())) {
 			equal = false;
 		} else if (object == this) {
 			equal = true;

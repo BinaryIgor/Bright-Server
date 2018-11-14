@@ -20,7 +20,7 @@ public final class BinaryThatCanReadContent extends TypeSafeMatcher<Binary> {
 
 	@Override
 	protected void describeMismatchSafely(Binary item, Description description) {
-		description.appendText(String.format("%s that can have content of %d length", getClass().getSimpleName(),
+		description.appendText(String.format("%s that does not have content of %d length", getClass().getSimpleName(),
 				this.content.length));
 	}
 

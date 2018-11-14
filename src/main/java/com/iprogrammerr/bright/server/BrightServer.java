@@ -59,7 +59,6 @@ public final class BrightServer implements Server {
 						this.executor.execute(() -> this.connection.connect(socket));
 					} else {
 						serverSocket.close();
-						break;
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -76,8 +75,8 @@ public final class BrightServer implements Server {
 	@Override
 	public void stop() {
 		try {
-			new Socket(this.serverSocket.value().getInetAddress(), this.serverSocket.value().getLocalPort()).close();
 			this.running = false;
+			new Socket(this.serverSocket.value().getInetAddress(), this.serverSocket.value().getLocalPort()).close();
 			System.out.println("Bright Server is fading away...");
 		} catch (Exception e) {
 			e.printStackTrace();

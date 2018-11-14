@@ -25,7 +25,7 @@ public final class FiltersThatCanGiveIntermediateResponses extends TypeSafeMatch
 
 	@Override
 	protected void describeMismatchSafely(Filters item, Description description) {
-		description.appendText(String.format("%s that can give toForward: %b response to %s requests",
+		description.appendText(String.format("%s that can not give toForward: %b response to %s requests",
 				getClass().getSimpleName(), this.response.canForward(), this.requests));
 	}
 

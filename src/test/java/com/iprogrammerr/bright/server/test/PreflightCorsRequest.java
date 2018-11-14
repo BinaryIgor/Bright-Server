@@ -2,7 +2,9 @@ package com.iprogrammerr.bright.server.test;
 
 import java.util.Arrays;
 
-import com.iprogrammerr.bright.server.header.HttpHeader;
+import com.iprogrammerr.bright.server.header.template.AccessControlAllowHeadersHeader;
+import com.iprogrammerr.bright.server.header.template.AccessControlAllowMethodsHeader;
+import com.iprogrammerr.bright.server.header.template.AccessControlAllowOriginHeader;
 import com.iprogrammerr.bright.server.request.ParsedRequest;
 import com.iprogrammerr.bright.server.request.RequestEnvelope;
 
@@ -10,9 +12,9 @@ public final class PreflightCorsRequest extends RequestEnvelope {
 
 	public PreflightCorsRequest(String url, String origin, String requestHeaders, String requestMethods, byte[] body) {
 		super(new ParsedRequest(url, "OPTIONS",
-				Arrays.asList(new HttpHeader("Origin", origin),
-						new HttpHeader("Access-Control-Request-Headers", requestHeaders),
-						new HttpHeader("Access-Control-Request-Method", requestMethods)),
+				Arrays.asList(new AccessControlAllowOriginHeader(origin),
+						new AccessControlAllowHeadersHeader(requestHeaders),
+						new AccessControlAllowMethodsHeader(requestMethods)),
 				body));
 	}
 

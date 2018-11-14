@@ -3,6 +3,7 @@ package com.iprogrammerr.bright.server.binary;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import org.hamcrest.Description;
@@ -27,17 +28,16 @@ public final class TypedBinaryThatCanRead extends TypeSafeMatcher<TypedBinary> {
 
 	@Override
 	protected boolean matchesSafely(TypedBinary item) {
-		boolean matched;
-		try {
-			matched = this.type.equals(item.type());
-			if (matched) {
+		boolean matched = this.type.equals(item.type());
+		if (matched) {
+			try (InputStream is = new BufferedInputStream(new FileInputStream(this.source))) {
 				byte[] content = item.content();
-				matched = content.length == this.source.length() && Arrays.equals(content,
-						new PacketsBinary(new BufferedInputStream(new FileInputStream(this.source)),
-								this.source.length()).content());
+				matched = content.length == this.source.length()
+						&& Arrays.equals(content, new PacketsBinary(is, this.source.length()).content());
+
+			} catch (Exception e) {
+				matched = false;
 			}
-		} catch (Exception e) {
-			matched = false;
 		}
 		return matched;
 	}

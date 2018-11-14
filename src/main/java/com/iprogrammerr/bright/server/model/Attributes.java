@@ -112,7 +112,7 @@ public final class Attributes implements TypedMap {
 	@Override
 	public boolean equals(Object object) {
 		boolean equal;
-		if (object == null || !TypedMap.class.isAssignableFrom(object.getClass())) {
+		if (!TypedMap.class.isAssignableFrom(object.getClass())) {
 			equal = false;
 		} else if (object == this) {
 			equal = true;

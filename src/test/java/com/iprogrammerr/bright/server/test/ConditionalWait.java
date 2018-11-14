@@ -2,34 +2,42 @@ package com.iprogrammerr.bright.server.test;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ConditionalWait {
 
+	private static final int STEPS = 5;
+	private final Executor executor;
 	private final int timeout;
 
-	public ConditionalWait(int timeout) {
+	public ConditionalWait(Executor executor, int timeout) {
+		this.executor = executor;
 		this.timeout = timeout;
+	}
+
+	public ConditionalWait(int timeout) {
+		this(Executors.newCachedThreadPool(), timeout);
 	}
 
 	public void waitUntil(Callable<Boolean> callable) throws Exception {
 		CountDownLatch latch = new CountDownLatch(1);
-		new Thread(() -> {
+		this.executor.execute(() -> {
 			try {
-				int steps = 5;
-				for (int i = 0; i < steps; ++i) {
+				for (int i = 0; i < STEPS; ++i) {
 					if (callable.call()) {
 						break;
 					}
-					Thread.sleep(this.timeout / steps);
+					Thread.sleep(this.timeout / STEPS);
 				}
 				latch.countDown();
 			} catch (Exception e) {
 
 			}
-		}).start();
+		});
 		if (!latch.await(this.timeout, TimeUnit.MILLISECONDS)) {
-			throw new Exception(String.format("Runnable has not finished in %d ms", this.timeout));
+			throw new Exception(String.format("Callable has not finished in %d ms", this.timeout));
 		}
 	}
 }

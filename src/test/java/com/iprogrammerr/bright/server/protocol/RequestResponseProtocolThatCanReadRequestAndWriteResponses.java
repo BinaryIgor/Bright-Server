@@ -17,8 +17,7 @@ public final class RequestResponseProtocolThatCanReadRequestAndWriteResponses ex
 	private final Request request;
 	private final Response response;
 
-	public RequestResponseProtocolThatCanReadRequestAndWriteResponses(Request request,
-			Response response) {
+	public RequestResponseProtocolThatCanReadRequestAndWriteResponses(Request request, Response response) {
 		this.request = request;
 		this.response = response;
 	}
@@ -30,23 +29,20 @@ public final class RequestResponseProtocolThatCanReadRequestAndWriteResponses ex
 
 	@Override
 	protected void describeMismatchSafely(RequestResponseProtocol item, Description description) {
-		description
-				.appendText(String.format("%s that can read given request and write given response",
-						getClass().getSimpleName()));
+		description.appendText(String.format("%s that can not read given request and write given response",
+				getClass().getSimpleName()));
 	}
 
 	@Override
 	protected boolean matchesSafely(RequestResponseProtocol item) {
 		boolean matched = false;
 		try {
-			Request request = item
-					.request(new ByteArrayInputStream(new RequestBinary(this.request).content()));
+			Request request = item.request(new ByteArrayInputStream(new RequestBinary(this.request).content()));
 			matched = this.request.equals(request);
 			if (matched) {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				item.write(baos, this.response);
-				matched = Arrays.equals(new ResponseBinary(this.response).content(),
-						baos.toByteArray());
+				matched = Arrays.equals(new ResponseBinary(this.response).content(), baos.toByteArray());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

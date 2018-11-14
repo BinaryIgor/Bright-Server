@@ -37,12 +37,14 @@ public final class ServerThatCanHaveMultipleInstances extends TypeSafeMatcher<Br
 	protected boolean matchesSafely(BrightServer item) {
 		boolean matched;
 		try {
-			int instances = 3 + this.random.nextInt(10);
+			int instances = 2 + this.random.nextInt(10);
 			int count = 0;
 			List<Server> servers = new ArrayList<>();
-			servers.add(item);
 			ConditionalWait wait = new ConditionalWait(100);
-			for (int i = 0; i < instances; ++i) {
+			item.start();
+			wait.waitUntil(() -> item.isRunning());
+			servers.add(item);
+			for (int i = 0; i < instances - 1; ++i) {
 				Server server = new BrightServer(0, MOCKED_CONNECTION);
 				servers.add(server);
 				server.start();
@@ -56,6 +58,7 @@ public final class ServerThatCanHaveMultipleInstances extends TypeSafeMatcher<Br
 			}
 			matched = count == instances;
 		} catch (Exception e) {
+			e.printStackTrace();
 			matched = false;
 		}
 		return matched;

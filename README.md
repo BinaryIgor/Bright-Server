@@ -32,18 +32,17 @@ public final class AuthorizationFilter implements RequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
    @Override
-   public Response response(Request request) {
+   public IntermediateResponse response(Request request) {
     	Response response;
     	if (request.hasHeader(AUTHORIZATION_HEADER)) {
     	    String token = request.header(AUTHORIZATION_HEADER);
     	    boolean valid = token.equals(SECRET_TOKEN);
-    	    response = valid ? new OkResponse() : new ForbiddenResponse();
+    	    response = valid ? new ToForwardResponse() : new BlockedResponse(new ForbiddenResponse());
     	} else {
-    	    response = new ForbiddenResponse();
+    	    response = new BlockedResponse(new ForbiddenResponse());
     	}
     	return response;
     }
-    
 }
 ```
 ```java
