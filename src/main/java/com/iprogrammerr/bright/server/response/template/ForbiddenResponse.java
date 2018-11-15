@@ -12,8 +12,8 @@ public final class ForbiddenResponse extends ResponseEnvelope {
 
 	private static final int CODE = 403;
 
-	public ForbiddenResponse() {
-		super(new EmptyResponse(CODE));
+	public ForbiddenResponse(Header... headers) {
+		super(new EmptyResponse(CODE, headers));
 	}
 
 	public ForbiddenResponse(String message, Header... headers) {

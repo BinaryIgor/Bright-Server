@@ -12,8 +12,8 @@ public final class InternalServerErrorResponse extends ResponseEnvelope {
 
 	private static final int CODE = 500;
 
-	public InternalServerErrorResponse() {
-		super(new EmptyResponse(CODE));
+	public InternalServerErrorResponse(Header... headers) {
+		super(new EmptyResponse(CODE, headers));
 	}
 
 	public InternalServerErrorResponse(String message, Header... headers) {

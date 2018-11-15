@@ -12,8 +12,8 @@ public final class BadRequestResponse extends ResponseEnvelope {
 
 	private static final int CODE = 400;
 
-	public BadRequestResponse() {
-		super(new EmptyResponse(CODE));
+	public BadRequestResponse(Header... headers) {
+		super(new EmptyResponse(CODE, headers));
 	}
 
 	public BadRequestResponse(ResponseBody responseBody, Header... headers) {
