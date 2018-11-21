@@ -5,11 +5,11 @@ import java.util.List;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-public final class TypedMapThatCanOverrideValuesAndTypes extends TypeSafeMatcher<TypedMap> {
+public final class PrimitivesMapThatCanOverrideValuesAndTypes extends TypeSafeMatcher<Primitives> {
 
 	private final List<String> keys;
 
-	public TypedMapThatCanOverrideValuesAndTypes(List<String> keys) {
+	public PrimitivesMapThatCanOverrideValuesAndTypes(List<String> keys) {
 		this.keys = keys;
 	}
 
@@ -20,7 +20,7 @@ public final class TypedMapThatCanOverrideValuesAndTypes extends TypeSafeMatcher
 	}
 
 	@Override
-	protected boolean matchesSafely(TypedMap item) {
+	protected boolean matchesSafely(Primitives item) {
 		boolean matched;
 		try {
 			matched = true;
@@ -37,21 +37,18 @@ public final class TypedMapThatCanOverrideValuesAndTypes extends TypeSafeMatcher
 		return matched;
 	}
 
-	private boolean isOverriden(String key, TypedMap item) {
+	private boolean isOverriden(String key, Primitives item) {
 		boolean overriden;
 		try {
-			if (item.has(key, Boolean.class) || item.has(key, String.class)) {
+			if (item.has(key, Boolean.class)) {
 				item.put(key, 1);
-				overriden = item.intValue(key) == 1;
-			} else if (item.has(key, Integer.class) || item.has(key, Long.class)) {
+				overriden = item.numberValue(key).intValue() == 1;
+			} else if (item.has(key, Number.class)) {
 				item.put(key, "string");
 				overriden = item.stringValue(key).equals("string");
-			} else if (item.has(key, Float.class) || item.has(key, Double.class)) {
+			} else {
 				item.put(key, true);
 				overriden = item.booleanValue(key) == true;
-			} else {
-				item.put(key, 44.5);
-				overriden = item.doubleValue(key) == 44.5;
 			}
 		} catch (Exception e) {
 			overriden = false;

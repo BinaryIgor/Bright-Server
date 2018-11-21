@@ -22,16 +22,12 @@ public final class TypeThatCanInferTypesAndValue extends TypeSafeMatcher<Type> {
 
 	@Override
 	protected boolean matchesSafely(Type item) {
-		boolean matched = Boolean.class.equals(item.type("boolean"))
-				&& Integer.class.equals(item.type("int")) && Long.class.equals(item.type("long"))
-				&& Float.class.equals(item.type("float"))
-				&& Double.class.equals(item.type("double"))
+		boolean matched = Boolean.class.equals(item.type("boolean")) && Number.class.equals(item.type("number"))
 				&& String.class.equals(item.type("string"));
 		if (matched) {
 			try {
 				for (Map.Entry<Class, String> entry : this.typesValues.entrySet()) {
-					if (!this.values.get(entry.getValue())
-							.equals(item.value(entry.getKey(), entry.getValue()))) {
+					if (!this.values.get(entry.getValue()).equals(item.value(entry.getKey(), entry.getValue()))) {
 						matched = false;
 						break;
 					}

@@ -19,6 +19,6 @@ public final class GzipBinaryTest {
 		TypedBinary tb = new TypedFile(new File(getClass().getResource("/test.html").getFile()));
 		byte[] source = tb.content();
 		assertThat(new GzipCompressedBinary(source),
-				new BinaryThatCanCompressAndDecompress(source, GzipDecompressedBinary.class));
+				new BinaryThatCanCompressAndDecompress(source, GzipDecompressedBinary.class, "gzip"));
 	}
 }

@@ -25,10 +25,10 @@ public final class HttpBinary implements Binary {
 		baos.write(this.firstLine.getBytes());
 		if (!this.headers.isEmpty()) {
 			baos.write(CRLF);
-			baos.write(this.headers.get(0).writable().getBytes());
+			baos.write(this.headers.get(0).toString().getBytes());
 			for (int i = 1; i < this.headers.size(); ++i) {
 				baos.write(CRLF);
-				baos.write(this.headers.get(i).writable().getBytes());
+				baos.write(this.headers.get(i).toString().getBytes());
 			}
 		}
 		if (this.body.length > 0) {

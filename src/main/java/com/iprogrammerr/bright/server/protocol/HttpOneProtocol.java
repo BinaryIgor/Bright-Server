@@ -123,7 +123,7 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 		StringBuilder builder = new StringBuilder();
 		builder.append(stringedResponseCode(response.code()));
 		for (Header header : response.headers()) {
-			builder.append(CRLF).append(header.writable());
+			builder.append(CRLF).append(header.toString());
 		}
 		outputStream.write(builder.toString().getBytes());
 		if (response.body().length > 0) {

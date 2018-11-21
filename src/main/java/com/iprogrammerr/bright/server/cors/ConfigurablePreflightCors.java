@@ -46,16 +46,12 @@ public final class ConfigurablePreflightCors implements PreflightCors {
 	public boolean isValid(Request request) {
 		boolean valid = is(request);
 		if (valid) {
-			try {
-				valid = (this.allowOrigin.equals(ALLOW_ALL)
-						|| this.allowOrigin.equals(request.header(ACCESS_CONTROL_ORIGIN)))
-						&& (this.allowMethods.equals(ALLOW_ALL) || this.allowMethods
-								.contains(request.header(ACCESS_CONTROL_REQUEST_METHOD).toLowerCase()))
-						&& (this.allowHeaders.equals(ALLOW_ALL) || this.allowHeaders
-								.contains(request.header(ACCESS_CONTROL_REQUEST_HEADERS).toLowerCase()));
-			} catch (Exception e) {
-				valid = false;
-			}
+			valid = (this.allowOrigin.equals(ALLOW_ALL)
+					|| this.allowOrigin.equals(request.header(ACCESS_CONTROL_ORIGIN)))
+					&& (this.allowMethods.equals(ALLOW_ALL)
+							|| this.allowMethods.contains(request.header(ACCESS_CONTROL_REQUEST_METHOD).toLowerCase()))
+					&& (this.allowHeaders.equals(ALLOW_ALL) || this.allowHeaders
+							.contains(request.header(ACCESS_CONTROL_REQUEST_HEADERS).toLowerCase()));
 		}
 		return valid;
 	}

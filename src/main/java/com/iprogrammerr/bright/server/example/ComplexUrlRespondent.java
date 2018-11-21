@@ -11,9 +11,9 @@ public final class ComplexUrlRespondent implements Respondent {
 	@Override
 	public Response response(MatchedRequest request) {
 		try {
-			long id = request.pathVariables().longValue("id");
+			long id = request.pathVariables().numberValue("id").longValue();
 			String message = request.parameters().stringValue("message");
-			float scale = request.parameters().floatValue("scale");
+			float scale = request.parameters().numberValue("scale").floatValue();
 			String mirror = String.format("id=%d, message=%s, scale=%.3f", id, message, scale);
 			return new OkResponse(mirror);
 		} catch (Exception e) {

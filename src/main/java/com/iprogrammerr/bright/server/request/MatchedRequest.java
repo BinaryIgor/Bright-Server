@@ -1,10 +1,10 @@
 package com.iprogrammerr.bright.server.request;
 
-import com.iprogrammerr.bright.server.model.TypedMap;
+import com.iprogrammerr.bright.server.model.Primitives;
 
 public interface MatchedRequest extends Request {
 
-    TypedMap parameters();
+	Primitives parameters();
 
-    TypedMap pathVariables();
+	Primitives pathVariables();
 }

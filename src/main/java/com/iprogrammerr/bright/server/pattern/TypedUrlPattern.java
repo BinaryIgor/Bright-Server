@@ -6,7 +6,7 @@ import java.util.Map;
 import com.iprogrammerr.bright.server.initialization.Initialization;
 import com.iprogrammerr.bright.server.initialization.StickyInitialization;
 import com.iprogrammerr.bright.server.model.Attributes;
-import com.iprogrammerr.bright.server.model.TypedMap;
+import com.iprogrammerr.bright.server.model.Primitives;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public final class TypedUrlPattern implements ParameterizableUrlPattern {
@@ -87,7 +87,7 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 		return matched;
 	}
 
-	private boolean areVariablesValid(Map<String, Class> requiredVariables, TypedMap variables) {
+	private boolean areVariablesValid(Map<String, Class> requiredVariables, Primitives variables) {
 		for (Map.Entry<String, Class> rv : requiredVariables.entrySet()) {
 			if (!variables.has(rv.getKey(), rv.getValue())) {
 				return false;
@@ -121,8 +121,8 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 	}
 
 	@Override
-	public TypedMap pathVariables(String url) {
-		TypedMap pathVariables = new Attributes();
+	public Primitives pathVariables(String url) {
+		Primitives pathVariables = new Attributes();
 		String[] urlSegments = url.split(SEGMENTS_SEPARATOR);
 		String[] urlPatternSegments = this.urlPattern.split(SEGMENTS_SEPARATOR);
 		if (urlSegments.length >= urlPatternSegments.length) {
@@ -173,8 +173,8 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 	}
 
 	@Override
-	public TypedMap parameters(String url) {
-		TypedMap parameters = new Attributes();
+	public Primitives parameters(String url) {
+		Primitives parameters = new Attributes();
 		Map<String, String> urlParameters = rawParameters(url);
 		if (urlParameters.size() >= this.parameters.value().size()) {
 			try {

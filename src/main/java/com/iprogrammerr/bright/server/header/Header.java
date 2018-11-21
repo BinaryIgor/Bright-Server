@@ -2,11 +2,9 @@ package com.iprogrammerr.bright.server.header;
 
 public interface Header {
 
-    String key();
+	String key();
 
-    String value();
+	String value();
 
-    boolean is(String key);
-    
-    String writable();
+	boolean is(String key);
 }

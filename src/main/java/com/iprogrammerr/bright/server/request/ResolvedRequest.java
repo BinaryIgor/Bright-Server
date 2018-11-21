@@ -1,14 +1,14 @@
 package com.iprogrammerr.bright.server.request;
 
 import com.iprogrammerr.bright.server.model.Attributes;
-import com.iprogrammerr.bright.server.model.TypedMap;
+import com.iprogrammerr.bright.server.model.Primitives;
 
 public final class ResolvedRequest extends RequestEnvelope implements MatchedRequest {
 
-	private final TypedMap parameters;
-	private final TypedMap pathVariables;
+	private final Primitives parameters;
+	private final Primitives pathVariables;
 
-	public ResolvedRequest(Request request, TypedMap parameters, TypedMap pathVariables) {
+	public ResolvedRequest(Request request, Primitives parameters, Primitives pathVariables) {
 		super(request);
 		this.parameters = parameters;
 		this.pathVariables = pathVariables;
@@ -19,12 +19,12 @@ public final class ResolvedRequest extends RequestEnvelope implements MatchedReq
 	}
 
 	@Override
-	public TypedMap parameters() {
+	public Primitives parameters() {
 		return this.parameters;
 	}
 
 	@Override
-	public TypedMap pathVariables() {
+	public Primitives pathVariables() {
 		return this.pathVariables;
 	}
 }

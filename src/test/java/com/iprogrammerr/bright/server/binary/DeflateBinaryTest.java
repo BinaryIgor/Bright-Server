@@ -18,6 +18,6 @@ public class DeflateBinaryTest {
 		TypedBinary tb = new TypedFile(new File(getClass().getResource("/test.html").getFile()));
 		byte[] source = tb.content();
 		assertThat(new DeflateCompressedBinary(source),
-				new BinaryThatCanCompressAndDecompress(source, DeflateDecompressedBinary.class));
+				new BinaryThatCanCompressAndDecompress(source, DeflateDecompressedBinary.class, "deflate"));
 	}
 }

@@ -3,10 +3,7 @@ package com.iprogrammerr.bright.server.pattern;
 public final class UrlPatternType implements Type {
 
 	private static final String BOOLEAN = "boolean";
-	private static final String INT = "int";
-	private static final String LONG = "long";
-	private static final String FLOAT = "float";
-	private static final String DOUBLE = "double";
+	private static final String NUMBER = "number";
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -14,14 +11,8 @@ public final class UrlPatternType implements Type {
 		Class<T> typeClass;
 		if (type.equalsIgnoreCase(BOOLEAN)) {
 			typeClass = (Class<T>) Boolean.class;
-		} else if (type.equalsIgnoreCase(INT)) {
-			typeClass = (Class<T>) Integer.class;
-		} else if (type.equalsIgnoreCase(LONG)) {
-			typeClass = (Class<T>) Long.class;
-		} else if (type.equalsIgnoreCase(FLOAT)) {
-			typeClass = (Class<T>) Float.class;
-		} else if (type.equalsIgnoreCase(DOUBLE)) {
-			typeClass = (Class<T>) Double.class;
+		} else if (type.equalsIgnoreCase(NUMBER)) {
+			typeClass = (Class<T>) Number.class;
 		} else {
 			typeClass = (Class<T>) String.class;
 		}
@@ -34,13 +25,7 @@ public final class UrlPatternType implements Type {
 		T parsedValue;
 		if (Boolean.class.isAssignableFrom(type)) {
 			parsedValue = type.cast(Boolean.parseBoolean(value));
-		} else if (Integer.class.isAssignableFrom(type)) {
-			parsedValue = type.cast(Integer.parseInt(value));
-		} else if (Long.class.isAssignableFrom(type)) {
-			parsedValue = type.cast(Long.parseLong(value));
-		} else if (Float.class.isAssignableFrom(type)) {
-			parsedValue = type.cast(Float.parseFloat(value));
-		} else if (Double.class.isAssignableFrom(type)) {
+		} else if (Number.class.isAssignableFrom(type)) {
 			parsedValue = type.cast(Double.parseDouble(value));
 		} else {
 			parsedValue = type.cast(value);
@@ -52,14 +37,7 @@ public final class UrlPatternType implements Type {
 	public Object probedValue(String value) {
 		Object probed;
 		try {
-			if (isInteger(value)) {
-				long longValue = Long.parseLong(value);
-				if (longValue > Integer.MAX_VALUE) {
-					probed = longValue;
-				} else {
-					probed = (int) longValue;
-				}
-			} else if (isDouble(value)) {
+			if (isNumber(value)) {
 				probed = Double.parseDouble(value);
 			} else if (isBoolean(value)) {
 				probed = Boolean.parseBoolean(value);
@@ -67,23 +45,9 @@ public final class UrlPatternType implements Type {
 				probed = value;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			probed = value;
 		}
 		return probed;
-	}
-
-	private boolean isInteger(String value) {
-		char[] values = value.toCharArray();
-		boolean is = false;
-		if (values.length == 0) {
-			is = false;
-		} else if (values.length == 1 && Character.isDigit(values[0])) {
-			is = true;
-		} else if (Character.isDigit(values[0]) || values[0] == '-' || values[0] == '+') {
-			is = notDigitIndex(1, values) >= 0 ? false : true;
-		}
-		return is;
 	}
 
 	private int notDigitIndex(int from, char[] values) {
@@ -97,7 +61,7 @@ public final class UrlPatternType implements Type {
 		return index;
 	}
 
-	private boolean isDouble(String value) {
+	private boolean isNumber(String value) {
 		char[] values = value.toCharArray();
 		boolean is = values.length > 0 && Character.isDigit(values[0])
 				|| ((values[0] == '-' || values[0] == '+') && values.length > 1);

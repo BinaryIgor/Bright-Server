@@ -26,13 +26,8 @@ public final class HttpHeader implements Header {
 	}
 
 	@Override
-	public String writable() {
-		return this.key + ": " + this.value;
-	}
-
-	@Override
 	public String toString() {
-		return writable();
+		return this.key + ": " + this.value;
 	}
 
 	@Override

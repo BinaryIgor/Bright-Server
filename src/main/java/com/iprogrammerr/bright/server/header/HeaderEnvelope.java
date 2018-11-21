@@ -24,12 +24,12 @@ public abstract class HeaderEnvelope implements Header {
 	}
 
 	@Override
-	public final String writable() {
-		return this.base.writable();
+	public final boolean equals(Object object) {
+		return this.base.equals(object);
 	}
 
 	@Override
-	public final boolean equals(Object object) {
-		return this.base.equals(object);
+	public final String toString() {
+		return this.base.toString();
 	}
 }

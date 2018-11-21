@@ -14,15 +14,24 @@ public final class BinaryThatCanCompressAndDecompress extends TypeSafeMatcher<Co
 
 	private final byte[] source;
 	private final Class<? extends DecompressedBinary> decompressed;
+	private final String algorithm;
 
-	public BinaryThatCanCompressAndDecompress(byte[] source, Class<? extends DecompressedBinary> decompressed) {
+	public BinaryThatCanCompressAndDecompress(byte[] source, Class<? extends DecompressedBinary> decompressed,
+			String algorithm) {
 		this.source = source;
 		this.decompressed = decompressed;
+		this.algorithm = algorithm;
 	}
 
 	@Override
 	public void describeTo(Description description) {
 		description.appendText(getClass().getSimpleName());
+	}
+
+	@Override
+	protected void describeMismatchSafely(CompressedBinary item, Description description) {
+		description.appendText(String.format("%s that can not decompress source of %s size using %s algorithm",
+				getClass().getSimpleName(), this.source.length, this.algorithm));
 	}
 
 	@Override
@@ -36,7 +45,8 @@ public final class BinaryThatCanCompressAndDecompress extends TypeSafeMatcher<Co
 			} else {
 				db = new GzipDecompressedBinary(compressed, this.source.length);
 			}
-			matched = Arrays.equals(this.source, db.content());
+			matched = this.algorithm.equals(item.algorithm()) && this.algorithm.equals(db.algorithm())
+					&& Arrays.equals(this.source, db.content());
 		} catch (Exception e) {
 			matched = false;
 		}

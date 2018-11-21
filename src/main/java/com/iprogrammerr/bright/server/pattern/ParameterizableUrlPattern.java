@@ -1,12 +1,12 @@
 package com.iprogrammerr.bright.server.pattern;
 
-import com.iprogrammerr.bright.server.model.TypedMap;
+import com.iprogrammerr.bright.server.model.Primitives;
 
 public interface ParameterizableUrlPattern extends UrlPattern {
 
-	TypedMap pathVariables(String url);
+	Primitives pathVariables(String url);
 
-	TypedMap parameters(String url);
+	Primitives parameters(String url);
 
 	boolean hasParameters();
 

@@ -17,7 +17,7 @@ public final class HeaderThatIsHttpCompliant extends TypeSafeMatcher<Header> {
 
 	@Override
 	protected boolean matchesSafely(Header item) {
-		String writable = item.writable();
+		String writable = item.toString();
 		int index = writable.indexOf(":");
 		boolean matched = index == item.key().length();
 		if (matched) {
