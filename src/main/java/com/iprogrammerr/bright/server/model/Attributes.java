@@ -5,7 +5,6 @@ import java.util.List;
 
 public final class Attributes implements Primitives {
 
-	private static final double DELTA = 10e-6;
 	private final List<MutableKeyValue> values;
 
 	private Attributes(List<MutableKeyValue> values) {
@@ -112,11 +111,10 @@ public final class Attributes implements Primitives {
 				equal = this.booleanValue(keyValue.key()) == primitives.booleanValue(keyValue.key());
 			} else if (primitives.has(keyValue.key(), Number.class)) {
 				equal = Math.abs(this.numberValue(keyValue.key()).doubleValue()
-						- primitives.numberValue(keyValue.key()).doubleValue()) < DELTA;
+						- primitives.numberValue(keyValue.key()).doubleValue()) < 10e-6;
 			} else if (primitives.has(keyValue.key(), String.class)) {
 				equal = this.stringValue(keyValue.key()).equals(primitives.stringValue(keyValue.key()));
 			} else {
-				System.out.println("Does not have a key!");
 				equal = false;
 			}
 		} catch (Exception e) {

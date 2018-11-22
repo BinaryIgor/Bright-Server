@@ -52,7 +52,7 @@ public final class HelloRespondent implements Respondent {
     public Response response(MatchedRequest request) {
         Response response;
 	try {
-	    int id = request.pathVariables().intValue("id");
+	    int id = request.pathVariables().numberValue("id").intValue();
 	    String message = "Hello number " + id;
 	    response = new OkResponse(message);
 	} catch (Exception e) {
@@ -71,12 +71,12 @@ Because of that, they might become outdated from time to time.
 <dependency>
   <groupId>com.iprogrammerr</groupId>
   <artifactId>bright-server</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 ## Gradle
 ```
-compile 'com.iprogrammerr:bright-server:1.0.0'
+compile 'com.iprogrammerr:bright-server:1.0.1'
  ```
 ## Example
   In development: (https://github.com/Iprogrammerr/Riddle/)
