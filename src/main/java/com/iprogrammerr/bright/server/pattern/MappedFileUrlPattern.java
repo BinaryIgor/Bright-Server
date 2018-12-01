@@ -37,14 +37,14 @@ public final class MappedFileUrlPattern implements FileUrlPattern {
 
 	@Override
 	public String filePath(String url) {
+		url = withoutParameters(url);
 		String path;
 		if (this.base.isMatched(url)) {
 			path = this.base.filePath(url);
+		} else if (this.mappings.containsKey(url)) {
+			path = path(url);
 		} else {
-			path = withoutParameters(url);
-			if (this.mappings.containsKey(path)) {
-				path = path(url);
-			}
+			path = url;
 		}
 		return path;
 	}

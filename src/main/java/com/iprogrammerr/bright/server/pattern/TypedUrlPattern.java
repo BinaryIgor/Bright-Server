@@ -35,7 +35,6 @@ public final class TypedUrlPattern implements ParameterizableUrlPattern {
 		this(urlPattern, type, new StickyInitialization<>(() -> {
 			Map<String, Class> pathVariables = new HashMap<>();
 			String[] urlPatternSegments = urlPattern.split(SEGMENTS_SEPARATOR);
-
 			for (int i = 0; i < urlPatternSegments.length; i++) {
 				boolean pathVariable = urlPatternSegments[i].startsWith(PATH_VARIABLE_START)
 						&& urlPatternSegments[i].endsWith(PATH_VARIABLE_END);

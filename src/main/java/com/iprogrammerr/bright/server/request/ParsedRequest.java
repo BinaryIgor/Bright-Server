@@ -74,7 +74,7 @@ public final class ParsedRequest implements Request {
 	@Override
 	public void removeContext(String context) {
 		if (this.url.startsWith(context) && !context.isEmpty()) {
-			url = url.replace(context + "/", "");
+			this.url = this.url.replace(context + "/", "");
 		}
 
 	}
