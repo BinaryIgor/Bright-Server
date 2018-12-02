@@ -101,11 +101,11 @@ public class HttpOneProtocol implements RequestResponseProtocol {
 	private String path(String line) throws Exception {
 		int separator = line.indexOf(SEGMENTS_SEPARATOR);
 		if (separator <= MIN_REQUEST_METHOD_LENGTH) {
-			throw new Exception("First request line is invalid");
+			throw new Exception("Separator in first line is shorter that shortest valid http method");
 		}
 		int http = line.indexOf(HTTP);
-		if (http <= 2 * MIN_REQUEST_METHOD_LENGTH || (separator >= http)) {
-			throw new Exception("First request line is invalid");
+		if (separator >= http) {
+			throw new Exception("Index of protocol version is not greater that index of method/protocol separator");
 		}
 		return line.substring(separator + 1, http).trim();
 	}
