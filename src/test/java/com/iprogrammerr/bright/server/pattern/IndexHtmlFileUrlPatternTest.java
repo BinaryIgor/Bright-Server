@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public final class IndexHtmlFileUrlPatternTest {
@@ -27,5 +28,12 @@ public final class IndexHtmlFileUrlPatternTest {
 		urlsToFilePaths.put("index.html", CURRENT_PATH + File.separator + "index.html");
 		urlsToFilePaths.put("test.html", CURRENT_PATH + File.separator + "test.html");
 		assertThat(pattern, new FileUrlPatternThatCanReadPaths(urlsToFilePaths));
+	}
+
+	@Test
+	public void canReadNestedIndexHtml() {
+		IndexHtmlFileUrlPattern pattern = new IndexHtmlFileUrlPattern(CURRENT_PATH);
+		assertThat(pattern.filePath("nested/"),
+				Matchers.equalTo(String.join(File.separator, CURRENT_PATH, "nested", "index.html")));
 	}
 }

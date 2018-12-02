@@ -23,14 +23,15 @@ public final class MappedFileUrlPattern implements FileUrlPattern {
 
 	@Override
 	public boolean isMatched(String url) {
-		boolean matched = this.base.isMatched(url);
+		url = withoutParameters(url);
+		boolean matched;
+		if (url.contains(HIGHER_DIRECTORY) || !this.mappings.containsKey(url)) {
+			matched = false;
+		} else {
+			matched = new File(path(url)).exists();
+		}
 		if (!matched) {
-			url = withoutParameters(url);
-			if (url.contains(HIGHER_DIRECTORY) || !this.mappings.containsKey(url)) {
-				matched = false;
-			} else {
-				matched = new File(path(url)).exists();
-			}
+			matched = this.base.isMatched(url);
 		}
 		return matched;
 	}
